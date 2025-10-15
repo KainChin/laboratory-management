@@ -44,7 +44,8 @@ public class TestOrder {
     private String email;
 
     @Column(name = "status", nullable = false, length = 30)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ResultStatus status;
 
     @Column(name = "created_by", nullable = false)
     private String createdBy;
