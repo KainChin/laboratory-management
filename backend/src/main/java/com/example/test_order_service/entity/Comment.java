@@ -1,9 +1,12 @@
 package com.example.test_order_service.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.util.Date;
 
 @Entity
+@Data
 @Table(name = "comments")
 public class Comment {
     @Id
@@ -27,6 +30,4 @@ public class Comment {
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-
-    // Getters and setters...
 }

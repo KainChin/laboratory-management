@@ -1,9 +1,12 @@
 package com.example.test_order_service.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.util.Date;
 
 @Entity
+@Data
 @Table(name = "flagging_configs")
 public class FlaggingConfig {
     @Id
@@ -25,6 +28,4 @@ public class FlaggingConfig {
     @Column(name = "updated_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-
-    // Getters and setters...
 }

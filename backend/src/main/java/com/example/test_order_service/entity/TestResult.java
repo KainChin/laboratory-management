@@ -1,10 +1,14 @@
 package com.example.test_order_service.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
 @Table(name = "test_results")
+@Data
 public class TestResult {
     @Id
     @Column(name = "result_id")
@@ -28,7 +32,5 @@ public class TestResult {
 
     @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-
-    // Getters and setters...
+    private LocalDate createdAt = LocalDate.now();
 }
