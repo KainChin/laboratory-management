@@ -1,15 +1,21 @@
 package com.example.test_order_service.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Data
 @Table(name = "test_orders")
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class TestOrder {
     @Id
     @Column(name = "test_order_id")
@@ -23,8 +29,7 @@ public class TestOrder {
     private String patientName;
 
     @Column(name = "date_of_birth")
-    @Temporal(TemporalType.DATE)
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(name = "gender", length = 10)
     private String gender;
@@ -45,22 +50,19 @@ public class TestOrder {
     private String createdBy;
 
     @Column(name = "created_at", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "run_by")
     private String runBy;
 
     @Column(name = "run_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDate runAt;
+    private LocalDateTime runAt;
 
     @Column(name = "reviewed_by")
     private String reviewedBy;
 
     @Column(name = "reviewed_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDate reviewedAt;
+    private LocalDateTime reviewedAt;
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
     private List<TestResult> testResults;

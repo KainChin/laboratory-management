@@ -1,17 +1,23 @@
 package com.example.test_order_service.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "test_results")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TestResult {
     @Id
     @Column(name = "result_id")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String resultId;
 
     @ManyToOne
@@ -31,6 +37,5 @@ public class TestResult {
     private Boolean flagged;
 
     @Column(name = "created_at", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
