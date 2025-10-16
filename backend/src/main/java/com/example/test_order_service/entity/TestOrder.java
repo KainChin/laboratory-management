@@ -66,8 +66,10 @@ public class TestOrder {
     private LocalDateTime reviewedAt;
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<TestResult> testResults;
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Comment> comments;
 }

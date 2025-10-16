@@ -21,6 +21,7 @@ public class Comment {
     private String commentId;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "test_order_id", nullable = false)
     private TestOrder testOrder;
 
