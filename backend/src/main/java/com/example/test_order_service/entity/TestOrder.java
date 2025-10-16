@@ -47,7 +47,7 @@ public class TestOrder {
     @Enumerated(EnumType.STRING)
     private ResultStatus status;
 
-    @Column(name = "created_by", nullable = false)
+    @Column(name = "created_by", nullable = false, updatable = false)
     private String createdBy;
 
     @Column(name = "created_at", nullable = false)
@@ -70,4 +70,10 @@ public class TestOrder {
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.status = ResultStatus.PENDING;
+    }
 }
