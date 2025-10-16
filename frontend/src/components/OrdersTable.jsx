@@ -1,4 +1,5 @@
 import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
+import { useState } from "react";
 
 export default function OrdersTable() {
   const data = [
@@ -15,11 +16,36 @@ export default function OrdersTable() {
     Reviewed: "bg-purple-100 text-purple-700",
   };
 
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({
+    patientName: "",
+    dob: "",
+    phone: "",
+    email: "",
+    gender: "",
+    address: "",
+    country: "",
+    citizenId: "",
+  });
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm((s) => ({ ...s, [name]: value }));
+  }
+
+  function handleCreate() {
+    // For now just log the form. In a real app you'd POST to the backend.
+    console.log("Create test order:", form);
+    setShowModal(false);
+    // reset form
+    setForm({ patientName: "", dob: "", phone: "", email: "", gender: "", address: "", country: "", citizenId: "" });
+  }
+
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-red-500 font-semibold">Test Order Lists</h2>
-        <button className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600">
+        <button onClick={() => setShowModal(true)} className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600">
           + New Test Order
         </button>
       </div>
@@ -72,6 +98,66 @@ export default function OrdersTable() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl w-[820px] p-8 shadow-lg">
+            <h3 className="text-2xl text-red-500 font-bold text-center">NEW TEST ORDER</h3>
+            <p className="text-center text-sm text-gray-500 mb-6">Enter patient information to create a new test order</p>
+
+            <div className="border rounded-lg p-6 bg-gray-50">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-red-500 font-semibold text-sm">Patient Name</label>
+                  <input name="patientName" value={form.patientName} onChange={handleChange} className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="text-red-500 font-semibold text-sm">Date of Birth</label>
+                  <input name="dob" value={form.dob} onChange={handleChange} type="date" className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm" />
+                </div>
+
+                <div>
+                  <label className="text-red-500 font-semibold text-sm">Phone Number</label>
+                  <input name="phone" value={form.phone} onChange={handleChange} className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="text-red-500 font-semibold text-sm">Email</label>
+                  <input name="email" value={form.email} onChange={handleChange} type="email" className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm" />
+                </div>
+
+                <div>
+                  <label className="text-red-500 font-semibold text-sm">Gender</label>
+                  <select name="gender" value={form.gender} onChange={handleChange} className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm">
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-red-500 font-semibold text-sm">Address</label>
+                  <input name="address" value={form.address} onChange={handleChange} className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm" />
+                </div>
+
+                <div>
+                  <label className="text-red-500 font-semibold text-sm">Country</label>
+                  <input name="country" value={form.country} onChange={handleChange} className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="text-red-500 font-semibold text-sm">Citizen ID</label>
+                  <input name="citizenId" value={form.citizenId} onChange={handleChange} className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-4 mt-6">
+              <button onClick={() => setShowModal(false)} className="px-4 py-2 border border-gray-200 rounded-lg bg-white">Cancel</button>
+              <button onClick={handleCreate} className="px-4 py-2 bg-red-500 text-white rounded-lg">Create</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
