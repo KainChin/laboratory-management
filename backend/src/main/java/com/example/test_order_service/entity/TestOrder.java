@@ -1,5 +1,7 @@
 package com.example.test_order_service.entity;
 
+import com.example.test_order_service.entity.enumForEntity.Gender;
+import com.example.test_order_service.entity.enumForEntity.ResultStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,8 +33,15 @@ public class TestOrder {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+    @Column(name = "citizen_id", length = 30)
+    private String citizenId;
+
+    @Column(name = "country", length = 20)
+    private String country;
+
     @Column(name = "gender", length = 10)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Column(name = "phone", length = 20)
     private String phone;
@@ -66,11 +75,9 @@ public class TestOrder {
     private LocalDateTime reviewedAt;
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<TestResult> testResults;
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Comment> comments;
 
     @PrePersist
