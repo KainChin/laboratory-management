@@ -2,12 +2,13 @@ import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
 import { useState } from "react";
 
 export default function OrdersTable() {
-  const data = [
+  // Đổi mảng data sang orders (state), để bảng tự động cập nhật khi thao tác
+  const [orders, setOrders] = useState([
     { id: "P001", name: "Nguyen Tan Dung", status: "Completed", date: "27/09/2025", creator: "John. Smith" },
     { id: "P002", name: "Nguyen Ngoc Van", status: "Cancelled", date: "27/09/2025", creator: "John. Smith" },
     { id: "P003", name: "Tran Phuoc An", status: "Reviewed", date: "27/09/2025", creator: "John. Smith" },
     { id: "P004", name: "Nguyen Tan Dung", status: "Pending", date: "27/09/2025", creator: "John. Smith" },
-  ];
+  ]);
 
   const statusColor = {
     Completed: "bg-green-100 text-green-700",
@@ -16,7 +17,6 @@ export default function OrdersTable() {
     Reviewed: "bg-purple-100 text-purple-700",
   };
 
-  // State cho create/edit mode
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState("create");
   const [form, setForm] = useState({
@@ -29,21 +29,36 @@ export default function OrdersTable() {
     country: "",
     citizenId: "",
   });
+  // Lưu id đang edit để update đúng đơn hàng
+  const [editingId, setEditingId] = useState(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((s) => ({ ...s, [name]: value }));
   }
 
-  // Mở form tạo mới
+  function resetForm() {
+    setForm({
+      patientName: "",
+      dob: "",
+      phone: "",
+      email: "",
+      gender: "",
+      address: "",
+      country: "",
+      citizenId: "",
+    });
+  }
+
   function openCreateModal() {
     setMode("create");
-    setForm({ patientName: "", dob: "", phone: "", email: "", gender: "", address: "", country: "", citizenId: "" });
+    setEditingId(null);
+    resetForm();
     setShowModal(true);
   }
-  // Mở form chỉnh sửa và fill data
   function openEditModal(order) {
     setMode("edit");
+    setEditingId(order.id);
     setForm({
       patientName: order.name || "",
       dob: order.dob || "",
@@ -58,16 +73,46 @@ export default function OrdersTable() {
   }
 
   function handleCreate() {
-    // For now just log the form. In a real app you'd POST to the backend.
-    console.log("Create test order:", form);
+    setOrders([
+      ...orders,
+      {
+        id: `P00${orders.length + 1}`,
+        name: form.patientName,
+        status: "Pending",
+        date: new Date().toLocaleDateString(),
+        creator: "John. Smith",
+        dob: form.dob,
+        phone: form.phone,
+        email: form.email,
+        gender: form.gender,
+        address: form.address,
+        country: form.country,
+        citizenId: form.citizenId,
+      }
+    ]);
     setShowModal(false);
-    setForm({ patientName: "", dob: "", phone: "", email: "", gender: "", address: "", country: "", citizenId: "" });
+    resetForm();
   }
 
   function handleUpdate() {
-    // Demo: log form data, thực tế sẽ update dữ liệu order
-    console.log("Update test order:", form);
+    setOrders(orders.map((o) =>
+      o.id === editingId
+        ? {
+            ...o,
+            name: form.patientName,
+            dob: form.dob,
+            phone: form.phone,
+            email: form.email,
+            gender: form.gender,
+            address: form.address,
+            country: form.country,
+            citizenId: form.citizenId,
+          }
+        : o
+    ));
     setShowModal(false);
+    setEditingId(null);
+    resetForm();
   }
 
   return (
@@ -106,8 +151,8 @@ export default function OrdersTable() {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, i) => (
-              <tr key={i} className="border-b hover:bg-gray-50">
+            {orders.map((row, i) => (
+              <tr key={row.id} className="border-b hover:bg-gray-50">
                 <td className="py-2 px-3 font-medium">{row.id}</td>
                 <td className="py-2 px-3">{row.name}</td>
                 <td className="py-2 px-3">
