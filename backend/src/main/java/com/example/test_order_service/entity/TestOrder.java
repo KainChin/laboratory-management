@@ -1,10 +1,13 @@
 package com.example.test_order_service.entity;
 
+import com.example.test_order_service.entity.enumForEntity.Gender;
+import com.example.test_order_service.entity.enumForEntity.ResultStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,8 +34,15 @@ public class TestOrder {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+    @Column(name = "citizen_id", nullable = false, length = 30)
+    private String citizenId;
+
+    @Column(name = "country", nullable = false, length = 20)
+    private String country;
+
     @Column(name = "gender", length = 10)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Column(name = "phone", length = 20)
     private String phone;
@@ -47,7 +57,7 @@ public class TestOrder {
     @Enumerated(EnumType.STRING)
     private ResultStatus status;
 
-    @Column(name = "created_by", nullable = false)
+    @Column(name = "created_by", nullable = false, updatable = false)
     private String createdBy;
 
     @Column(name = "created_at", nullable = false)
@@ -70,4 +80,10 @@ public class TestOrder {
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.status = ResultStatus.PENDING;
+    }
 }
