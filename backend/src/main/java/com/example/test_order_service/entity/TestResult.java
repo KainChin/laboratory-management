@@ -22,7 +22,6 @@ public class TestResult {
     private String resultId;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "test_order_id", nullable = false)
     private TestOrder testOrder;
 
