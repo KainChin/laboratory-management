@@ -33,10 +33,10 @@ public class TestOrder {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "citizen_id", length = 30)
+    @Column(name = "citizen_id", nullable = false, length = 30)
     private String citizenId;
 
-    @Column(name = "country", length = 20)
+    @Column(name = "country", nullable = false, length = 20)
     private String country;
 
     @Column(name = "gender", length = 10)
