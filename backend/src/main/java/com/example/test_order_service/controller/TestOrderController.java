@@ -44,7 +44,7 @@ public class TestOrderController {
         return RestResponse.<PageResponse<TestOrderResponse>>builder()
                 .timestamp(LocalDateTime.now())
                 .statusCode(200)
-                .message("Products retrieved successfully")
+                .message("Test orders retrieved successfully")
                 .result(testOrderPage)
                 .build();
     }
