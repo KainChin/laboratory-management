@@ -1,5 +1,6 @@
 package com.example.test_order_service.serviceImpl;
 
+import com.example.test_order_service.dto.repsonse.PageResponse;
 import com.example.test_order_service.dto.repsonse.RestResponse;
 import com.example.test_order_service.dto.repsonse.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
@@ -8,6 +9,8 @@ import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,6 +37,19 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .result(response)
                 .message("Test order created successfully")
                 .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    public PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword) {
+        Page<TestOrder> testOrderPage = testOrderRepository.findTestOrdersByParams(pageable, keyword);
+
+        return PageResponse.<TestOrderResponse>builder()
+                .currentPage(testOrderPage.getNumber() + 1)
+                .totalPages(testOrderPage.getTotalPages())
+                .items(testOrderPage.stream()
+                        .map(testOrderMapper::toTestOrderResponse)
+                        .toList())
                 .build();
     }
 
