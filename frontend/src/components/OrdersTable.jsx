@@ -2,12 +2,13 @@ import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
 import { useState } from "react";
 
 export default function OrdersTable() {
-  const data = [
+  // Đổi mảng data sang orders (state), để bảng tự động cập nhật khi thao tác
+  const [orders, setOrders] = useState([
     { id: "P001", name: "Nguyen Tan Dung", status: "Completed", date: "27/09/2025", creator: "John. Smith" },
     { id: "P002", name: "Nguyen Ngoc Van", status: "Cancelled", date: "27/09/2025", creator: "John. Smith" },
     { id: "P003", name: "Tran Phuoc An", status: "Reviewed", date: "27/09/2025", creator: "John. Smith" },
     { id: "P004", name: "Nguyen Tan Dung", status: "Pending", date: "27/09/2025", creator: "John. Smith" },
-  ];
+  ]);
 
   const statusColor = {
     Completed: "bg-green-100 text-green-700",
@@ -17,6 +18,7 @@ export default function OrdersTable() {
   };
 
   const [showModal, setShowModal] = useState(false);
+  const [mode, setMode] = useState("create");
   const [form, setForm] = useState({
     patientName: "",
     dob: "",
@@ -27,25 +29,97 @@ export default function OrdersTable() {
     country: "",
     citizenId: "",
   });
+  // Lưu id đang edit để update đúng đơn hàng
+  const [editingId, setEditingId] = useState(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((s) => ({ ...s, [name]: value }));
   }
 
+  function resetForm() {
+    setForm({
+      patientName: "",
+      dob: "",
+      phone: "",
+      email: "",
+      gender: "",
+      address: "",
+      country: "",
+      citizenId: "",
+    });
+  }
+
+  function openCreateModal() {
+    setMode("create");
+    setEditingId(null);
+    resetForm();
+    setShowModal(true);
+  }
+  function openEditModal(order) {
+    setMode("edit");
+    setEditingId(order.id);
+    setForm({
+      patientName: order.name || "",
+      dob: order.dob || "",
+      phone: order.phone || "",
+      email: order.email || "",
+      gender: order.gender || "",
+      address: order.address || "",
+      country: order.country || "",
+      citizenId: order.citizenId || "",
+    });
+    setShowModal(true);
+  }
+
   function handleCreate() {
-    // For now just log the form. In a real app you'd POST to the backend.
-    console.log("Create test order:", form);
+    setOrders([
+      ...orders,
+      {
+        id: `P00${orders.length + 1}`,
+        name: form.patientName,
+        status: "Pending",
+        date: new Date().toLocaleDateString(),
+        creator: "John. Smith",
+        dob: form.dob,
+        phone: form.phone,
+        email: form.email,
+        gender: form.gender,
+        address: form.address,
+        country: form.country,
+        citizenId: form.citizenId,
+      }
+    ]);
     setShowModal(false);
-    // reset form
-    setForm({ patientName: "", dob: "", phone: "", email: "", gender: "", address: "", country: "", citizenId: "" });
+    resetForm();
+  }
+
+  function handleUpdate() {
+    setOrders(orders.map((o) =>
+      o.id === editingId
+        ? {
+            ...o,
+            name: form.patientName,
+            dob: form.dob,
+            phone: form.phone,
+            email: form.email,
+            gender: form.gender,
+            address: form.address,
+            country: form.country,
+            citizenId: form.citizenId,
+          }
+        : o
+    ));
+    setShowModal(false);
+    setEditingId(null);
+    resetForm();
   }
 
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-red-500 font-semibold">Test Order Lists</h2>
-        <button onClick={() => setShowModal(true)} className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600">
+        <button onClick={openCreateModal} className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600">
           + New Test Order
         </button>
       </div>
@@ -77,8 +151,8 @@ export default function OrdersTable() {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, i) => (
-              <tr key={i} className="border-b hover:bg-gray-50">
+            {orders.map((row, i) => (
+              <tr key={row.id} className="border-b hover:bg-gray-50">
                 <td className="py-2 px-3 font-medium">{row.id}</td>
                 <td className="py-2 px-3">{row.name}</td>
                 <td className="py-2 px-3">
@@ -90,7 +164,7 @@ export default function OrdersTable() {
                 <td className="py-2 px-3">{row.creator}</td>
                 <td className="py-2 px-3 text-center space-x-2">
                   <button className="text-blue-500 hover:text-blue-700"><Eye size={15} /></button>
-                  <button className="text-orange-500 hover:text-orange-700"><Edit size={15} /></button>
+                  <button className="text-orange-500 hover:text-orange-700" onClick={() => openEditModal(row)}><Edit size={15} /></button>
                   <button className="text-red-500 hover:text-red-700"><Trash2 size={15} /></button>
                 </td>
               </tr>
@@ -103,8 +177,14 @@ export default function OrdersTable() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl w-[820px] p-8 shadow-lg">
-            <h3 className="text-2xl text-red-500 font-bold text-center">NEW TEST ORDER</h3>
-            <p className="text-center text-sm text-gray-500 mb-6">Enter patient information to create a new test order</p>
+            <h3 className="text-2xl text-red-500 font-bold text-center">
+              {mode === "edit" ? "EDIT TEST ORDER" : "NEW TEST ORDER"}
+            </h3>
+            <p className="text-center text-sm text-gray-500 mb-6">
+              {mode === "edit"
+                ? "Cập nhật thông tin bệnh nhân cho đơn xét nghiệm này"
+                : "Enter patient information to create a new test order"}
+            </p>
 
             <div className="border rounded-lg p-6 bg-gray-50">
               <div className="grid grid-cols-2 gap-4">
@@ -153,7 +233,11 @@ export default function OrdersTable() {
 
             <div className="flex justify-end gap-4 mt-6">
               <button onClick={() => setShowModal(false)} className="px-4 py-2 border border-gray-200 rounded-lg bg-white">Cancel</button>
-              <button onClick={handleCreate} className="px-4 py-2 bg-red-500 text-white rounded-lg">Create</button>
+              {mode === "edit" ? (
+                <button onClick={handleUpdate} className="px-4 py-2 bg-red-500 text-white rounded-lg">Save</button>
+              ) : (
+                <button onClick={handleCreate} className="px-4 py-2 bg-red-500 text-white rounded-lg">Create</button>
+              )}
             </div>
           </div>
         </div>
