@@ -19,6 +19,7 @@ public class RestResponse<T> {
     private T result;
     private String error;
     private LocalDateTime timestamp;
+    private String path;
 
     public RestResponse(int statusCode, String message, T result) {
         this.statusCode = statusCode;

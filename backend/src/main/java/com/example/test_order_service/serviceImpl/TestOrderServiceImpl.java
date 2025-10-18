@@ -6,6 +6,7 @@ import com.example.test_order_service.dto.repsonse.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.TestOrder;
+import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
@@ -104,7 +105,7 @@ public class TestOrderServiceImpl implements TestOrderService {
     @Override
     public RestResponse<Void> deleteTestOrder(String orderId) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Test order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
         testOrderRepository.deleteById(orderId);
 
