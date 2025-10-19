@@ -6,6 +6,7 @@ import com.example.test_order_service.dto.repsonse.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.TestOrder;
+import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
@@ -65,8 +66,10 @@ public class TestOrderServiceImpl implements TestOrderService {
             TestOrder testOrder = testOrderRepository.findById(orderId)
                     .orElseThrow(() -> new RuntimeException("Test order not found"));
 
-            testOrder.setPatientName(request.getPatientName() != null ? request.getPatientName() : testOrder.getPatientName());
-            testOrder.setDateOfBirth(request.getDateOfBirth() != null ? request.getDateOfBirth() : testOrder.getDateOfBirth());
+            testOrder.setPatientName(
+                    request.getPatientName() != null ? request.getPatientName() : testOrder.getPatientName());
+            testOrder.setDateOfBirth(
+                    request.getDateOfBirth() != null ? request.getDateOfBirth() : testOrder.getDateOfBirth());
             testOrder.setGender(request.getGender() != null ? request.getGender() : testOrder.getGender());
             testOrder.setPhone(request.getPhone() != null ? request.getPhone() : testOrder.getPhone());
             testOrder.setAddress(request.getAddress() != null ? request.getAddress() : testOrder.getAddress());
@@ -97,5 +100,19 @@ public class TestOrderServiceImpl implements TestOrderService {
                     .timestamp(LocalDateTime.now())
                     .build();
         }
+    }
+
+    @Override
+    public RestResponse<Void> deleteTestOrder(String orderId) {
+        TestOrder testOrder = testOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        testOrderRepository.deleteById(orderId);
+
+        return RestResponse.<Void>builder()
+                .statusCode(200)
+                .message("Test order " + orderId + " deleted successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 }

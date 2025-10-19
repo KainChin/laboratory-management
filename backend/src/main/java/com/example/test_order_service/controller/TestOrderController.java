@@ -56,4 +56,9 @@ public class TestOrderController {
                 .result(testOrderPage)
                 .build();
     }
+
+    @DeleteMapping("/{orderId}")
+    public RestResponse<Void> deleteTestOrder(@PathVariable String orderId) {
+        return testOrderService.deleteTestOrder(orderId);
+    }
 }

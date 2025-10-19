@@ -53,6 +53,7 @@ public class GlobalExceptionHandler {
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(ex.getMessage())
+                .path(request.getRequestURI())
                 .build();
         return ResponseEntity.badRequest().body(errorResponse);
     }
@@ -70,6 +71,7 @@ public class GlobalExceptionHandler {
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(errorMessages)
+                .path(request.getRequestURI())
                 .build();
 
         return ResponseEntity.badRequest().body(errorResponse);
@@ -109,8 +111,21 @@ public class GlobalExceptionHandler {
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(errorMessages)
+                .path(request.getRequestURI())
                 .build();
 
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<RestResponse<Void>> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        RestResponse<Void> response = RestResponse.<Void>builder()
+                .timestamp(LocalDateTime.now())
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .message(List.of(ex.getMessage()))
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }
