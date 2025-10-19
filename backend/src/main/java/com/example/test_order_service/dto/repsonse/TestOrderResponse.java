@@ -27,5 +27,6 @@ public class TestOrderResponse {
     private String address;
     private String email;
     private String phone;
+    private String createdBy;
     private ResultStatus status;
 }

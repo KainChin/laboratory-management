@@ -1,5 +1,6 @@
 import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
 import { useState, useEffect } from "react";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 export default function OrdersTable() {
   // const PAGE_SIZE and page/setPage are now declared above for backend pagination
@@ -12,13 +13,17 @@ export default function OrdersTable() {
   const [successMsg, setSuccessMsg] = useState("");
   // Đổi mảng data sang orders (state), để bảng tự động cập nhật khi thao tác
   const [orders, setOrders] = useState([]);
+  const [deleteId, setDeleteId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteMsg, setDeleteMsg] = useState("");
+  const [deleteError, setDeleteError] = useState("");
 
-  useEffect(() => {
+  function fetchOrdersWrapper(pageIdx = page) {
     async function fetchOrders() {
       try {
         const params = new URLSearchParams({
           keyword,
-          page: page.toString(),
+          page: pageIdx.toString(),
           size: PAGE_SIZE.toString(),
           sortDir,
         });
@@ -46,6 +51,10 @@ export default function OrdersTable() {
       }
     }
     fetchOrders();
+  }
+
+  useEffect(() => {
+    fetchOrdersWrapper();
   }, [page, keyword, sortDir]);
 
   const statusColor = {
@@ -173,13 +182,13 @@ export default function OrdersTable() {
       const created = result.result || {};
       setOrders([
         ...orders,
-      {
-        id: created.id || `P00${orders.length + 1}`,
-        name: created.patientName || form.patientName,
-        status: created.status || "Pending",
-        date: created.dateOfBirth || formatDate(form.dob) || formatDate(new Date()),
-        creator: created.createdBy || "John. Smith",
-        dob: created.dateOfBirth || formatDate(form.dob),
+        {
+          id: created.id || `P00${orders.length + 1}`,
+          name: created.patientName || form.patientName,
+          status: created.status || "Pending",
+          date: created.dateOfBirth || formatDate(form.dob) || formatDate(new Date()),
+          creator: created.createdBy || "John. Smith",
+          dob: created.dateOfBirth || formatDate(form.dob),
           phone: created.phone || form.phone,
           email: created.email || form.email,
           gender: created.gender || form.gender,
@@ -192,6 +201,9 @@ export default function OrdersTable() {
       setSuccessMsg("Create test order successfully!");
       setTimeout(() => setSuccessMsg(""), 3000);
       resetForm();
+      // REFRESH danh sách sau khi thêm
+      fetchOrdersWrapper(1); // về trang 1 sau khi thêm mới
+      setPage(1);
     } catch (err) {
       alert('Create failed: ' + err.message);
     }
@@ -313,7 +325,7 @@ export default function OrdersTable() {
                 <td className="py-2 px-3 text-center space-x-2">
                   <button className="text-blue-500 hover:text-blue-700" onClick={() => openViewModal(row)}><Eye size={15} /></button>
                   <button className="text-orange-500 hover:text-orange-700" onClick={() => openEditModal(row)}><Edit size={15} /></button>
-                  <button className="text-red-500 hover:text-red-700"><Trash2 size={15} /></button>
+                  <button className="text-red-500 hover:text-red-700" onClick={() => { setDeleteId(row.id); setShowDeleteModal(true); }}><Trash2 size={15} /></button>
                 </td>
               </tr>
             ))}
@@ -361,8 +373,8 @@ export default function OrdersTable() {
               {mode === 'view'
                 ? 'View patient information for this test order'
                 : mode === 'edit'
-                ? 'Update patient information for this test order'
-                : 'Enter patient information to create a new test order'}
+                  ? 'Update patient information for this test order'
+                  : 'Enter patient information to create a new test order'}
             </p>
 
             <div className="border rounded-lg p-6 bg-gray-50">
@@ -429,6 +441,51 @@ export default function OrdersTable() {
           </div>
         </div>
       )}
+      {/* Xoá - Modal xác nhận */}
+      <DeleteConfirmationModal
+        open={showDeleteModal}
+        orderId={deleteId}
+        onCancel={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          try {
+            const res = await fetch(`http://localhost:6868/api/test-orders/${deleteId}`, { method: 'DELETE' });
+            if (!res.ok) {
+              const text = await res.text();
+              setDeleteError(text || 'Xoá thất bại!');
+              setDeleteMsg("");
+              setTimeout(() => {
+                setDeleteError("");
+                setDeleteId(null);
+              }, 3000);
+            } else {
+              // Sau khi xoá thành công:
+              // Nếu đã xoá phần tử cuối cùng của trang và không phải trang 1, thì lùi về trang trước
+              const isLastItem = orders.length === 1; // chỉ còn 1 phần tử trang này (sau khi xoá = 0)
+              if (isLastItem && page > 1) {
+                setPage(page - 1);
+                fetchOrdersWrapper(page - 1);
+              } else {
+                fetchOrdersWrapper();
+              }
+              setDeleteMsg('Đã xoá thành công!');
+              setDeleteError("");
+              setShowDeleteModal(false);
+              setDeleteId(null);
+              setTimeout(() => setDeleteMsg(""), 3000);
+            }
+          } catch (e) {
+            setDeleteError('Lỗi mạng hoặc server!');
+            setDeleteMsg("");
+            setTimeout(() => {
+              setDeleteError("");
+              setDeleteId(null);
+            }, 3000);
+          }
+        }}
+      />
+      {/* Thông báo thành công xoá */}
+      {deleteMsg && <div className="fixed left-1/2 top-5 -translate-x-1/2 bg-green-100 text-green-700 px-6 py-2 shadow-lg rounded-lg z-50 font-semibold">{deleteMsg}</div>}
+      {deleteError && <div className="fixed left-1/2 top-5 -translate-x-1/2 bg-red-100 text-red-600 px-6 py-2 shadow-lg rounded-lg z-50 font-semibold">{deleteError}</div>}
     </div>
   );
 }
