@@ -1,5 +1,6 @@
 package com.example.test_order_service.dto.repsonse;
 
+import com.example.test_order_service.entity.enumForEntity.Gender;
 import com.example.test_order_service.entity.enumForEntity.ResultStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Pattern;
@@ -23,7 +24,7 @@ public class TestOrderResponse {
     private String citizenId;
     private String country;
     private int age;
-    private String gender;
+    private Gender gender;
     private String address;
     private String email;
     private String phone;
