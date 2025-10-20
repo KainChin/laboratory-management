@@ -64,6 +64,7 @@ public class TestOrderServiceImpl implements TestOrderService {
                 request.getDateOfBirth() != null ? request.getDateOfBirth() : testOrder.getDateOfBirth());
         testOrder.setCountry(request.getCountry() != null ? request.getCountry() : testOrder.getCountry());
         testOrder.setGender(request.getGender() != null ? request.getGender() : testOrder.getGender());
+        testOrder.setStatus(request.getStatus() != null ? request.getStatus() : testOrder.getStatus());
         testOrder.setPhone(request.getPhone() != null ? request.getPhone() : testOrder.getPhone());
         testOrder.setAddress(request.getAddress() != null ? request.getAddress() : testOrder.getAddress());
         testOrder.setEmail(request.getEmail() != null ? request.getEmail() : testOrder.getEmail());
