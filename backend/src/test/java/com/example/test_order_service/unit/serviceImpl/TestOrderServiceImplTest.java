@@ -31,10 +31,18 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit Tests for TestOrderServiceImpl
+ * Tests business logic with mocked dependencies
+ */
 @ExtendWith(MockitoExtension.class)
+@DisplayName("TestOrderServiceImpl Unit Tests")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestOrderServiceImplTest {
+
     @Mock
     private TestOrderRepository testOrderRepository;
 
@@ -49,7 +57,6 @@ public class TestOrderServiceImplTest {
     private TestOrder testOrder;
     private TestOrderResponse testOrderResponse;
 
-    //Setup common test data
     @BeforeEach
     void setUp() {
         testOrderRequest = TestOrderRequest.builder()
@@ -63,13 +70,15 @@ public class TestOrderServiceImplTest {
                 .phone("0901234567")
                 .build();
 
-        updateRequest = new TestOrderUpdateRequest();
-        updateRequest.setPatientName("Nguyen Van B");
-        updateRequest.setDateOfBirth(LocalDate.of(1992, 5, 20));
-        updateRequest.setGender(Gender.FEMALE);
-        updateRequest.setPhone("0909876543");
-        updateRequest.setAddress("456 Le Loi, HCMC");
-        updateRequest.setEmail("nguyenvanb@example.com");
+        updateRequest = TestOrderUpdateRequest.builder()
+                .patientName("Nguyen Van B")
+                .dateOfBirth(LocalDate.of(1992, 5, 20))
+                .gender(Gender.MALE)
+                .phone("0909876543")
+                .address("456 Le Loi, HCMC")
+                .email("nguyenvanb@example.com")
+                .citizenId("009876543210")
+                .build();
 
         testOrder = TestOrder.builder()
                 .testOrderId("TO-001")
@@ -100,12 +109,17 @@ public class TestOrderServiceImplTest {
                 .build();
     }
 
-    //This is the test for createTestOrder method
+    // ═══════════════════════════════════════════════════════════════
+    // CREATE TEST ORDER TESTS
+    // ═══════════════════════════════════════════════════════════════
+
     @Nested
     @DisplayName("Create Test Order Tests")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class CreateTestOrderTests {
 
         @Test
+        @Order(1)
         @DisplayName("Should create test order successfully")
         void shouldCreateTestOrderSuccessfully() {
             // Given
@@ -123,6 +137,7 @@ public class TestOrderServiceImplTest {
             assertThat(response.getResult()).isNotNull();
             assertThat(response.getResult().getPatientName()).isEqualTo("Nguyen Van A");
             assertThat(response.getResult().getAge()).isEqualTo(35);
+            assertThat(response.getTimestamp()).isNotNull();
 
             verify(testOrderMapper).toTestOrderEntity(testOrderRequest);
             verify(testOrderRepository).save(any(TestOrder.class));
@@ -130,6 +145,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
+        @Order(2)
         @DisplayName("Should set createdBy to System")
         void shouldSetCreatedByToSystem() {
             // Given
@@ -147,6 +163,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
+        @Order(3)
         @DisplayName("Should calculate age correctly")
         void shouldCalculateAgeCorrectly() {
             // Given
@@ -170,14 +187,90 @@ public class TestOrderServiceImplTest {
             int expectedAge = LocalDate.now().getYear() - 2000;
             assertThat(response.getResult().getAge()).isEqualTo(expectedAge);
         }
+
+        @Test
+        @Order(4)
+        @DisplayName("Should calculate age for infant (born this year)")
+        void shouldCalculateAgeForInfant() {
+            // Given
+            LocalDate infantDob = LocalDate.now().minusMonths(6);
+            TestOrderRequest request = TestOrderRequest.builder()
+                    .patientName("Infant Patient")
+                    .dateOfBirth(infantDob)
+                    .citizenId("001234567890")
+                    .country("Vietnam")
+                    .gender(Gender.MALE)
+                    .phone("0901234567")
+                    .build();
+
+            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            RestResponse<TestOrderResponse> response = testOrderService.createTestOrder(request);
+
+            // Then
+            assertThat(response.getResult().getAge()).isEqualTo(0);
+        }
+
+        @Test
+        @Order(5)
+        @DisplayName("Should calculate age for senior citizen")
+        void shouldCalculateAgeForSenior() {
+            // Given
+            LocalDate seniorDob = LocalDate.of(1950, 3, 10);
+            TestOrderRequest request = TestOrderRequest.builder()
+                    .patientName("Senior Patient")
+                    .dateOfBirth(seniorDob)
+                    .citizenId("001234567890")
+                    .country("Vietnam")
+                    .gender(Gender.FEMALE)
+                    .phone("0901234567")
+                    .build();
+
+            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            RestResponse<TestOrderResponse> response = testOrderService.createTestOrder(request);
+
+            // Then
+            int expectedAge = LocalDate.now().getYear() - 1950;
+            assertThat(response.getResult().getAge()).isEqualTo(expectedAge);
+        }
+
+        @Test
+        @Order(6)
+        @DisplayName("Should handle repository exception during create")
+        void shouldHandleRepositoryExceptionDuringCreate() {
+            // Given
+            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
+            when(testOrderRepository.save(any(TestOrder.class)))
+                    .thenThrow(new RuntimeException("Database error"));
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.createTestOrder(testOrderRequest))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Database error");
+
+            verify(testOrderRepository).save(any(TestOrder.class));
+        }
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // UPDATE TEST ORDER TESTS
+    // ═══════════════════════════════════════════════════════════════
 
     @Nested
     @DisplayName("Update Test Order Tests")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class UpdateTestOrderTests {
 
         @Test
-        @DisplayName("Should update test order successfully")
+        @Order(7)
+        @DisplayName("Should update test order successfully with all fields")
         void shouldUpdateTestOrderSuccessfully() {
             // Given
             String orderId = "TO-001";
@@ -193,6 +286,7 @@ public class TestOrderServiceImplTest {
             assertThat(response.getStatusCode()).isEqualTo(200);
             assertThat(response.getMessage()).isEqualTo("Test order updated successfully");
             assertThat(response.getResult()).isNotNull();
+            assertThat(response.getTimestamp()).isNotNull();
 
             verify(testOrderRepository).findById(orderId);
             verify(testOrderRepository).save(any(TestOrder.class));
@@ -200,13 +294,18 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @DisplayName("Should update only provided fields")
+        @Order(8)
+        @DisplayName("Should update only provided fields (partial update)")
         void shouldUpdateOnlyProvidedFields() {
             // Given
             String orderId = "TO-001";
             TestOrderUpdateRequest partialUpdate = new TestOrderUpdateRequest();
             partialUpdate.setPatientName("New Name");
-            // Other fields are null
+            // Other fields are null - should preserve existing values
+
+            String originalPhone = testOrder.getPhone();
+            String originalEmail = testOrder.getEmail();
+            Gender originalGender = testOrder.getGender();
 
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
             when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
@@ -215,53 +314,36 @@ public class TestOrderServiceImplTest {
             // When
             testOrderService.updateTestOrder(orderId, partialUpdate);
 
-            // Then
+            // Then - Only patientName should be updated, others preserved
             verify(testOrderRepository).save(argThat(order ->
                     "New Name".equals(order.getPatientName()) &&
-                            testOrder.getGender().equals(order.getGender()) &&
-                            testOrder.getPhone().equals(order.getPhone())
+                            originalGender.equals(order.getGender()) &&
+                            originalPhone.equals(order.getPhone()) &&
+                            originalEmail.equals(order.getEmail())
             ));
         }
 
         @Test
-        @DisplayName("Should return 404 when test order not found")
-        void shouldReturn404WhenTestOrderNotFound() {
+        @Order(9)
+        @DisplayName("Should throw ResourceNotFoundException when test order not found")
+        void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
             // Given
-            String orderId = "INVALID-ID";
-            when(testOrderRepository.findById(orderId)).thenReturn(Optional.empty());
+            String invalidOrderId = "INVALID-ID";
+            when(testOrderRepository.findById(invalidOrderId)).thenReturn(Optional.empty());
 
-            // When
-            RestResponse<TestOrderResponse> response = testOrderService.updateTestOrder(orderId, updateRequest);
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.updateTestOrder(invalidOrderId, updateRequest))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessage("Test order not found");
 
-            // Then
-            assertThat(response).isNotNull();
-            assertThat(response.getStatusCode()).isEqualTo(404);
-            assertThat(response.getMessage()).isEqualTo("Test order not found");
-            assertThat(response.getResult()).isNull();
-
-            verify(testOrderRepository).findById(orderId);
+            verify(testOrderRepository).findById(invalidOrderId);
             verify(testOrderRepository, never()).save(any(TestOrder.class));
+            verify(testOrderMapper, never()).toTestOrderResponse(any(TestOrder.class));
         }
 
         @Test
-        @DisplayName("Should return 500 on unexpected error")
-        void shouldReturn500OnUnexpectedError() {
-            // Given
-            String orderId = "TO-001";
-            when(testOrderRepository.findById(orderId)).thenThrow(new RuntimeException("Database error"));
-
-            // When
-            RestResponse<TestOrderResponse> response = testOrderService.updateTestOrder(orderId, updateRequest);
-
-            // Then
-            assertThat(response).isNotNull();
-            assertThat(response.getStatusCode()).isEqualTo(500);
-            assertThat(response.getMessage()).isEqualTo("An error occurred while updating the test order");
-            assertThat(response.getResult()).isNull();
-        }
-
-        @Test
-        @DisplayName("Should recalculate age after update")
+        @Order(10)
+        @DisplayName("Should recalculate age after updating date of birth")
         void shouldRecalculateAgeAfterUpdate() {
             // Given
             String orderId = "TO-001";
@@ -279,14 +361,90 @@ public class TestOrderServiceImplTest {
             int expectedAge = LocalDate.now().getYear() - 1995;
             assertThat(response.getResult().getAge()).isEqualTo(expectedAge);
         }
+
+        @Test
+        @Order(11)
+        @DisplayName("Should preserve all fields when update request has all null values")
+        void shouldPreserveAllFieldsWhenUpdateHasAllNullValues() {
+            // Given
+            String orderId = "TO-001";
+            TestOrderUpdateRequest emptyUpdate = new TestOrderUpdateRequest();
+            // All fields are null
+
+            String originalName = testOrder.getPatientName();
+            String originalPhone = testOrder.getPhone();
+            String originalEmail = testOrder.getEmail();
+            String originalAddress = testOrder.getAddress();
+            String originalCitizenId = testOrder.getCitizenId();
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            testOrderService.updateTestOrder(orderId, emptyUpdate);
+
+            // Then - All original values should be preserved
+            verify(testOrderRepository).save(argThat(order ->
+                    originalName.equals(order.getPatientName()) &&
+                            originalPhone.equals(order.getPhone()) &&
+                            originalEmail.equals(order.getEmail()) &&
+                            originalAddress.equals(order.getAddress()) &&
+                            originalCitizenId.equals(order.getCitizenId())
+            ));
+        }
+
+        @Test
+        @Order(12)
+        @DisplayName("Should update citizenId when provided")
+        void shouldUpdateCitizenIdWhenProvided() {
+            // Given
+            String orderId = "TO-001";
+            String newCitizenId = "999888777666";
+            TestOrderUpdateRequest updateWithCitizenId = new TestOrderUpdateRequest();
+            updateWithCitizenId.setCitizenId(newCitizenId);
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            testOrderService.updateTestOrder(orderId, updateWithCitizenId);
+
+            // Then
+            verify(testOrderRepository).save(argThat(order ->
+                    newCitizenId.equals(order.getCitizenId())
+            ));
+        }
+
+        @Test
+        @Order(13)
+        @DisplayName("Should handle repository exception during update")
+        void shouldHandleRepositoryExceptionDuringUpdate() {
+            // Given
+            String orderId = "TO-001";
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any(TestOrder.class)))
+                    .thenThrow(new RuntimeException("Database error"));
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.updateTestOrder(orderId, updateRequest))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Database error");
+        }
     }
 
-    //This is the test for getTestOrders method
+    // ═══════════════════════════════════════════════════════════════
+    // GET TEST ORDERS TESTS
+    // ═══════════════════════════════════════════════════════════════
+
     @Nested
     @DisplayName("Get Test Orders Tests")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class GetTestOrdersTests {
 
         @Test
+        @Order(14)
         @DisplayName("Should return paginated test orders")
         void shouldReturnPaginatedTestOrders() {
             // Given
@@ -327,7 +485,7 @@ public class TestOrderServiceImplTest {
 
             // Then
             assertThat(response).isNotNull();
-            assertThat(response.getCurrentPage()).isEqualTo(1);
+            assertThat(response.getCurrentPage()).isEqualTo(1); // Page number starts from 1
             assertThat(response.getTotalPages()).isEqualTo(1);
             assertThat(response.getItems()).hasSize(2);
             assertThat(response.getItems().get(0).getTestOrderId()).isEqualTo("TO-001");
@@ -338,6 +496,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
+        @Order(15)
         @DisplayName("Should filter test orders by keyword")
         void shouldFilterTestOrdersByKeyword() {
             // Given
@@ -359,11 +518,13 @@ public class TestOrderServiceImplTest {
             // Then
             assertThat(response).isNotNull();
             assertThat(response.getItems()).hasSize(1);
+            assertThat(response.getItems().get(0).getPatientName()).contains("Nguyen");
 
             verify(testOrderRepository).findTestOrdersByParams(pageable, keyword);
         }
 
         @Test
+        @Order(16)
         @DisplayName("Should return empty list when no test orders found")
         void shouldReturnEmptyListWhenNoTestOrdersFound() {
             // Given
@@ -386,13 +547,43 @@ public class TestOrderServiceImplTest {
             assertThat(response.getTotalPages()).isEqualTo(0);
             assertThat(response.getCurrentPage()).isEqualTo(1);
         }
+
+        @Test
+        @Order(17)
+        @DisplayName("Should handle pagination correctly for multiple pages")
+        void shouldHandlePaginationCorrectlyForMultiplePages() {
+            // Given - Page 2 of 3
+            Page<TestOrder> testOrderPage = new PageImpl<>(
+                    Collections.singletonList(testOrder),
+                    PageRequest.of(1, 6), // Page index 1 = Page 2
+                    18 // Total 18 items, 3 pages
+            );
+
+            when(testOrderRepository.findTestOrdersByParams(any(Pageable.class), anyString()))
+                    .thenReturn(testOrderPage);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            Pageable pageable = PageRequest.of(1, 6);
+            PageResponse<TestOrderResponse> response = testOrderService.getTestOrders(pageable, "");
+
+            // Then
+            assertThat(response.getCurrentPage()).isEqualTo(2); // Should be page 2
+            assertThat(response.getTotalPages()).isEqualTo(3);
+        }
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // DELETE TEST ORDER TESTS
+    // ═══════════════════════════════════════════════════════════════
 
     @Nested
     @DisplayName("Delete Test Order Tests")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class DeleteTestOrderTests {
 
         @Test
+        @Order(18)
         @DisplayName("Should delete test order successfully")
         void shouldDeleteTestOrderSuccessfully() {
             // Given
@@ -408,25 +599,47 @@ public class TestOrderServiceImplTest {
             assertThat(response.getStatusCode()).isEqualTo(200);
             assertThat(response.getMessage().toString()).contains("deleted successfully");
             assertThat(response.getMessage().toString()).contains(orderId);
+            assertThat(response.getTimestamp()).isNotNull();
+            assertThat(response.getResult()).isNull();
 
             verify(testOrderRepository).findById(orderId);
             verify(testOrderRepository).deleteById(orderId);
         }
 
         @Test
-        @DisplayName("Should throw ResourceNotFoundException when test order not found")
+        @Order(19)
+        @DisplayName("Should throw ResourceNotFoundException when test order not found for deletion")
         void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
             // Given
-            String orderId = "INVALID-ID";
-            when(testOrderRepository.findById(orderId)).thenReturn(Optional.empty());
+            String invalidOrderId = "INVALID-ID";
+            when(testOrderRepository.findById(invalidOrderId)).thenReturn(Optional.empty());
 
             // When & Then
-            assertThatThrownBy(() -> testOrderService.deleteTestOrder(orderId))
+            assertThatThrownBy(() -> testOrderService.deleteTestOrder(invalidOrderId))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("Test order not found");
 
-            verify(testOrderRepository).findById(orderId);
+            verify(testOrderRepository).findById(invalidOrderId);
             verify(testOrderRepository, never()).deleteById(anyString());
+        }
+
+        @Test
+        @Order(20)
+        @DisplayName("Should handle repository exception during deletion")
+        void shouldHandleRepositoryExceptionDuringDeletion() {
+            // Given
+            String orderId = "TO-001";
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            doThrow(new RuntimeException("Database error"))
+                    .when(testOrderRepository).deleteById(orderId);
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.deleteTestOrder(orderId))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Database error");
+
+            verify(testOrderRepository).findById(orderId);
+            verify(testOrderRepository).deleteById(orderId);
         }
     }
 }

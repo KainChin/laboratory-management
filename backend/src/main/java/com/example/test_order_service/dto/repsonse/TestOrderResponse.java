@@ -23,7 +23,6 @@ public class TestOrderResponse {
     private LocalDate dateOfBirth;
     private String citizenId;
     private String country;
-    private int age;
     private Gender gender;
     private String address;
     private String email;
