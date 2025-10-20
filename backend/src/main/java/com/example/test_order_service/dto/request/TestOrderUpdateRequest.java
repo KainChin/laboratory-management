@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 @Data
 public class TestOrderUpdateRequest {
+    private String citizenId;
     private String patientName;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
