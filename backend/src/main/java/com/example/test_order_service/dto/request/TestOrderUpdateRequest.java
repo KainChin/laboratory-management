@@ -12,13 +12,13 @@ import java.time.LocalDate;
 
 @Data
 public class TestOrderUpdateRequest {
-    private String citizenId;
     private String patientName;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateOfBirth;
+
+    private String citizenId;
     private String country;
-    private Integer age;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;

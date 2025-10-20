@@ -29,10 +29,8 @@ public class TestOrderServiceImpl implements TestOrderService {
     public RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request) {
         TestOrder testOrder = testOrderMapper.toTestOrderEntity(request);
         testOrder.setCreatedBy("System");
-        int age = calculateAge(request.getDateOfBirth());
 
         TestOrderResponse response = testOrderMapper.toTestOrderResponse(testOrderRepository.save(testOrder));
-        response.setAge(age);
 
         return RestResponse.<TestOrderResponse>builder()
                 .statusCode(200)
@@ -55,11 +53,6 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .build();
     }
 
-    private int calculateAge(LocalDate dateOfBirth) {
-        LocalDate currentDate = LocalDate.now();
-        return currentDate.getYear() - dateOfBirth.getYear();
-    }
-
     @Override
     public RestResponse<TestOrderResponse> updateTestOrder(String orderId, TestOrderUpdateRequest request) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
@@ -75,10 +68,7 @@ public class TestOrderServiceImpl implements TestOrderService {
         testOrder.setAddress(request.getAddress() != null ? request.getAddress() : testOrder.getAddress());
         testOrder.setEmail(request.getEmail() != null ? request.getEmail() : testOrder.getEmail());
 
-        int age = calculateAge(testOrder.getDateOfBirth());
-
         TestOrderResponse response = testOrderMapper.toTestOrderResponse(testOrderRepository.save(testOrder));
-        response.setAge(age);
 
         return RestResponse.<TestOrderResponse>builder()
                 .statusCode(200)
