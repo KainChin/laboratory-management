@@ -79,7 +79,6 @@ public class TestOrderControllerTest {
                 .dateOfBirth(LocalDate.of(1980, 1, 1))
                 .citizenId("079399004953")
                 .country("Vietnam")
-                .age(45)
                 .gender(Gender.MALE)
                 .address("123 Main St, Hanoi")
                 .email("johndoe@gmail.com")
@@ -125,7 +124,6 @@ public class TestOrderControllerTest {
                     .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.result.testOrderId").value("6b1f2e77-29d3-4e58-8a32-b9e7c3c3b1f0"))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.result.patientName").value("John Doe"))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.age").value(45))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.result.gender").value("MALE"))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.result.status").value("PENDING"))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.result.createdBy").value("System"));
@@ -319,7 +317,6 @@ public class TestOrderControllerTest {
                     .testOrderId(orderId)
                     .patientName("Jane Doe")
                     .dateOfBirth(LocalDate.of(1985, 5, 15))
-                    .age(40)
                     .gender(Gender.FEMALE)
                     .phone("+84987654321")
                     .address("456 Oak St, HCMC")
@@ -464,7 +461,7 @@ public class TestOrderControllerTest {
     class GetTestOrdersTests {
 
         @Test
-        @Order(14)
+        @Order(13)
         @DisplayName("Should get all test orders with default parameters")
         public void getTestOrders_defaultParameters_success() throws Exception {
             //Given
@@ -473,7 +470,6 @@ public class TestOrderControllerTest {
                     TestOrderResponse.builder()
                             .testOrderId("another-id")
                             .patientName("Jane Smith")
-                            .age(35)
                             .status(ResultStatus.COMPLETED)
                             .build()
             );
@@ -508,7 +504,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(15)
+        @Order(14)
         @DisplayName("Should get test orders with keyword search")
         public void getTestOrders_withKeyword_success() throws Exception {
             //Given
@@ -535,7 +531,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(16)
+        @Order(15)
         @DisplayName("Should get test orders with custom page and size")
         public void getTestOrders_withCustomPageSize_success() throws Exception {
             //Given
@@ -560,7 +556,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(17)
+        @Order(16)
         @DisplayName("Should get test orders sorted ascending")
         public void getTestOrders_sortedAscending_success() throws Exception {
             //Given
@@ -584,7 +580,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(18)
+        @Order(17)
         @DisplayName("Should get test orders sorted descending")
         public void getTestOrders_sortedDescending_success() throws Exception {
             //Given
@@ -608,7 +604,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(19)
+        @Order(18)
         @DisplayName("Should return empty list when no orders found")
         public void getTestOrders_noOrdersFound_returnEmptyList() throws Exception {
             //Given
@@ -631,7 +627,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(20)
+        @Order(19)
         @DisplayName("Should handle page number less than 1")
         public void getTestOrders_pageNumberLessThanOne_usePageZero() throws Exception {
             //Given
@@ -654,7 +650,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(21)
+        @Order(20)
         @DisplayName("Should sort by different fields")
         public void getTestOrders_sortByDifferentFields_success() throws Exception {
             //Given
@@ -685,7 +681,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(22)
+        @Order(21)
         @DisplayName("Should handle all parameters together")
         public void getTestOrders_allParameters_success() throws Exception {
             //Given
@@ -713,7 +709,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(23)
+        @Order(22)
         @DisplayName("Should handle case-insensitive sort direction")
         public void getTestOrders_caseInsensitiveSortDir_success() throws Exception {
             //Given
@@ -759,7 +755,7 @@ public class TestOrderControllerTest {
     class DeleteTestOrderTests {
 
         @Test
-        @Order(24)
+        @Order(23)
         @DisplayName("Should delete test order successfully")
         public void deleteTestOrder_validOrderId_success() throws Exception {
             //Given
@@ -785,7 +781,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(25)
+        @Order(24)
         @DisplayName("Should return 404 when deleting non-existent order")
         public void deleteTestOrder_orderNotFound_fail() throws Exception {
             //Given
@@ -804,7 +800,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(26)
+        @Order(25)
         @DisplayName("Should handle deletion of order with special characters in ID")
         public void deleteTestOrder_specialCharactersInId_success() throws Exception {
             //Given
@@ -827,7 +823,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(27)
+        @Order(26)
         @DisplayName("Should handle deletion of order with UUID format")
         public void deleteTestOrder_uuidFormat_success() throws Exception {
             //Given
@@ -861,7 +857,7 @@ public class TestOrderControllerTest {
     class EdgeCasesTests {
 
         @Test
-        @Order(28)
+        @Order(27)
         @DisplayName("Should handle empty request body for POST")
         public void createTestOrder_emptyRequestBody_fail() throws Exception {
             //Given
@@ -876,7 +872,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(29)
+        @Order(28)
         @DisplayName("Should handle empty request body for PUT")
         public void updateTestOrder_emptyRequestBody_success() throws Exception {
             //Given
@@ -902,7 +898,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(30)
+        @Order(29)
         @DisplayName("Should handle very long patient name")
         public void createTestOrder_veryLongPatientName_success() throws Exception {
             //Given
@@ -922,7 +918,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(31)
+        @Order(30)
         @DisplayName("Should handle special characters in patient name")
         public void createTestOrder_specialCharactersInName_success() throws Exception {
             //Given
@@ -941,11 +937,11 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(32)
+        @Order(31)
         @DisplayName("Should handle international phone number formats")
         public void createTestOrder_internationalPhoneNumber_success() throws Exception {
             //Given
-            testOrderRequest.setPhone("+1 555-123-4567");
+            testOrderRequest.setPhone("+1 5551234567");
             String requestContent = objectMapper.writeValueAsString(testOrderRequest);
 
             when(testOrderService.createTestOrder(any(TestOrderRequest.class)))
@@ -960,7 +956,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(33)
+        @Order(32)
         @DisplayName("Should handle future date of birth - should accept but may fail business logic")
         public void createTestOrder_futureDateOfBirth_processRequest() throws Exception {
             //Given
@@ -979,7 +975,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(34)
+        @Order(33)
         @DisplayName("Should handle very old date of birth")
         public void createTestOrder_veryOldDateOfBirth_success() throws Exception {
             //Given
@@ -998,7 +994,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(35)
+        @Order(34)
         @DisplayName("Should handle NULL values in JSON for optional fields")
         public void createTestOrder_explicitNullValues_success() throws Exception {
             //Given
@@ -1027,7 +1023,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(36)
+        @Order(35)
         @DisplayName("Should handle multiple validation errors at once")
         public void createTestOrder_multipleValidationErrors_returnAllErrors() throws Exception {
             //Given
@@ -1054,7 +1050,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(37)
+        @Order(36)
         @DisplayName("Should handle missing Content-Type header")
         public void createTestOrder_missingContentType_fail() throws Exception {
             //Given
@@ -1068,7 +1064,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(38)
+        @Order(37)
         @DisplayName("Should handle GET request with very large page number")
         public void getTestOrders_veryLargePageNumber_returnEmpty() throws Exception {
             //Given
@@ -1091,7 +1087,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(39)
+        @Order(38)
         @DisplayName("Should handle GET request with very large page size")
         public void getTestOrders_veryLargePageSize_success() throws Exception {
             //Given
@@ -1113,7 +1109,7 @@ public class TestOrderControllerTest {
         }
 
         @Test
-        @Order(40)
+        @Order(39)
         @DisplayName("Should handle keyword with special regex characters")
         public void getTestOrders_keywordWithRegexCharacters_success() throws Exception {
             //Given

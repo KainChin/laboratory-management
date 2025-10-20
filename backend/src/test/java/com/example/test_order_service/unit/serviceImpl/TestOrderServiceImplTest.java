@@ -100,7 +100,6 @@ public class TestOrderServiceImplTest {
                 .dateOfBirth(LocalDate.of(1990, 1, 15))
                 .citizenId("001234567890")
                 .country("Vietnam")
-                .age(35)
                 .gender(Gender.MALE)
                 .address("123 Nguyen Hue, HCMC")
                 .email("nguyenvana@example.com")
@@ -136,7 +135,6 @@ public class TestOrderServiceImplTest {
             assertThat(response.getMessage()).isEqualTo("Test order created successfully");
             assertThat(response.getResult()).isNotNull();
             assertThat(response.getResult().getPatientName()).isEqualTo("Nguyen Van A");
-            assertThat(response.getResult().getAge()).isEqualTo(35);
             assertThat(response.getTimestamp()).isNotNull();
 
             verify(testOrderMapper).toTestOrderEntity(testOrderRequest);
@@ -164,85 +162,6 @@ public class TestOrderServiceImplTest {
 
         @Test
         @Order(3)
-        @DisplayName("Should calculate age correctly")
-        void shouldCalculateAgeCorrectly() {
-            // Given
-            TestOrderRequest request = TestOrderRequest.builder()
-                    .patientName("Test Patient")
-                    .dateOfBirth(LocalDate.of(2000, 1, 1))
-                    .citizenId("001234567890")
-                    .country("Vietnam")
-                    .gender(Gender.MALE)
-                    .phone("0901234567")
-                    .build();
-
-            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
-            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
-            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
-
-            // When
-            RestResponse<TestOrderResponse> response = testOrderService.createTestOrder(request);
-
-            // Then
-            int expectedAge = LocalDate.now().getYear() - 2000;
-            assertThat(response.getResult().getAge()).isEqualTo(expectedAge);
-        }
-
-        @Test
-        @Order(4)
-        @DisplayName("Should calculate age for infant (born this year)")
-        void shouldCalculateAgeForInfant() {
-            // Given
-            LocalDate infantDob = LocalDate.now().minusMonths(6);
-            TestOrderRequest request = TestOrderRequest.builder()
-                    .patientName("Infant Patient")
-                    .dateOfBirth(infantDob)
-                    .citizenId("001234567890")
-                    .country("Vietnam")
-                    .gender(Gender.MALE)
-                    .phone("0901234567")
-                    .build();
-
-            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
-            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
-            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
-
-            // When
-            RestResponse<TestOrderResponse> response = testOrderService.createTestOrder(request);
-
-            // Then
-            assertThat(response.getResult().getAge()).isEqualTo(0);
-        }
-
-        @Test
-        @Order(5)
-        @DisplayName("Should calculate age for senior citizen")
-        void shouldCalculateAgeForSenior() {
-            // Given
-            LocalDate seniorDob = LocalDate.of(1950, 3, 10);
-            TestOrderRequest request = TestOrderRequest.builder()
-                    .patientName("Senior Patient")
-                    .dateOfBirth(seniorDob)
-                    .citizenId("001234567890")
-                    .country("Vietnam")
-                    .gender(Gender.FEMALE)
-                    .phone("0901234567")
-                    .build();
-
-            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
-            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
-            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
-
-            // When
-            RestResponse<TestOrderResponse> response = testOrderService.createTestOrder(request);
-
-            // Then
-            int expectedAge = LocalDate.now().getYear() - 1950;
-            assertThat(response.getResult().getAge()).isEqualTo(expectedAge);
-        }
-
-        @Test
-        @Order(6)
         @DisplayName("Should handle repository exception during create")
         void shouldHandleRepositoryExceptionDuringCreate() {
             // Given
@@ -269,7 +188,7 @@ public class TestOrderServiceImplTest {
     class UpdateTestOrderTests {
 
         @Test
-        @Order(7)
+        @Order(4)
         @DisplayName("Should update test order successfully with all fields")
         void shouldUpdateTestOrderSuccessfully() {
             // Given
@@ -294,7 +213,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(8)
+        @Order(5)
         @DisplayName("Should update only provided fields (partial update)")
         void shouldUpdateOnlyProvidedFields() {
             // Given
@@ -324,7 +243,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(9)
+        @Order(6)
         @DisplayName("Should throw ResourceNotFoundException when test order not found")
         void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
             // Given
@@ -342,28 +261,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(10)
-        @DisplayName("Should recalculate age after updating date of birth")
-        void shouldRecalculateAgeAfterUpdate() {
-            // Given
-            String orderId = "TO-001";
-            TestOrderUpdateRequest updateWithNewDob = new TestOrderUpdateRequest();
-            updateWithNewDob.setDateOfBirth(LocalDate.of(1995, 6, 15));
-
-            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
-            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
-
-            // When
-            RestResponse<TestOrderResponse> response = testOrderService.updateTestOrder(orderId, updateWithNewDob);
-
-            // Then
-            int expectedAge = LocalDate.now().getYear() - 1995;
-            assertThat(response.getResult().getAge()).isEqualTo(expectedAge);
-        }
-
-        @Test
-        @Order(11)
+        @Order(7)
         @DisplayName("Should preserve all fields when update request has all null values")
         void shouldPreserveAllFieldsWhenUpdateHasAllNullValues() {
             // Given
@@ -395,7 +293,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(12)
+        @Order(8)
         @DisplayName("Should update citizenId when provided")
         void shouldUpdateCitizenIdWhenProvided() {
             // Given
@@ -418,7 +316,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(13)
+        @Order(9)
         @DisplayName("Should handle repository exception during update")
         void shouldHandleRepositoryExceptionDuringUpdate() {
             // Given
@@ -444,7 +342,7 @@ public class TestOrderServiceImplTest {
     class GetTestOrdersTests {
 
         @Test
-        @Order(14)
+        @Order(10)
         @DisplayName("Should return paginated test orders")
         void shouldReturnPaginatedTestOrders() {
             // Given
@@ -496,7 +394,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(15)
+        @Order(11)
         @DisplayName("Should filter test orders by keyword")
         void shouldFilterTestOrdersByKeyword() {
             // Given
@@ -524,7 +422,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(16)
+        @Order(12)
         @DisplayName("Should return empty list when no test orders found")
         void shouldReturnEmptyListWhenNoTestOrdersFound() {
             // Given
@@ -549,7 +447,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(17)
+        @Order(13)
         @DisplayName("Should handle pagination correctly for multiple pages")
         void shouldHandlePaginationCorrectlyForMultiplePages() {
             // Given - Page 2 of 3
@@ -583,7 +481,7 @@ public class TestOrderServiceImplTest {
     class DeleteTestOrderTests {
 
         @Test
-        @Order(18)
+        @Order(14)
         @DisplayName("Should delete test order successfully")
         void shouldDeleteTestOrderSuccessfully() {
             // Given
@@ -607,7 +505,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(19)
+        @Order(15)
         @DisplayName("Should throw ResourceNotFoundException when test order not found for deletion")
         void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
             // Given
@@ -624,7 +522,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(20)
+        @Order(16)
         @DisplayName("Should handle repository exception during deletion")
         void shouldHandleRepositoryExceptionDuringDeletion() {
             // Given
