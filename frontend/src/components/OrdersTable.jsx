@@ -1,5 +1,6 @@
 import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 export default function OrdersTable() {
@@ -72,6 +73,8 @@ export default function OrdersTable() {
   };
 
   const [showModal, setShowModal] = useState(false);
+  const modalRef = useRef(null);
+  const [modalScale, setModalScale] = useState(1);
   const [mode, setMode] = useState("create");
   const [form, setForm] = useState({
     patientName: "",
@@ -150,7 +153,7 @@ export default function OrdersTable() {
   function selectToEnumStatus(s) {
     if (!s) return "";
     if (s === "Pending") return "PENDING";
-    if (s === "Completed") return "COMPLETED";
+    if (s === "Completed" ) return "COMPLETED";
     if (s === "Cancelled") return "CANCELLED";
     return String(s).toUpperCase();
   }
@@ -379,6 +382,62 @@ export default function OrdersTable() {
 
   // No local pagination, backend handles it
 
+  // Modal portal so the overlay covers the whole viewport
+  function Modal({ children }) {
+    return createPortal(
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2">
+        {children}
+      </div>,
+      document.body
+    );
+  }
+
+  // auto scale modal so it fits the viewport without scrollbars
+  useLayoutEffect(() => {
+    let rafId;
+    if (!showModal) {
+      setModalScale(1);
+      // restore body scroll when modal closed
+      document.body.style.overflow = "";
+      return;
+    }
+
+    // prevent background scrolling while modal open
+    document.body.style.overflow = "hidden";
+
+    function updateScale() {
+      const el = modalRef.current;
+      if (!el) {
+        setModalScale(1);
+        return;
+      }
+      // reset transform to measure natural size
+      el.style.transform = "scale(1)";
+      const rect = el.getBoundingClientRect();
+      const h = rect.height;
+      const w = rect.width;
+      const vh = window.innerHeight;
+      const vw = window.innerWidth;
+      const marginY = 48; // top+bottom spacing
+      const marginX = 48; // left+right spacing
+      const scaleY = (vh - marginY) / Math.max(1, h);
+      const scaleX = (vw - marginX) / Math.max(1, w);
+      const scale = Math.min(1, scaleX, scaleY);
+      setModalScale(scale);
+    }
+
+    // measure after paint once, and also on resize
+    rafId = requestAnimationFrame(() => updateScale());
+    window.addEventListener("resize", updateScale);
+
+    return () => {
+      window.removeEventListener("resize", updateScale);
+      if (rafId) cancelAnimationFrame(rafId);
+      document.body.style.overflow = "";
+      setModalScale(1);
+    };
+  }, [showModal, form, mode]);
+
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative">
       {successMsg && (
@@ -523,22 +582,30 @@ export default function OrdersTable() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl w-[820px] p-8 shadow-lg">
-            <h3 className="text-2xl text-red-500 font-bold text-center">
-              {mode === "view"
-                ? "Detail Test Order Information"
-                : mode === "edit"
-                ? "UPDATE TEST ORDER"
-                : "NEW TEST ORDER"}
-            </h3>
-            <p className="text-center text-sm text-gray-500 mb-6">
-              {mode === "view"
-                ? "View patient information for this test order"
-                : mode === "edit"
-                ? "Update patient information for this test order"
-                : "Enter patient information to create a new test order"}
-            </p>
+        <Modal>
+          <div
+            ref={modalRef}
+            style={{
+              transform: `scale(${modalScale})`,
+              transformOrigin: "center",
+              transition: "transform 120ms ease",
+            }}
+            className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
+          >
+             <h3 className="text-2xl text-red-500 font-bold text-center">
+               {mode === "view"
+                 ? "Detail Test Order Information"
+                 : mode === "edit"
+                 ? "UPDATE TEST ORDER"
+                 : "NEW TEST ORDER"}
+             </h3>
+             <p className="text-center text-sm text-gray-500 mb-6">
+               {mode === "view"
+                 ? "View patient information for this test order"
+                 : mode === "edit"
+                 ? "Update patient information for this test order"
+                 : "Enter patient information to create a new test order"}
+             </p>
 
             <div className="border rounded-lg p-6 bg-gray-50">
               <div className="grid grid-cols-2 gap-4">
@@ -737,7 +804,7 @@ export default function OrdersTable() {
               )}
             </div>
           </div>
-        </div>
+        </Modal>
       )}
       {/* Xoá - Modal xác nhận */}
       <DeleteConfirmationModal
