@@ -2,6 +2,7 @@ package com.example.test_order_service.serviceImpl;
 
 import com.example.test_order_service.dto.repsonse.PageResponse;
 import com.example.test_order_service.dto.repsonse.RestResponse;
+import com.example.test_order_service.dto.repsonse.TestOrderDetailResponse;
 import com.example.test_order_service.dto.repsonse.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
@@ -10,6 +11,7 @@ import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
+import com.example.test_order_service.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -89,6 +91,22 @@ public class TestOrderServiceImpl implements TestOrderService {
         return RestResponse.<Void>builder()
                 .statusCode(200)
                 .message("Test order " + orderId + " deleted successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    public RestResponse<TestOrderDetailResponse> getTestOrderById(String orderId) {
+        TestOrder testOrder = testOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        TestOrderDetailResponse testOrderDetailResponse = testOrderMapper.toTestOrderDetailResponse(testOrder);
+        testOrderDetailResponse.setAge(DateUtils.calculateAge(testOrder.getDateOfBirth()));
+
+        return RestResponse.<TestOrderDetailResponse>builder()
+                .statusCode(200)
+                .result(testOrderDetailResponse)
+                .message("Test order retrieved successfully")
                 .timestamp(LocalDateTime.now())
                 .build();
     }

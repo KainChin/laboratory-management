@@ -2,6 +2,7 @@ package com.example.test_order_service.controller;
 
 import com.example.test_order_service.dto.repsonse.PageResponse;
 import com.example.test_order_service.dto.repsonse.RestResponse;
+import com.example.test_order_service.dto.repsonse.TestOrderDetailResponse;
 import com.example.test_order_service.dto.repsonse.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
@@ -31,6 +32,11 @@ public class TestOrderController {
             @PathVariable String orderId,
             @RequestBody @Valid TestOrderUpdateRequest request) {
         return testOrderService.updateTestOrder(orderId, request);
+    }
+
+    @GetMapping("/{orderId}")
+    public RestResponse<TestOrderDetailResponse> getTestOrderById(@PathVariable String orderId) {
+        return testOrderService.getTestOrderById(orderId);
     }
 
     @GetMapping
