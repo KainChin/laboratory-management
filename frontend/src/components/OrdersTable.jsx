@@ -84,12 +84,16 @@ export default function OrdersTable() {
     country: "",
     citizenId: "",
   });
+  // validation errors for form fields
+  const [errors, setErrors] = useState({});
   // Lưu id đang edit để update đúng đơn hàng
   const [editingId, setEditingId] = useState(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((s) => ({ ...s, [name]: value }));
+    // clear validation for this field when user types
+    setErrors((s) => ({ ...s, [name]: undefined }));
   }
 
   function resetForm() {
@@ -160,6 +164,43 @@ export default function OrdersTable() {
     return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
   }
 
+  // validate form fields; return an object of errors (field -> message)
+  function validateForm() {
+    const e = {};
+    if (!form.patientName || !String(form.patientName).trim()) {
+      e.patientName = "Patient name is required";
+    }
+    if (!form.dob) {
+      e.dob = "Date of birth is required";
+    } else {
+      const dobDate = new Date(form.dob);
+      const today = new Date();
+      // normalize time
+      dobDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+      if (dobDate > today) {
+        e.dob = "Date of birth cannot be in the future";
+      }
+    }
+    if (!form.phone || !String(form.phone).trim()) {
+      e.phone = "Phone number is required";
+    } else if (!/^[0-9()+\-\s]{7,20}$/.test(form.phone)) {
+      e.phone = "Phone number looks invalid";
+    }
+    if (!form.email || !String(form.email).trim()) {
+      e.email = "Email is required";
+    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      e.email = "Email is invalid";
+    }
+    if (!form.gender || !String(form.gender).trim()) {
+      e.gender = "Gender is required";
+    }
+    if (!form.citizenId || !String(form.citizenId).trim()) {
+      e.citizenId = "Citizen ID is required";
+    }
+    return e;
+  }
+
   function openCreateModal() {
     setMode("create");
     setEditingId(null);
@@ -202,6 +243,13 @@ export default function OrdersTable() {
   }
 
   async function handleCreate() {
+    // validate
+    const validation = validateForm();
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation);
+      return;
+    }
+
     // Build payload for backend
     const payload = {
       patientName: form.patientName,
@@ -266,6 +314,13 @@ export default function OrdersTable() {
       alert("No order selected to edit");
       return;
     }
+    // validate
+    const validation = validateForm();
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation);
+      return;
+    }
+
     const payload = {
       patientName: form.patientName || undefined,
       dateOfBirth: form.dob ? formatDate(form.dob) : undefined,
@@ -498,6 +553,11 @@ export default function OrdersTable() {
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
+                  {errors.patientName && (
+                    <div className="text-sm text-red-600 mt-1">
+                      {errors.patientName}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="text-red-500 font-semibold text-sm">
@@ -516,6 +576,9 @@ export default function OrdersTable() {
                       className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
                     />
                   )}
+                  {errors.dob && (
+                    <div className="text-sm text-red-600 mt-1">{errors.dob}</div>
+                  )}
                 </div>
 
                 <div>
@@ -529,6 +592,9 @@ export default function OrdersTable() {
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
+                  {errors.phone && (
+                    <div className="text-sm text-red-600 mt-1">{errors.phone}</div>
+                  )}
                 </div>
                 <div>
                   <label className="text-red-500 font-semibold text-sm">
@@ -542,6 +608,9 @@ export default function OrdersTable() {
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
+                  {errors.email && (
+                    <div className="text-sm text-red-600 mt-1">{errors.email}</div>
+                  )}
                 </div>
 
                 <div>
@@ -571,6 +640,9 @@ export default function OrdersTable() {
                       <option value="Other">Other</option>
                     </select>
                   )}
+                  {errors.gender && (
+                    <div className="text-sm text-red-600 mt-1">{errors.gender}</div>
+                  )}
                 </div>
                 <div>
                   <label className="text-red-500 font-semibold text-sm">Status</label>
@@ -590,6 +662,9 @@ export default function OrdersTable() {
                       <option value="Completed">Completed</option>
                       <option value="Cancelled">Cancelled</option>
                     </select>
+                  )}
+                  {errors.status && (
+                    <div className="text-sm text-red-600 mt-1">{errors.status}</div>
                   )}
                 </div>
                 <div>
@@ -628,6 +703,9 @@ export default function OrdersTable() {
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
+                  {errors.citizenId && (
+                    <div className="text-sm text-red-600 mt-1">{errors.citizenId}</div>
+                  )}
                 </div>
               </div>
             </div>
