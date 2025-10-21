@@ -79,6 +79,7 @@ export default function OrdersTable() {
     phone: "",
     email: "",
     gender: "",
+    status: "",
     address: "",
     country: "",
     citizenId: "",
@@ -98,6 +99,7 @@ export default function OrdersTable() {
       phone: "",
       email: "",
       gender: "",
+      status: "",
       address: "",
       country: "",
       citizenId: "",
@@ -132,6 +134,23 @@ export default function OrdersTable() {
     return String(g).toUpperCase();
   }
 
+  // status mapping between backend enums and select labels
+  function enumToSelectStatus(s) {
+    if (!s) return "";
+    if (s === "PENDING" || s === "Pending") return "Pending";
+    if (s === "COMPLETED" || s === "Completed") return "Completed";
+    if (s === "CANCELLED" || s === "Cancelled") return "Cancelled";
+    return s;
+  }
+
+  function selectToEnumStatus(s) {
+    if (!s) return "";
+    if (s === "Pending") return "PENDING";
+    if (s === "Completed") return "COMPLETED";
+    if (s === "Cancelled") return "CANCELLED";
+    return String(s).toUpperCase();
+  }
+
   // convert backend dd/MM/yyyy -> yyyy-MM-dd for input[type=date]
   function parseBackendDateToInput(dateStr) {
     if (!dateStr) return "";
@@ -157,6 +176,7 @@ export default function OrdersTable() {
       email: order.email || "",
       // map backend enum (MALE/FEMALE) to select values (Male/Female)
       gender: enumToSelectGender(order.gender),
+      status: enumToSelectStatus(order.status),
       address: order.address || "",
       country: order.country || "",
       citizenId: order.citizenId || "",
@@ -173,6 +193,7 @@ export default function OrdersTable() {
       phone: order.phone || "",
       email: order.email || "",
       gender: order.gender || "",
+      status: enumToSelectStatus(order.status) || "",
       address: order.address || "",
       country: order.country || "",
       citizenId: order.citizenId || "",
@@ -188,6 +209,7 @@ export default function OrdersTable() {
       citizenId: form.citizenId,
       country: form.country,
       gender: selectToEnumGender(form.gender) || "",
+      status: form.status ? selectToEnumStatus(form.status) : undefined,
       address: form.address,
       email: form.email,
       phone: form.phone,
@@ -248,6 +270,7 @@ export default function OrdersTable() {
       patientName: form.patientName || undefined,
       dateOfBirth: form.dob ? formatDate(form.dob) : undefined,
       gender: form.gender ? selectToEnumGender(form.gender) : undefined,
+      status: form.status ? selectToEnumStatus(form.status) : undefined,
       phone: form.phone || undefined,
       address: form.address || undefined,
       email: form.email || undefined,
@@ -276,7 +299,8 @@ export default function OrdersTable() {
               ? {
                   ...o,
                   name: updated.patientName || form.patientName || o.name,
-                  dob: updated.dateOfBirth || form.dob || o.dob,
+          dob: updated.dateOfBirth || form.dob || o.dob,
+          status: updated.status || form.status || o.status,
                   phone: updated.phone || form.phone || o.phone,
                   email: updated.email || form.email || o.email,
                   gender: updated.gender || form.gender || o.gender,
@@ -545,6 +569,26 @@ export default function OrdersTable() {
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                       <option value="Other">Other</option>
+                    </select>
+                  )}
+                </div>
+                <div>
+                  <label className="text-red-500 font-semibold text-sm">Status</label>
+                  {mode === "view" ? (
+                    <div className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white">
+                      {form.status || ""}
+                    </div>
+                  ) : (
+                    <select
+                      name="status"
+                      value={form.status}
+                      onChange={handleChange}
+                      className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
+                    >
+                      <option value="">Select</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Cancelled">Cancelled</option>
                     </select>
                   )}
                 </div>
