@@ -74,6 +74,9 @@ public class TestOrder {
     @Column(name = "reviewed_at")
     private LocalDateTime reviewedAt;
 
+    @Column(name = "deleted")
+    private boolean deleted;
+
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
     private List<TestResult> testResults;
 
@@ -84,5 +87,6 @@ public class TestOrder {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.status = ResultStatus.PENDING;
+        this.deleted = false;
     }
 }
