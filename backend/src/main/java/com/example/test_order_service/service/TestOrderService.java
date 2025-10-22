@@ -13,5 +13,6 @@ public interface TestOrderService {
     RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request);
     RestResponse<TestOrderResponse> updateTestOrder(String orderId, TestOrderUpdateRequest request);
     PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword);
-    RestResponse<Void> deleteTestOrder(String orderId);
+    PageResponse<TestOrderResponse> deleteTestOrder(String orderId, Pageable pageable, String keyword);
+    RestResponse<?> getTestOrderStatistics();
 }
