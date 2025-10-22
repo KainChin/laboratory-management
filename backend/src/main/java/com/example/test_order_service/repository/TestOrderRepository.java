@@ -7,7 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface TestOrderRepository extends JpaRepository<TestOrder, String> {
     @Query("SELECT t FROM TestOrder t where t.patientName ILIKE CONCAT('%', :keyword, '%')")
     Page<TestOrder> findTestOrdersByParams(Pageable pageable, @Param("keyword") String keyword);
+
+    @Query("SELECT t.status AS status, COUNT(t) AS count FROM TestOrder t GROUP BY t.status")
+    List<Object[]> countByStatus();
 }

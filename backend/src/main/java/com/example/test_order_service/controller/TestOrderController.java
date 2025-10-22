@@ -61,4 +61,9 @@ public class TestOrderController {
     public RestResponse<Void> deleteTestOrder(@PathVariable String orderId) {
         return testOrderService.deleteTestOrder(orderId);
     }
+
+    @GetMapping("/statistics")
+    public RestResponse<?> getTestOrderStatistics() {
+        return testOrderService.getTestOrderStatistics();
+    }
 }
