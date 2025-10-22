@@ -45,8 +45,7 @@ public class TestOrderController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "patientName") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir
-    ) {
+            @RequestParam(defaultValue = "asc") String sortDir) {
         Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 
         int pageIndex = page < 1 ? 0 : page - 1;
@@ -64,7 +63,26 @@ public class TestOrderController {
     }
 
     @DeleteMapping("/{orderId}")
-    public RestResponse<Void> deleteTestOrder(@PathVariable String orderId) {
-        return testOrderService.deleteTestOrder(orderId);
+    public RestResponse<PageResponse<TestOrderResponse>> deleteTestOrder(
+            @PathVariable String orderId,
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "patientName") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        int pageIndex = page < 1 ? 0 : page - 1;
+
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortBy));
+
+        PageResponse<TestOrderResponse> testOrderPage = testOrderService.deleteTestOrder(orderId, pageable, keyword);
+
+        return RestResponse.<PageResponse<TestOrderResponse>>builder()
+                .timestamp(LocalDateTime.now())
+                .statusCode(200)
+                .message("Test orders retrieved successfully")
+                .result(testOrderPage)
+                .build();
     }
 }

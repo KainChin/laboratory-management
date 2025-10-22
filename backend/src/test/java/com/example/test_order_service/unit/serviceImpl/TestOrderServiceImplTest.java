@@ -78,6 +78,8 @@ public class TestOrderServiceImplTest {
                 .address("456 Le Loi, HCMC")
                 .email("nguyenvanb@example.com")
                 .citizenId("009876543210")
+                .country("Thailand")
+                .status(ResultStatus.COMPLETED)
                 .build();
 
         testOrder = TestOrder.builder()
@@ -162,6 +164,63 @@ public class TestOrderServiceImplTest {
 
         @Test
         @Order(3)
+        @DisplayName("Should create test order with country field")
+        void shouldCreateTestOrderWithCountry() {
+            // Given
+            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            RestResponse<TestOrderResponse> response = testOrderService.createTestOrder(testOrderRequest);
+
+            // Then
+            assertThat(response.getResult().getCountry()).isEqualTo("Vietnam");
+            verify(testOrderRepository).save(argThat(order ->
+                    "Vietnam".equals(order.getCountry())
+            ));
+        }
+
+        @Test
+        @Order(4)
+        @DisplayName("Should create test order with citizenId field")
+        void shouldCreateTestOrderWithCitizenId() {
+            // Given
+            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            RestResponse<TestOrderResponse> response = testOrderService.createTestOrder(testOrderRequest);
+
+            // Then
+            assertThat(response.getResult().getCitizenId()).isEqualTo("001234567890");
+            verify(testOrderRepository).save(argThat(order ->
+                    "001234567890".equals(order.getCitizenId())
+            ));
+        }
+
+        @Test
+        @Order(5)
+        @DisplayName("Should create test order with PENDING status by default")
+        void shouldCreateTestOrderWithPendingStatus() {
+            // Given
+            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            RestResponse<TestOrderResponse> response = testOrderService.createTestOrder(testOrderRequest);
+
+            // Then
+            assertThat(response.getResult().getStatus()).isEqualTo(ResultStatus.PENDING);
+            verify(testOrderRepository).save(argThat(order ->
+                    ResultStatus.PENDING.equals(order.getStatus())
+            ));
+        }
+
+        @Test
+        @Order(6)
         @DisplayName("Should handle repository exception during create")
         void shouldHandleRepositoryExceptionDuringCreate() {
             // Given
@@ -188,7 +247,7 @@ public class TestOrderServiceImplTest {
     class UpdateTestOrderTests {
 
         @Test
-        @Order(4)
+        @Order(7)
         @DisplayName("Should update test order successfully with all fields")
         void shouldUpdateTestOrderSuccessfully() {
             // Given
@@ -213,7 +272,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(5)
+        @Order(8)
         @DisplayName("Should update only provided fields (partial update)")
         void shouldUpdateOnlyProvidedFields() {
             // Given
@@ -243,57 +302,101 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(6)
-        @DisplayName("Should throw ResourceNotFoundException when test order not found")
-        void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
-            // Given
-            String invalidOrderId = "INVALID-ID";
-            when(testOrderRepository.findById(invalidOrderId)).thenReturn(Optional.empty());
-
-            // When & Then
-            assertThatThrownBy(() -> testOrderService.updateTestOrder(invalidOrderId, updateRequest))
-                    .isInstanceOf(ResourceNotFoundException.class)
-                    .hasMessage("Test order not found");
-
-            verify(testOrderRepository).findById(invalidOrderId);
-            verify(testOrderRepository, never()).save(any(TestOrder.class));
-            verify(testOrderMapper, never()).toTestOrderResponse(any(TestOrder.class));
-        }
-
-        @Test
-        @Order(7)
-        @DisplayName("Should preserve all fields when update request has all null values")
-        void shouldPreserveAllFieldsWhenUpdateHasAllNullValues() {
+        @Order(9)
+        @DisplayName("Should update country when provided")
+        void shouldUpdateCountryWhenProvided() {
             // Given
             String orderId = "TO-001";
-            TestOrderUpdateRequest emptyUpdate = new TestOrderUpdateRequest();
-            // All fields are null
-
-            String originalName = testOrder.getPatientName();
-            String originalPhone = testOrder.getPhone();
-            String originalEmail = testOrder.getEmail();
-            String originalAddress = testOrder.getAddress();
-            String originalCitizenId = testOrder.getCitizenId();
+            String newCountry = "Thailand";
+            TestOrderUpdateRequest updateWithCountry = new TestOrderUpdateRequest();
+            updateWithCountry.setCountry(newCountry);
 
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
             when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
             when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
 
             // When
-            testOrderService.updateTestOrder(orderId, emptyUpdate);
+            testOrderService.updateTestOrder(orderId, updateWithCountry);
 
-            // Then - All original values should be preserved
+            // Then
             verify(testOrderRepository).save(argThat(order ->
-                    originalName.equals(order.getPatientName()) &&
-                            originalPhone.equals(order.getPhone()) &&
-                            originalEmail.equals(order.getEmail()) &&
-                            originalAddress.equals(order.getAddress()) &&
-                            originalCitizenId.equals(order.getCitizenId())
+                    newCountry.equals(order.getCountry())
             ));
         }
 
         @Test
-        @Order(8)
+        @Order(10)
+        @DisplayName("Should preserve country when not provided in update")
+        void shouldPreserveCountryWhenNotProvided() {
+            // Given
+            String orderId = "TO-001";
+            String originalCountry = testOrder.getCountry();
+            TestOrderUpdateRequest partialUpdate = new TestOrderUpdateRequest();
+            partialUpdate.setPatientName("New Name");
+            // country is null
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            testOrderService.updateTestOrder(orderId, partialUpdate);
+
+            // Then
+            verify(testOrderRepository).save(argThat(order ->
+                    originalCountry.equals(order.getCountry())
+            ));
+        }
+
+        @Test
+        @Order(11)
+        @DisplayName("Should update status when provided")
+        void shouldUpdateStatusWhenProvided() {
+            // Given
+            String orderId = "TO-001";
+            ResultStatus newStatus = ResultStatus.COMPLETED;
+            TestOrderUpdateRequest updateWithStatus = new TestOrderUpdateRequest();
+            updateWithStatus.setStatus(newStatus);
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            testOrderService.updateTestOrder(orderId, updateWithStatus);
+
+            // Then
+            verify(testOrderRepository).save(argThat(order ->
+                    newStatus.equals(order.getStatus())
+            ));
+        }
+
+        @Test
+        @Order(12)
+        @DisplayName("Should preserve status when not provided in update")
+        void shouldPreserveStatusWhenNotProvided() {
+            // Given
+            String orderId = "TO-001";
+            ResultStatus originalStatus = testOrder.getStatus();
+            TestOrderUpdateRequest partialUpdate = new TestOrderUpdateRequest();
+            partialUpdate.setPatientName("New Name");
+            // status is null
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            testOrderService.updateTestOrder(orderId, partialUpdate);
+
+            // Then
+            verify(testOrderRepository).save(argThat(order ->
+                    originalStatus.equals(order.getStatus())
+            ));
+        }
+
+        @Test
+        @Order(13)
         @DisplayName("Should update citizenId when provided")
         void shouldUpdateCitizenIdWhenProvided() {
             // Given
@@ -316,7 +419,112 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(9)
+        @Order(14)
+        @DisplayName("Should preserve citizenId when not provided in update")
+        void shouldPreserveCitizenIdWhenNotProvided() {
+            // Given
+            String orderId = "TO-001";
+            String originalCitizenId = testOrder.getCitizenId();
+            TestOrderUpdateRequest partialUpdate = new TestOrderUpdateRequest();
+            partialUpdate.setPatientName("New Name");
+            // citizenId is null
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            testOrderService.updateTestOrder(orderId, partialUpdate);
+
+            // Then
+            verify(testOrderRepository).save(argThat(order ->
+                    originalCitizenId.equals(order.getCitizenId())
+            ));
+        }
+
+        @Test
+        @Order(15)
+        @DisplayName("Should update country, status, and citizenId together")
+        void shouldUpdateCountryStatusAndCitizenIdTogether() {
+            // Given
+            String orderId = "TO-001";
+            TestOrderUpdateRequest fullUpdate = TestOrderUpdateRequest.builder()
+                    .country("Singapore")
+                    .status(ResultStatus.COMPLETED)  // ✅ Thay đổi từ IN_PROGRESS
+                    .citizenId("111222333444")
+                    .build();
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            testOrderService.updateTestOrder(orderId, fullUpdate);
+
+            // Then
+            verify(testOrderRepository).save(argThat(order ->
+                    "Singapore".equals(order.getCountry()) &&
+                            ResultStatus.COMPLETED.equals(order.getStatus()) &&  // ✅ Thay đổi
+                            "111222333444".equals(order.getCitizenId())
+            ));
+        }
+
+        @Test
+        @Order(16)
+        @DisplayName("Should throw ResourceNotFoundException when test order not found")
+        void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
+            // Given
+            String invalidOrderId = "INVALID-ID";
+            when(testOrderRepository.findById(invalidOrderId)).thenReturn(Optional.empty());
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.updateTestOrder(invalidOrderId, updateRequest))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessage("Test order not found");
+
+            verify(testOrderRepository).findById(invalidOrderId);
+            verify(testOrderRepository, never()).save(any(TestOrder.class));
+            verify(testOrderMapper, never()).toTestOrderResponse(any(TestOrder.class));
+        }
+
+        @Test
+        @Order(17)
+        @DisplayName("Should preserve all fields when update request has all null values")
+        void shouldPreserveAllFieldsWhenUpdateHasAllNullValues() {
+            // Given
+            String orderId = "TO-001";
+            TestOrderUpdateRequest emptyUpdate = new TestOrderUpdateRequest();
+            // All fields are null
+
+            String originalName = testOrder.getPatientName();
+            String originalPhone = testOrder.getPhone();
+            String originalEmail = testOrder.getEmail();
+            String originalAddress = testOrder.getAddress();
+            String originalCitizenId = testOrder.getCitizenId();
+            String originalCountry = testOrder.getCountry();
+            ResultStatus originalStatus = testOrder.getStatus();
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
+
+            // When
+            testOrderService.updateTestOrder(orderId, emptyUpdate);
+
+            // Then - All original values should be preserved
+            verify(testOrderRepository).save(argThat(order ->
+                    originalName.equals(order.getPatientName()) &&
+                            originalPhone.equals(order.getPhone()) &&
+                            originalEmail.equals(order.getEmail()) &&
+                            originalAddress.equals(order.getAddress()) &&
+                            originalCitizenId.equals(order.getCitizenId()) &&
+                            originalCountry.equals(order.getCountry()) &&
+                            originalStatus.equals(order.getStatus())
+            ));
+        }
+
+        @Test
+        @Order(18)
         @DisplayName("Should handle repository exception during update")
         void shouldHandleRepositoryExceptionDuringUpdate() {
             // Given
@@ -342,18 +550,24 @@ public class TestOrderServiceImplTest {
     class GetTestOrdersTests {
 
         @Test
-        @Order(10)
+        @Order(19)
         @DisplayName("Should return paginated test orders")
         void shouldReturnPaginatedTestOrders() {
             // Given
             TestOrder order1 = TestOrder.builder()
                     .testOrderId("TO-001")
                     .patientName("Patient 1")
+                    .country("Vietnam")
+                    .citizenId("001111111111")
+                    .status(ResultStatus.PENDING)
                     .build();
 
             TestOrder order2 = TestOrder.builder()
                     .testOrderId("TO-002")
                     .patientName("Patient 2")
+                    .country("Thailand")
+                    .citizenId("002222222222")
+                    .status(ResultStatus.COMPLETED)
                     .build();
 
             Page<TestOrder> testOrderPage = new PageImpl<>(
@@ -365,11 +579,17 @@ public class TestOrderServiceImplTest {
             TestOrderResponse response1 = TestOrderResponse.builder()
                     .testOrderId("TO-001")
                     .patientName("Patient 1")
+                    .country("Vietnam")
+                    .citizenId("001111111111")
+                    .status(ResultStatus.PENDING)
                     .build();
 
             TestOrderResponse response2 = TestOrderResponse.builder()
                     .testOrderId("TO-002")
                     .patientName("Patient 2")
+                    .country("Thailand")
+                    .citizenId("002222222222")
+                    .status(ResultStatus.COMPLETED)
                     .build();
 
             when(testOrderRepository.findTestOrdersByParams(any(Pageable.class), anyString()))
@@ -383,18 +603,22 @@ public class TestOrderServiceImplTest {
 
             // Then
             assertThat(response).isNotNull();
-            assertThat(response.getCurrentPage()).isEqualTo(1); // Page number starts from 1
+            assertThat(response.getCurrentPage()).isEqualTo(1);
             assertThat(response.getTotalPages()).isEqualTo(1);
             assertThat(response.getItems()).hasSize(2);
             assertThat(response.getItems().get(0).getTestOrderId()).isEqualTo("TO-001");
+            assertThat(response.getItems().get(0).getCountry()).isEqualTo("Vietnam");
+            assertThat(response.getItems().get(0).getStatus()).isEqualTo(ResultStatus.PENDING);
             assertThat(response.getItems().get(1).getTestOrderId()).isEqualTo("TO-002");
+            assertThat(response.getItems().get(1).getCountry()).isEqualTo("Thailand");
+            assertThat(response.getItems().get(1).getStatus()).isEqualTo(ResultStatus.COMPLETED);
 
             verify(testOrderRepository).findTestOrdersByParams(pageable, "");
             verify(testOrderMapper, times(2)).toTestOrderResponse(any(TestOrder.class));
         }
 
         @Test
-        @Order(11)
+        @Order(20)
         @DisplayName("Should filter test orders by keyword")
         void shouldFilterTestOrdersByKeyword() {
             // Given
@@ -422,7 +646,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(12)
+        @Order(21)
         @DisplayName("Should return empty list when no test orders found")
         void shouldReturnEmptyListWhenNoTestOrdersFound() {
             // Given
@@ -447,7 +671,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(13)
+        @Order(22)
         @DisplayName("Should handle pagination correctly for multiple pages")
         void shouldHandlePaginationCorrectlyForMultiplePages() {
             // Given - Page 2 of 3
@@ -466,7 +690,7 @@ public class TestOrderServiceImplTest {
             PageResponse<TestOrderResponse> response = testOrderService.getTestOrders(pageable, "");
 
             // Then
-            assertThat(response.getCurrentPage()).isEqualTo(2); // Should be page 2
+            assertThat(response.getCurrentPage()).isEqualTo(2);
             assertThat(response.getTotalPages()).isEqualTo(3);
         }
     }
@@ -481,7 +705,7 @@ public class TestOrderServiceImplTest {
     class DeleteTestOrderTests {
 
         @Test
-        @Order(14)
+        @Order(23)
         @DisplayName("Should delete test order successfully")
         void shouldDeleteTestOrderSuccessfully() {
             // Given
@@ -505,7 +729,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(15)
+        @Order(24)
         @DisplayName("Should throw ResourceNotFoundException when test order not found for deletion")
         void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
             // Given
@@ -522,7 +746,7 @@ public class TestOrderServiceImplTest {
         }
 
         @Test
-        @Order(16)
+        @Order(25)
         @DisplayName("Should handle repository exception during deletion")
         void shouldHandleRepositoryExceptionDuringDeletion() {
             // Given
