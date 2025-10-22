@@ -83,8 +83,8 @@ public class TestOrderServiceImpl implements TestOrderService {
     public RestResponse<Void> deleteTestOrder(String orderId) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
-
-        testOrderRepository.deleteById(orderId);
+        testOrder.setDeleted(true);
+        testOrderRepository.save(testOrder);
 
         return RestResponse.<Void>builder()
                 .statusCode(200)
