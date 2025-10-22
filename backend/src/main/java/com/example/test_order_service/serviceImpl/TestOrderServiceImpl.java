@@ -80,17 +80,14 @@ public class TestOrderServiceImpl implements TestOrderService {
     }
 
     @Override
-    public RestResponse<Void> deleteTestOrder(String orderId) {
+    public PageResponse<TestOrderResponse> deleteTestOrder(String orderId, Pageable pageable, String keyword) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
         testOrder.setDeleted(true);
         testOrderRepository.save(testOrder);
 
-        return RestResponse.<Void>builder()
-                .statusCode(200)
-                .message("Test order " + orderId + " deleted successfully")
-                .timestamp(LocalDateTime.now())
-                .build();
+        return getTestOrders(pageable, keyword);
     }
 
     @Override
