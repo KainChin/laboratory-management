@@ -85,4 +85,9 @@ public class TestOrderController {
                 .result(testOrderPage)
                 .build();
     }
+
+    @GetMapping("/statistics")
+    public RestResponse<?> getTestOrderStatistics() {
+        return testOrderService.getTestOrderStatistics();
+    }
 }

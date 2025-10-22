@@ -16,4 +16,5 @@ public interface TestOrderService {
     PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword);
     RestResponse<TestOrderDetailResponse> getTestOrderById(String orderId);
     PageResponse<TestOrderResponse> deleteTestOrder(String orderId, Pageable pageable, String keyword);
+    RestResponse<?> getTestOrderStatistics();
 }
