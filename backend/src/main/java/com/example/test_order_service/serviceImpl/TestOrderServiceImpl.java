@@ -89,4 +89,38 @@ public class TestOrderServiceImpl implements TestOrderService {
 
         return getTestOrders(pageable, keyword);
     }
+
+    @Override
+    public RestResponse<?> getTestOrderStatistics() {
+        long total = testOrderRepository.countActive();
+        var groupedCounts = testOrderRepository.countByStatus();
+
+        long pending = 0;
+        long completed = 0;
+        long cancelled = 0;
+
+        for (Object[] row : groupedCounts) {
+            String status = row[0].toString();
+            long count = (long) row[1];
+            switch (status) {
+                case "PENDING" -> pending = count;
+                case "COMPLETED" -> completed = count;
+                case "CANCELLED" -> cancelled = count;
+            }
+        }
+
+        var result = new java.util.HashMap<String, Long>();
+        result.put("total", total);
+        result.put("pending", pending);
+        result.put("completed", completed);
+        result.put("cancelled", cancelled);
+
+        return RestResponse.builder()
+                .statusCode(200)
+                .message("Statistics retrieved successfully")
+                .result(result)
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+    }
+
 }
