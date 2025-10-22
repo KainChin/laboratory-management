@@ -23,6 +23,7 @@ public class TestResult {
 
     @ManyToOne
     @JoinColumn(name = "test_order_id", nullable = false)
+    @JsonBackReference
     private TestOrder testOrder;
 
     @Column(name = "parameter", nullable = false, length = 50)

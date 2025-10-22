@@ -1,5 +1,6 @@
 package com.example.test_order_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "test_order_id", nullable = false)
+    @JsonBackReference
     private TestOrder testOrder;
 
     @Column(name = "comment_text", nullable = false, columnDefinition = "TEXT")
