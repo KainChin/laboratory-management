@@ -3,6 +3,16 @@ import { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react
 import { createPortal } from "react-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
+// Modal portal so the overlay covers the whole viewport
+function Modal({ children }) {
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2">
+      {children}
+    </div>,
+    document.body
+  );
+}
+
 export default function OrdersTable() {
   // const PAGE_SIZE and page/setPage are now declared above for backend pagination
   const [totalPages, setTotalPages] = useState(1);
@@ -382,16 +392,6 @@ export default function OrdersTable() {
 
   // No local pagination, backend handles it
 
-  // Modal portal so the overlay covers the whole viewport
-  function Modal({ children }) {
-    return createPortal(
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2">
-        {children}
-      </div>,
-      document.body
-    );
-  }
-
   // auto scale modal so it fits the viewport without scrollbars
   useLayoutEffect(() => {
     let rafId;
@@ -436,7 +436,7 @@ export default function OrdersTable() {
       document.body.style.overflow = "";
       setModalScale(1);
     };
-  }, [showModal, form, mode]);
+  }, [showModal, mode]);
 
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative">
