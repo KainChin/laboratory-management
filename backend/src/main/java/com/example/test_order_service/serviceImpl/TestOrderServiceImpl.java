@@ -92,7 +92,7 @@ public class TestOrderServiceImpl implements TestOrderService {
 
     @Override
     public RestResponse<?> getTestOrderStatistics() {
-        long total = testOrderRepository.count();
+        long total = testOrderRepository.countActive();
         var groupedCounts = testOrderRepository.countByStatus();
 
         long pending = 0;

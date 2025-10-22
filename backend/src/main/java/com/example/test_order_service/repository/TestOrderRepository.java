@@ -13,6 +13,9 @@ public interface TestOrderRepository extends JpaRepository<TestOrder, String> {
     @Query("SELECT t FROM TestOrder t where t.deleted = false AND t.patientName ILIKE CONCAT('%', :keyword, '%')")
     Page<TestOrder> findTestOrdersByParams(Pageable pageable, @Param("keyword") String keyword);
 
-    @Query("SELECT t.status AS status, COUNT(t) AS count FROM TestOrder t GROUP BY t.status")
+    @Query("SELECT COUNT(t) FROM TestOrder t WHERE t.deleted = false")
+    long countActive();
+
+    @Query("SELECT t.status AS status, COUNT(t) AS count FROM TestOrder t WHERE t.deleted = false GROUP BY t.status")
     List<Object[]> countByStatus();
 }
