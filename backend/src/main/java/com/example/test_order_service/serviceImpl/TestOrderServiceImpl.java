@@ -8,7 +8,9 @@ import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.exception.ResourceNotFoundException;
+import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;
+import com.example.test_order_service.mapper.TestResultMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
 import com.example.test_order_service.utils.DateUtils;
@@ -26,6 +28,8 @@ public class TestOrderServiceImpl implements TestOrderService {
 
     private final TestOrderRepository testOrderRepository;
     private final TestOrderMapper testOrderMapper;
+    private final TestResultMapper testResultMapper;
+    private final CommentMapper commentMapper;
 
     @Override
     public RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request) {
@@ -98,7 +102,10 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
         TestOrderDetailResponse testOrderDetailResponse = testOrderMapper.toTestOrderDetailResponse(testOrder);
+
         testOrderDetailResponse.setAge(DateUtils.calculateAge(testOrder.getDateOfBirth()));
+        testOrderDetailResponse.setTestResults(testResultMapper.toTestResultResponses(testOrder.getTestResults()));
+        testOrderDetailResponse.setComments(commentMapper.toCommentResponses(testOrder.getComments()));
 
         return RestResponse.<TestOrderDetailResponse>builder()
                 .statusCode(200)

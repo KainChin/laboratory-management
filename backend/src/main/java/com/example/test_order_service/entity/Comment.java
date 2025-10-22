@@ -23,7 +23,6 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "test_order_id", nullable = false)
-    @JsonBackReference
     private TestOrder testOrder;
 
     @Column(name = "comment_text", nullable = false, columnDefinition = "TEXT")
@@ -32,17 +31,23 @@ public class Comment {
     @Column(name = "created_by", nullable = false)
     private String createdBy;
 
-    @Builder.Default
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted;
+
     @PrePersist
     protected void onCreate() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
+        this.createdAt = LocalDateTime.now();
+        this.deleted = false;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

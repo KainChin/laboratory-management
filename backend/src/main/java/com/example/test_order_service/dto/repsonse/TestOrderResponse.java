@@ -1,9 +1,8 @@
 package com.example.test_order_service.dto.repsonse;
 
 import com.example.test_order_service.entity.enumForEntity.Gender;
-import com.example.test_order_service.entity.enumForEntity.ResultStatus;
+import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,5 +27,5 @@ public class TestOrderResponse {
     private String email;
     private String phone;
     private String createdBy;
-    private ResultStatus status;
+    private TestOrderStatus status;
 }

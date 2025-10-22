@@ -1,7 +1,7 @@
 package com.example.test_order_service.dto.request;
 
 import com.example.test_order_service.entity.enumForEntity.Gender;
-import com.example.test_order_service.entity.enumForEntity.ResultStatus;
+import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -30,7 +30,7 @@ public class TestOrderUpdateRequest {
     @Enumerated(EnumType.STRING)
     private Gender gender;
     @Enumerated(EnumType.STRING)
-    private ResultStatus status;
+    private TestOrderStatus status;
 
     @Pattern(regexp = "^(\\+\\d{1,3}[- ]?)?\\d{10}$", message = "Phone number is invalid")
     private String phone;
