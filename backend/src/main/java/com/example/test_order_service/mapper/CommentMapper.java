@@ -6,11 +6,11 @@ import com.example.test_order_service.entity.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
-
     Comment toCommentEntity(CreateCommentRequest request);
-
-    @Mapping(target = "testOrderId", source = "testOrder.testOrderId")
     CommentResponse toCommentResponse(Comment comment);
+    List<CommentResponse> toCommentResponses(List<Comment> comments);
 }

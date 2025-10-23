@@ -1,7 +1,7 @@
 package com.example.test_order_service.entity;
 
 import com.example.test_order_service.entity.enumForEntity.Gender;
-import com.example.test_order_service.entity.enumForEntity.ResultStatus;
+import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,13 +54,16 @@ public class TestOrder {
 
     @Column(name = "status", nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
-    private ResultStatus status;
+    private TestOrderStatus status;
 
     @Column(name = "created_by", nullable = false, updatable = false)
     private String createdBy;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @Column(name = "run_by")
     private String runBy;
@@ -86,7 +89,12 @@ public class TestOrder {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.status = ResultStatus.PENDING;
+        this.status = TestOrderStatus.PENDING;
         this.deleted = false;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

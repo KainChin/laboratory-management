@@ -6,14 +6,13 @@ import com.example.test_order_service.dto.repsonse.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.enumForEntity.Gender;
-import com.example.test_order_service.entity.enumForEntity.ResultStatus;
+import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.service.TestOrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -84,7 +83,7 @@ public class TestOrderControllerTest {
                 .email("johndoe@gmail.com")
                 .phone("+84123456789")
                 .createdBy("System")
-                .status(ResultStatus.PENDING)
+                .status(TestOrderStatus.PENDING)
                 .build();
 
         restResponse = RestResponse.<TestOrderResponse>builder()
@@ -321,7 +320,7 @@ public class TestOrderControllerTest {
                     .phone("+84987654321")
                     .address("456 Oak St, HCMC")
                     .email("janedoe@gmail.com")
-                    .status(ResultStatus.PENDING)
+                    .status(TestOrderStatus.PENDING)
                     .build();
 
             RestResponse<TestOrderResponse> updateRestResponse = RestResponse.<TestOrderResponse>builder()
@@ -470,7 +469,7 @@ public class TestOrderControllerTest {
                     TestOrderResponse.builder()
                             .testOrderId("another-id")
                             .patientName("Jane Smith")
-                            .status(ResultStatus.COMPLETED)
+                            .status(TestOrderStatus.COMPLETED)
                             .build()
             );
 

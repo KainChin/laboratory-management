@@ -7,7 +7,7 @@ import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.enumForEntity.Gender;
-import com.example.test_order_service.entity.enumForEntity.ResultStatus;
+import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
@@ -79,7 +79,7 @@ public class TestOrderServiceImplTest {
                 .email("nguyenvanb@example.com")
                 .citizenId("009876543210")
                 .country("Thailand")
-                .status(ResultStatus.COMPLETED)
+                .status(TestOrderStatus.COMPLETED)
                 .build();
 
         testOrder = TestOrder.builder()
@@ -92,7 +92,7 @@ public class TestOrderServiceImplTest {
                 .address("123 Nguyen Hue, HCMC")
                 .email("nguyenvana@example.com")
                 .phone("0901234567")
-                .status(ResultStatus.PENDING)
+                .status(TestOrderStatus.PENDING)
                 .createdBy("System")
                 .build();
 
@@ -106,7 +106,7 @@ public class TestOrderServiceImplTest {
                 .address("123 Nguyen Hue, HCMC")
                 .email("nguyenvana@example.com")
                 .phone("0901234567")
-                .status(ResultStatus.PENDING)
+                .status(TestOrderStatus.PENDING)
                 .build();
     }
 
@@ -213,9 +213,9 @@ public class TestOrderServiceImplTest {
             RestResponse<TestOrderResponse> response = testOrderService.createTestOrder(testOrderRequest);
 
             // Then
-            assertThat(response.getResult().getStatus()).isEqualTo(ResultStatus.PENDING);
+            assertThat(response.getResult().getStatus()).isEqualTo(TestOrderStatus.PENDING);
             verify(testOrderRepository).save(argThat(order ->
-                    ResultStatus.PENDING.equals(order.getStatus())
+                    TestOrderStatus.PENDING.equals(order.getStatus())
             ));
         }
 
@@ -354,7 +354,7 @@ public class TestOrderServiceImplTest {
         void shouldUpdateStatusWhenProvided() {
             // Given
             String orderId = "TO-001";
-            ResultStatus newStatus = ResultStatus.COMPLETED;
+            TestOrderStatus newStatus = TestOrderStatus.COMPLETED;
             TestOrderUpdateRequest updateWithStatus = new TestOrderUpdateRequest();
             updateWithStatus.setStatus(newStatus);
 
@@ -377,7 +377,7 @@ public class TestOrderServiceImplTest {
         void shouldPreserveStatusWhenNotProvided() {
             // Given
             String orderId = "TO-001";
-            ResultStatus originalStatus = testOrder.getStatus();
+            TestOrderStatus originalStatus = testOrder.getStatus();
             TestOrderUpdateRequest partialUpdate = new TestOrderUpdateRequest();
             partialUpdate.setPatientName("New Name");
             // status is null
@@ -450,7 +450,7 @@ public class TestOrderServiceImplTest {
             String orderId = "TO-001";
             TestOrderUpdateRequest fullUpdate = TestOrderUpdateRequest.builder()
                     .country("Singapore")
-                    .status(ResultStatus.COMPLETED)  // ✅ Thay đổi từ IN_PROGRESS
+                    .status(TestOrderStatus.COMPLETED)  // ✅ Thay đổi từ IN_PROGRESS
                     .citizenId("111222333444")
                     .build();
 
@@ -464,7 +464,7 @@ public class TestOrderServiceImplTest {
             // Then
             verify(testOrderRepository).save(argThat(order ->
                     "Singapore".equals(order.getCountry()) &&
-                            ResultStatus.COMPLETED.equals(order.getStatus()) &&  // ✅ Thay đổi
+                            TestOrderStatus.COMPLETED.equals(order.getStatus()) &&  // ✅ Thay đổi
                             "111222333444".equals(order.getCitizenId())
             ));
         }
@@ -502,7 +502,7 @@ public class TestOrderServiceImplTest {
             String originalAddress = testOrder.getAddress();
             String originalCitizenId = testOrder.getCitizenId();
             String originalCountry = testOrder.getCountry();
-            ResultStatus originalStatus = testOrder.getStatus();
+            TestOrderStatus originalStatus = testOrder.getStatus();
 
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
             when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
@@ -559,7 +559,7 @@ public class TestOrderServiceImplTest {
                     .patientName("Patient 1")
                     .country("Vietnam")
                     .citizenId("001111111111")
-                    .status(ResultStatus.PENDING)
+                    .status(TestOrderStatus.PENDING)
                     .build();
 
             TestOrder order2 = TestOrder.builder()
@@ -567,7 +567,7 @@ public class TestOrderServiceImplTest {
                     .patientName("Patient 2")
                     .country("Thailand")
                     .citizenId("002222222222")
-                    .status(ResultStatus.COMPLETED)
+                    .status(TestOrderStatus.COMPLETED)
                     .build();
 
             Page<TestOrder> testOrderPage = new PageImpl<>(
@@ -581,7 +581,7 @@ public class TestOrderServiceImplTest {
                     .patientName("Patient 1")
                     .country("Vietnam")
                     .citizenId("001111111111")
-                    .status(ResultStatus.PENDING)
+                    .status(TestOrderStatus.PENDING)
                     .build();
 
             TestOrderResponse response2 = TestOrderResponse.builder()
@@ -589,7 +589,7 @@ public class TestOrderServiceImplTest {
                     .patientName("Patient 2")
                     .country("Thailand")
                     .citizenId("002222222222")
-                    .status(ResultStatus.COMPLETED)
+                    .status(TestOrderStatus.COMPLETED)
                     .build();
 
             when(testOrderRepository.findTestOrdersByParams(any(Pageable.class), anyString()))
@@ -608,10 +608,10 @@ public class TestOrderServiceImplTest {
             assertThat(response.getItems()).hasSize(2);
             assertThat(response.getItems().get(0).getTestOrderId()).isEqualTo("TO-001");
             assertThat(response.getItems().get(0).getCountry()).isEqualTo("Vietnam");
-            assertThat(response.getItems().get(0).getStatus()).isEqualTo(ResultStatus.PENDING);
+            assertThat(response.getItems().get(0).getStatus()).isEqualTo(TestOrderStatus.PENDING);
             assertThat(response.getItems().get(1).getTestOrderId()).isEqualTo("TO-002");
             assertThat(response.getItems().get(1).getCountry()).isEqualTo("Thailand");
-            assertThat(response.getItems().get(1).getStatus()).isEqualTo(ResultStatus.COMPLETED);
+            assertThat(response.getItems().get(1).getStatus()).isEqualTo(TestOrderStatus.COMPLETED);
 
             verify(testOrderRepository).findTestOrdersByParams(pageable, "");
             verify(testOrderMapper, times(2)).toTestOrderResponse(any(TestOrder.class));
