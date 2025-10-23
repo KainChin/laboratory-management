@@ -1,3 +1,4 @@
+import React from "react";
 import {
   LineChart,
   Line,
@@ -9,8 +10,15 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export default function ChartSection({ data = [] }) {
-  // If no data provided, render a demo dataset so user can preview the chart layout.
+export default function ChartSection({ data = [], activityTotals = null }) {
+  // chuẩn hoá label week: "Week 01" -> "W01"
+  const formatWeek = (w) => {
+    if (!w) return "";
+    const s = String(w);
+    const m = s.match(/(\d{1,2})/);
+    return m ? `W${String(m[1]).padStart(2, "0")}` : s;
+  };
+
   const hasRealData = Array.isArray(data) && data.length > 0;
   const demoData = [
     { week: "W01", Completed: 5, Cancelled: 1, Pending: 8 },
@@ -22,157 +30,72 @@ export default function ChartSection({ data = [] }) {
     { week: "W07", Completed: 11, Cancelled: 0, Pending: 2 },
     { week: "W08", Completed: 8, Cancelled: 1, Pending: 4 },
   ];
-  const dataToRender = hasRealData ? data : demoData;
 
-  // Calculate max value for Y axis
-  const maxValue = Math.max(
-    ...dataToRender.flatMap((item) => [
-      item.Completed || 0,
-      item.Cancelled || 0,
-      item.Pending || 0,
-    ])
-  );
+  const dataToRender = (hasRealData ? data : demoData).map((it) => ({
+    ...it,
+    week: formatWeek(it.week),
+    Completed: Number(it.Completed || 0),
+    Cancelled: Number(it.Cancelled || 0),
+    Pending: Number(it.Pending || 0),
+  }));
 
-  // summary counts (displayed in header)
-  const totals = dataToRender.reduce(
+  const totalsFromData = dataToRender.reduce(
     (acc, cur) => {
-      acc.Completed += Number(cur.Completed || 0);
-      acc.Cancelled += Number(cur.Cancelled || 0);
-      acc.Pending += Number(cur.Pending || 0);
+      acc.Completed += cur.Completed;
+      acc.Cancelled += cur.Cancelled;
+      acc.Pending += cur.Pending;
       return acc;
     },
     { Completed: 0, Cancelled: 0, Pending: 0 }
   );
 
+  const totals = activityTotals || totalsFromData;
+  const maxValue = Math.max(1, ...dataToRender.flatMap((r) => [r.Completed, r.Cancelled, r.Pending]));
+
   return (
-    <div className="bg-white px-6 py-5 rounded-2xl shadow-lg border border-gray-200">
-      <div className="flex items-start justify-between gap-4 mb-4">
+    <div className="bg-white px-6 py-6 rounded-2xl shadow-lg border border-gray-200">
+      <div className="flex items-start justify-between gap-6 mb-3">
         <div>
-          <h3 className="text-xl font-semibold text-gray-800">
-            Weekly Test Orders
-          </h3>
-          <p className="text-sm text-gray-500">
-            Trend of Completed / Cancelled / Pending by week
-          </p>
+          <h3 className="text-2xl font-semibold text-gray-800">Weekly Test Orders</h3>
+          <p className="text-sm text-gray-500">Trend of Completed / Cancelled / Pending by week</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="text-center">
+        <div className="flex items-start gap-8">
+          <div className="text-right">
             <div className="text-sm text-gray-500">Completed</div>
-            <div className="text-lg font-bold text-green-600">
-              {totals.Completed}
-            </div>
+            <div className="text-2xl font-bold text-green-600">{totals.Completed}</div>
           </div>
-          <div className="text-center">
+          <div className="text-right">
             <div className="text-sm text-gray-500">Cancelled</div>
-            <div className="text-lg font-bold text-red-600">
-              {totals.Cancelled}
-            </div>
+            <div className="text-2xl font-bold text-red-600">{totals.Cancelled}</div>
           </div>
-          <div className="text-center">
+          <div className="text-right">
             <div className="text-sm text-gray-500">Pending</div>
-            <div className="text-lg font-bold text-blue-600">
-              {totals.Pending}
-            </div>
+            <div className="text-2xl font-bold text-blue-600">{totals.Pending}</div>
           </div>
         </div>
       </div>
 
       {!hasRealData && (
-        <div className="text-sm text-gray-500 italic mb-3 text-right">
-          Demo data
-        </div>
+        <div className="text-sm text-gray-400 italic mb-2 text-right">Demo data</div>
       )}
 
       <ResponsiveContainer width="100%" height={360}>
-        <LineChart
-          data={dataToRender}
-          margin={{ top: 12, right: 24, left: 24, bottom: 8 }}
-        >
-          <defs>
-            <linearGradient id="gradCompleted" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#dcfce7" stopOpacity={0.9} />
-              <stop offset="100%" stopColor="#dcfce7" stopOpacity={0.0} />
-            </linearGradient>
-            <linearGradient id="gradCancelled" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#fee2e2" stopOpacity={0.9} />
-              <stop offset="100%" stopColor="#fee2e2" stopOpacity={0.0} />
-            </linearGradient>
-            <linearGradient id="gradPending" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#dbeafe" stopOpacity={0.9} />
-              <stop offset="100%" stopColor="#dbeafe" stopOpacity={0.0} />
-            </linearGradient>
-          </defs>
-
+        <LineChart data={dataToRender} margin={{ top: 12, right: 24, left: 24, bottom: 8 }}>
           <CartesianGrid stroke="#f3f4f6" vertical={false} />
-          <XAxis
-            dataKey="week"
-            axisLine={false}
-            tickLine={false}
-            interval={dataToRender.length > 12 ? Math.ceil(dataToRender.length / 12) : 0}
-            tickFormatter={(val) => (typeof val === "string" ? val : val)}
-            tick={{ fill: "#374151", fontSize: 13 }}
-            height={dataToRender.length > 8 ? 56 : 40}
-            angle={dataToRender.length > 8 ? -35 : 0}
-            textAnchor={dataToRender.length > 8 ? "end" : "middle"}
-          />
-
-          <YAxis
-            axisLine={false}
-            tickLine={false}
-            tickCount={5}
-            domain={[0, maxValue > 0 ? maxValue + Math.ceil(maxValue * 0.15) : 40]}
-            tick={{ fill: "#374151", fontSize: 13 }}
-          />
-
+          <XAxis dataKey="week" axisLine={false} tickLine={false} tick={{ fill: "#374151", fontSize: 13 }} height={48} />
+          <YAxis axisLine={false} tickLine={false} tickCount={5} domain={[0, Math.ceil(maxValue * 1.15)]} tick={{ fill: "#374151", fontSize: 13 }} />
           <Tooltip
             cursor={{ stroke: "#eef2ff", strokeWidth: 2 }}
-            contentStyle={{
-              background: "#ffffff",
-              border: "1px solid #e6eef8",
-              borderRadius: 8,
-              boxShadow: "0 6px 20px rgba(15, 23, 42, 0.08)",
-            }}
+            contentStyle={{ background: "#fff", border: "1px solid #e6eef8", borderRadius: 8, boxShadow: "0 6px 20px rgba(15,23,42,0.08)" }}
             labelStyle={{ fontWeight: 700 }}
-            formatter={(value) => [value, "Count"]}
+            formatter={(v) => [v, "Count"]}
           />
+          <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ top: -10, fontSize: 14 }} />
 
-          <Legend
-            verticalAlign="top"
-            align="right"
-            iconType="circle"
-            wrapperStyle={{ top: -10, fontSize: 14 }}
-          />
-
-          <Line
-            type="monotone"
-            dataKey="Completed"
-            stroke="#16a34a"
-            strokeWidth={3}
-            dot={{ r: 4, strokeWidth: 0, fill: "#16a34a" }}
-            activeDot={{ r: 6 }}
-            strokeLinecap="round"
-          />
-
-          <Line
-            type="monotone"
-            dataKey="Cancelled"
-            stroke="#ef4444"
-            strokeWidth={3}
-            dot={{ r: 4, strokeWidth: 0, fill: "#ef4444" }}
-            activeDot={{ r: 6 }}
-            strokeLinecap="round"
-          />
-
-          <Line
-            type="monotone"
-            dataKey="Pending"
-            stroke="#2563eb"
-            strokeWidth={3}
-            dot={{ r: 4, strokeWidth: 0, fill: "#2563eb" }}
-            activeDot={{ r: 6 }}
-            strokeLinecap="round"
-          />
+          <Line type="monotone" dataKey="Cancelled" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, fill: "#ef4444" }} activeDot={{ r: 6 }} />
+          <Line type="monotone" dataKey="Completed" stroke="#16a34a" strokeWidth={3} dot={{ r: 4, fill: "#16a34a" }} activeDot={{ r: 6 }} />
+          <Line type="monotone" dataKey="Pending" stroke="#2563eb" strokeWidth={3} dot={{ r: 4, fill: "#2563eb" }} activeDot={{ r: 6 }} />
         </LineChart>
       </ResponsiveContainer>
     </div>

@@ -3,116 +3,120 @@ import ChartSection from "../components/ChartSection";
 import ActivityCard from "../components/ActivityCard";
 import OrdersTable from "../components/OrdersTable";
 import { BarChart3, Clock3, CheckCircle2, XCircle } from "lucide-react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function TestOrders() {
-  // State for order stats
   const [orderStats, setOrderStats] = useState({
     total: 0,
     pending: 0,
     completed: 0,
     cancelled: 0,
-    weeklyData: []
+    weeklyData: [],
   });
 
   useEffect(() => {
-    async function fetchOrders() {
+    let mounted = true;
+
+    async function fetchStatistics() {
       try {
-        const res = await fetch("http://localhost:6868/api/test-orders?page=1&size=1000");
-        if (!res.ok) throw new Error("Failed to fetch orders");
-        const data = await res.json();
-        console.log("API Response:", data);
-        
-        const orders = data.result?.items || [];
-        console.log("Orders to process:", orders);
+        const res = await fetch("http://localhost:6868/api/test-orders/statistics");
+        if (!res.ok) throw new Error("Failed to fetch statistics");
+        const json = await res.json();
+        const stats = json.result || json.data || {};
 
-        // Count by status
-        const stats = { pending: 0, completed: 0, cancelled: 0 };
-        orders.forEach(order => {
-          const status = (order.status || "PENDING").toUpperCase();
-          if (status === "PENDING") stats.pending++;
-          else if (status === "COMPLETED") stats.completed++;
-          else if (status === "CANCELLED") stats.cancelled++;
-        });
+        // totals (tolerant với nhiều tên trường)
+        const total = Number(stats.total ?? stats.count ?? 0);
+        const pending = Number(stats.pending ?? 0);
+        const completed = Number(stats.completed ?? 0);
+        const cancelled = Number(stats.cancelled ?? 0);
 
-        console.log("Status counts:", stats);
+        // weeklyData: nếu API trả weeklyData dùng thẳng, nếu không => build từ orders
+        let weeklyData = [];
+        if (Array.isArray(stats.weeklyData) && stats.weeklyData.length) {
+          weeklyData = stats.weeklyData.map((it) => ({
+            week: it.week ?? it.weekLabel ?? it.label,
+            Completed: Number(it.Completed ?? it.completed ?? 0),
+            Cancelled: Number(it.Cancelled ?? it.cancelled ?? 0),
+            Pending: Number(it.Pending ?? it.pending ?? 0),
+          }));
+        } else {
+          // tìm mảng orders trong nhiều vị trí khả dĩ
+          const rawOrders =
+            Array.isArray(stats.orders) ? stats.orders :
+            Array.isArray(json.orders) ? json.orders :
+            Array.isArray(stats.data) ? stats.data :
+            [];
+          weeklyData = processWeeklyStats(rawOrders);
+        }
 
-        // Group by week for chart
-        const weeklyStats = processWeeklyStats(orders);
-        console.log("Weekly stats for chart:", weeklyStats);
-
-        setOrderStats({
-          total: orders.length,
-          pending: stats.pending,
-          completed: stats.completed,
-          cancelled: stats.cancelled,
-          weeklyData: weeklyStats
-        });
+        if (mounted) {
+          setOrderStats((prev) => ({
+            ...prev,
+            total,
+            pending,
+            completed,
+            cancelled,
+            weeklyData,
+          }));
+        }
       } catch (err) {
-        console.error("Error fetching orders:", err);
+        console.error("Error fetching statistics:", err);
       }
     }
 
     function processWeeklyStats(orders) {
-      if (!orders.length) return [];
+      if (!Array.isArray(orders) || orders.length === 0) return [];
 
-      // Group orders by week
       const weekMap = orders.reduce((acc, order) => {
-        try {
-          // Convert dd/MM/yyyy to Date object
-          const [day, month, year] = (order.dateOfBirth || "").split("/");
-          if (!day || !month || !year) {
-            console.warn("Invalid date format:", order.dateOfBirth);
-            return acc;
-          }
+        // lấy ngày từ các tên trường thường gặp
+        const dateStr = order.date || order.orderDate || order.createdAt || order.created_at || order.dateOfBirth;
+        const d = parseDate(dateStr);
+        if (!d) return acc;
 
-          const date = new Date(year, month - 1, day);
-          if (isNaN(date.getTime())) {
-            console.warn("Invalid date:", order.dateOfBirth);
-            return acc;
-          }
+        const weekNo = getWeekNumber(d);
+        const weekKey = `W${String(weekNo).padStart(2, "0")}`;
 
-          const weekNum = getWeekNumber(date);
-          const weekKey = `Week ${String(weekNum).padStart(2, "0")}`;
-          
-          if (!acc[weekKey]) {
-            acc[weekKey] = { Completed: 0, Cancelled: 0, Pending: 0 };
-          }
-          
-          const status = (order.status || "PENDING").toUpperCase();
-          if (status === "COMPLETED") acc[weekKey].Completed += 1;
-          else if (status === "CANCELLED") acc[weekKey].Cancelled += 1;
-          else acc[weekKey].Pending += 1;
-          
-          return acc;
-        } catch (err) {
-          console.warn("Error processing order:", order, err);
-          return acc;
-        }
+        if (!acc[weekKey]) acc[weekKey] = { Completed: 0, Cancelled: 0, Pending: 0 };
+
+        const status = (order.status || order.state || "PENDING").toString().toUpperCase();
+        if (status.startsWith("COMP")) acc[weekKey].Completed += 1;
+        else if (status.startsWith("CANCEL")) acc[weekKey].Cancelled += 1;
+        else acc[weekKey].Pending += 1;
+
+        return acc;
       }, {});
 
-      // Convert to array format for chart, sort by week
       return Object.entries(weekMap)
-        .map(([week, stats]) => ({
-          week,
-          ...stats
-        }))
-        .sort((a, b) => {
-          const weekA = parseInt(a.week.split(" ")[1]);
-          const weekB = parseInt(b.week.split(" ")[1]);
-          return weekA - weekB;
-        });
+        .map(([week, stats]) => ({ week, ...stats }))
+        .sort((a, b) => a.week.localeCompare(b.week));
+    }
+
+    function parseDate(s) {
+      if (!s) return null;
+      // ISO first
+      const iso = new Date(s);
+      if (!isNaN(iso.getTime())) return iso;
+      // dd/MM/yyyy
+      const parts = s.split("/");
+      if (parts.length === 3) {
+        const [d, m, y] = parts;
+        const year = Number(y.length === 2 ? `20${y}` : y);
+        const date = new Date(year, Number(m) - 1, Number(d));
+        if (!isNaN(date.getTime())) return date;
+      }
+      return null;
     }
 
     function getWeekNumber(d) {
-      d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-      const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-      const weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-      return weekNo;
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
     }
 
-    fetchOrders();
+    fetchStatistics();
+    return () => { mounted = false; };
   }, []);
 
   const summary = [
@@ -177,7 +181,7 @@ export default function TestOrders() {
       </div>
 
       {/* CHART */}
-      <ChartSection data={orderStats.weeklyData} />
+      <ChartSection data={orderStats.weeklyData} activityTotals={{ Completed: orderStats.completed, Cancelled: orderStats.cancelled, Pending: orderStats.pending }} />
 
       {/* ACTIVITY */}
       <ActivityCard />

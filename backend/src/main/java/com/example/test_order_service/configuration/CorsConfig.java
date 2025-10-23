@@ -17,7 +17,8 @@ public class CorsConfig {
                         .allowedOrigins("http://localhost:5173") // React frontend port
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(true)
+                        .maxAge(60*60);
             }
         };
     }

@@ -52,6 +52,7 @@ export default function OrdersTable() {
           const result = await res.json();
           const items = result.result?.items || [];
           setTotalPages(result.result?.totalPages || 1);
+          // Format date from backend (assuming it's in dd/MM/yyyy format)
           setOrders(
             items.map((order) => ({
               id: order.testOrderId,
@@ -59,7 +60,8 @@ export default function OrdersTable() {
               status: order.status || "Pending",
               date: order.dateOfBirth,
               creator: order.createdBy || "Unknown",
-              dob: order.dateOfBirth,
+              // Preserve the original date format for display
+              dob: order.dateOfBirth || "",
               phone: order.phone,
               email: order.email,
               gender: order.gender,
@@ -633,59 +635,67 @@ export default function OrdersTable() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((row) => (
-              <tr key={row.id} className="border-b hover:bg-gray-50">
-                <td className="py-2 px-3">
-                  <div className="truncate" title={row.name}>
-                    {row.name}
-                  </div>
-                </td>
-                <td className="py-2 px-3">
-                  <div className="truncate">
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        statusColor[row.status]
-                      }`}
-                    >
-                      {row.status}
-                    </span>
-                  </div>
-                </td>
-                <td className="py-2 px-3">
-                  <div className="truncate" title={row.dob}>
-                    {row.dob ? new Date(row.dob).toLocaleDateString() : ""}
-                  </div>
-                </td>
-                <td className="py-2 px-3">
-                  <div className="truncate" title={row.creator}>
-                    {row.creator}
-                  </div>
-                </td>
-                <td className="py-2 px-3 text-center space-x-2">
-                  <button
-                    className="text-blue-500 hover:text-blue-700"
-                    onClick={() => openViewModal(row)}
-                  >
-                    <Eye size={15} />
-                  </button>
-                  <button
-                    className="text-orange-500 hover:text-orange-700"
-                    onClick={() => openEditModal(row)}
-                  >
-                    <Edit size={15} />
-                  </button>
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => {
-                      setDeleteId(row.id);
-                      setShowDeleteModal(true);
-                    }}
-                  >
-                    <Trash2 size={15} />
-                  </button>
+            {orders.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-8 text-center text-gray-500">
+                  Không có dữ liệu về bệnh nhân
                 </td>
               </tr>
-            ))}
+            ) : (
+              orders.map((row) => (
+                <tr key={row.id} className="border-b hover:bg-gray-50">
+                  <td className="py-2 px-3">
+                    <div className="truncate" title={row.name}>
+                      {row.name}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <div className="truncate">
+                      <span
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          statusColor[row.status]
+                        }`}
+                      >
+                        {row.status}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <div className="truncate" title={row.dob}>
+                      {row.dob || ""}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <div className="truncate" title={row.creator}>
+                      {row.creator}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3 text-center space-x-2">
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => openViewModal(row)}
+                    >
+                      <Eye size={15} />
+                    </button>
+                    <button
+                      className="text-orange-500 hover:text-orange-700"
+                      onClick={() => openEditModal(row)}
+                    >
+                      <Edit size={15} />
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => {
+                        setDeleteId(row.id);
+                        setShowDeleteModal(true);
+                      }}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -1006,7 +1016,7 @@ export default function OrdersTable() {
         onConfirm={async () => {
           try {
             const res = await fetch(
-              `http://localhost:6868/api/test-orders/${deleteId}`,
+              `http://localhost:6868/api/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=patientName&sortDir=${sortDir}`,
               { method: "DELETE" }
             );
             if (!res.ok) {
@@ -1018,14 +1028,37 @@ export default function OrdersTable() {
                 setDeleteId(null);
               }, 3000);
             } else {
-              // Sau khi xoá thành công:
-              // Nếu đã xoá phần tử cuối cùng của trang và không phải trang 1, thì lùi về trang trước
-              const isLastItem = orders.length === 1; // chỉ còn 1 phần tử trang này (sau khi xoá = 0)
-              if (isLastItem && page > 1) {
-                setPage(page - 1);
-                fetchOrdersWrapper(page - 1);
-              } else {
-                fetchOrdersWrapper();
+              const data = await res.json();
+              if (data?.result) {
+                const items = data.result.items || [];
+                
+                // Nếu có items trong response, cập nhật danh sách
+                if (items.length > 0) {
+                  setTotalPages(data.result.totalPages || 1);
+                  setOrders(
+                    items.map((order) => ({
+                      id: order.testOrderId,
+                      name: order.patientName,
+                      status: order.status || "Pending",
+                      date: order.dateOfBirth,
+                      creator: order.createdBy || "Unknown",
+                      dob: order.dateOfBirth,
+                      phone: order.phone,
+                      email: order.email,
+                      gender: order.gender,
+                      address: order.address,
+                      country: order.country,
+                      citizenId: order.citizenId,
+                    }))
+                  );
+                } else {
+                  // Nếu result trả về mảng rỗng và không phải trang 1, gọi lại API với page nhỏ hơn 1 đơn vị
+                  if (page > 1) {
+                    setPage(page - 1);
+                    fetchOrdersWrapper(page - 1);
+                  }
+                  // Nếu đang ở trang 1 và không có test order nào thì không cần gọi lại API
+                }
               }
               setSuccessMsg("Delete test order successfully!");
               setDeleteError("");

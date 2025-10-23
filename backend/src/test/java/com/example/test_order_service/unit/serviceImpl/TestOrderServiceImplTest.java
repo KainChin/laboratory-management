@@ -700,68 +700,80 @@ public class TestOrderServiceImplTest {
     // ═══════════════════════════════════════════════════════════════
 
     @Nested
-    @DisplayName("Delete Test Order Tests")
+    @DisplayName("Delete Test Order Tests (Soft Delete)")
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class DeleteTestOrderTests {
 
         @Test
         @Order(23)
-        @DisplayName("Should delete test order successfully")
-        void shouldDeleteTestOrderSuccessfully() {
+        @DisplayName("Should soft delete test order successfully and return updated page")
+        void shouldSoftDeleteTestOrderSuccessfullyAndReturnUpdatedPage() {
             // Given
             String orderId = "TO-001";
+            Pageable pageable = PageRequest.of(0, 6);
+            String keyword = "";
+
+            testOrder.setDeleted(false);
+
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            doNothing().when(testOrderRepository).deleteById(orderId);
+            when(testOrderRepository.save(any(TestOrder.class))).thenReturn(testOrder);
+
+            Page<TestOrder> mockPage = new PageImpl<>(List.of(testOrder), pageable, 1);
+            when(testOrderRepository.findTestOrdersByParams(pageable, keyword)).thenReturn(mockPage);
+            when(testOrderMapper.toTestOrderResponse(any(TestOrder.class))).thenReturn(testOrderResponse);
 
             // When
-            RestResponse<Void> response = testOrderService.deleteTestOrder(orderId);
+            var response = testOrderService.deleteTestOrder(orderId, pageable, keyword);
 
             // Then
             assertThat(response).isNotNull();
-            assertThat(response.getStatusCode()).isEqualTo(200);
-            assertThat(response.getMessage().toString()).contains("deleted successfully");
-            assertThat(response.getMessage().toString()).contains(orderId);
-            assertThat(response.getTimestamp()).isNotNull();
-            assertThat(response.getResult()).isNull();
-
+            assertThat(response.getItems()).hasSize(1);
+            assertThat(response.getItems().get(0).getTestOrderId()).isEqualTo("TO-001");
             verify(testOrderRepository).findById(orderId);
-            verify(testOrderRepository).deleteById(orderId);
+            verify(testOrderRepository).save(argThat(order -> order.isDeleted()));
+            verify(testOrderRepository).findTestOrdersByParams(pageable, keyword);
         }
 
         @Test
         @Order(24)
-        @DisplayName("Should throw ResourceNotFoundException when test order not found for deletion")
+        @DisplayName("Should throw ResourceNotFoundException when test order not found for soft delete")
         void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
             // Given
             String invalidOrderId = "INVALID-ID";
+            Pageable pageable = PageRequest.of(0, 6);
+            String keyword = "";
+
             when(testOrderRepository.findById(invalidOrderId)).thenReturn(Optional.empty());
 
             // When & Then
-            assertThatThrownBy(() -> testOrderService.deleteTestOrder(invalidOrderId))
+            assertThatThrownBy(() -> testOrderService.deleteTestOrder(invalidOrderId, pageable, keyword))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("Test order not found");
 
             verify(testOrderRepository).findById(invalidOrderId);
-            verify(testOrderRepository, never()).deleteById(anyString());
+            verify(testOrderRepository, never()).save(any(TestOrder.class));
         }
 
         @Test
         @Order(25)
-        @DisplayName("Should handle repository exception during deletion")
-        void shouldHandleRepositoryExceptionDuringDeletion() {
+        @DisplayName("Should handle repository exception during soft delete")
+        void shouldHandleRepositoryExceptionDuringSoftDelete() {
             // Given
             String orderId = "TO-001";
+            Pageable pageable = PageRequest.of(0, 6);
+            String keyword = "";
+
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            doThrow(new RuntimeException("Database error"))
-                    .when(testOrderRepository).deleteById(orderId);
+            when(testOrderRepository.save(any(TestOrder.class)))
+                    .thenThrow(new RuntimeException("Database error"));
 
             // When & Then
-            assertThatThrownBy(() -> testOrderService.deleteTestOrder(orderId))
+            assertThatThrownBy(() -> testOrderService.deleteTestOrder(orderId, pageable, keyword))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessage("Database error");
 
             verify(testOrderRepository).findById(orderId);
-            verify(testOrderRepository).deleteById(orderId);
+            verify(testOrderRepository).save(any(TestOrder.class));
         }
     }
 }
