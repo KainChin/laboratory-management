@@ -3,7 +3,9 @@ package com.example.test_order_service.serviceImpl;
 import com.example.test_order_service.dto.repsonse.*;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
+import com.example.test_order_service.entity.Comment;
 import com.example.test_order_service.entity.TestOrder;
+import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -101,8 +105,18 @@ public class TestOrderServiceImpl implements TestOrderService {
         TestOrderDetailResponse testOrderDetailResponse = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
         testOrderDetailResponse.setAge(DateUtils.calculateAge(testOrder.getDateOfBirth()));
-        testOrderDetailResponse.setTestResults(testResultMapper.toTestResultResponses(testOrder.getTestResults()));
-        testOrderDetailResponse.setComments(commentMapper.toCommentResponses(testOrder.getComments()));
+
+        List<TestResultResponse> sortedTestResults = testOrder.getTestResults().stream()
+                .sorted(Comparator.comparing(TestResult::getCreatedAt))
+                .map(testResultMapper::toTestResultResponse)
+                .toList();
+        List<CommentResponse> sortedComments = testOrder.getComments().stream()
+                .sorted(Comparator.comparing(Comment::getCreatedAt))
+                .map(commentMapper::toCommentResponse)
+                .toList();
+
+        testOrderDetailResponse.setTestResults(sortedTestResults);
+        testOrderDetailResponse.setComments(sortedComments);
 
         return RestResponse.<TestOrderDetailResponse>builder()
                 .statusCode(200)

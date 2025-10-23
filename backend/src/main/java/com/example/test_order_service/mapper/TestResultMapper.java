@@ -9,4 +9,5 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface TestResultMapper {
     List<TestResultResponse> toTestResultResponses(List<TestResult> testResults);
+    TestResultResponse toTestResultResponse(TestResult testResult);
 }
