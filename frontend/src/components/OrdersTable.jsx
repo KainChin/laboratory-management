@@ -814,7 +814,7 @@ export default function OrdersTable() {
         onConfirm={async () => {
           try {
             const res = await fetch(
-              `http://localhost:6868/api/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortDir=${sortDir}`,
+              `http://localhost:6868/api/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=patientName&sortDir=${sortDir}`,
               { method: "DELETE" }
             );
             if (!res.ok) {
@@ -828,10 +828,13 @@ export default function OrdersTable() {
             } else {
               const data = await res.json();
               if (data?.result) {
-                if ((data.result.items || []).length > 0 || page === 1) {
+                const items = data.result.items || [];
+                
+                // Nếu có items trong response, cập nhật danh sách
+                if (items.length > 0) {
                   setTotalPages(data.result.totalPages || 1);
                   setOrders(
-                    (data.result.items || []).map((order) => ({
+                    items.map((order) => ({
                       id: order.testOrderId,
                       name: order.patientName,
                       status: order.status || "Pending",
@@ -846,9 +849,13 @@ export default function OrdersTable() {
                       citizenId: order.citizenId,
                     }))
                   );
-                } else if (page > 1) {
-                  setPage(page - 1);
-                  fetchOrdersWrapper(page - 1);
+                } else {
+                  // Nếu result trả về mảng rỗng và không phải trang 1, gọi lại API với page nhỏ hơn 1 đơn vị
+                  if (page > 1) {
+                    setPage(page - 1);
+                    fetchOrdersWrapper(page - 1);
+                  }
+                  // Nếu đang ở trang 1 và không có test order nào thì không cần gọi lại API
                 }
               }
               setSuccessMsg("Delete test order successfully!");
