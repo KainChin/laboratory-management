@@ -52,6 +52,7 @@ export default function OrdersTable() {
           const result = await res.json();
           const items = result.result?.items || [];
           setTotalPages(result.result?.totalPages || 1);
+          // Format date from backend (assuming it's in dd/MM/yyyy format)
           setOrders(
             items.map((order) => ({
               id: order.testOrderId,
@@ -59,7 +60,8 @@ export default function OrdersTable() {
               status: order.status || "Pending",
               date: order.dateOfBirth,
               creator: order.createdBy || "Unknown",
-              dob: order.dateOfBirth,
+              // Preserve the original date format for display
+              dob: order.dateOfBirth || "",
               phone: order.phone,
               email: order.email,
               gender: order.gender,
@@ -653,7 +655,7 @@ export default function OrdersTable() {
                 </td>
                 <td className="py-2 px-3">
                   <div className="truncate" title={row.dob}>
-                    {row.dob ? new Date(row.dob).toLocaleDateString() : ""}
+                    {row.dob || ""}
                   </div>
                 </td>
                 <td className="py-2 px-3">

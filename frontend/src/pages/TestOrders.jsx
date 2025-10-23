@@ -16,40 +16,24 @@ export default function TestOrders() {
   });
 
   useEffect(() => {
-    async function fetchOrders() {
+    async function fetchStatistics() {
       try {
-        const res = await fetch("http://localhost:6868/api/test-orders?page=1&size=1000");
-        if (!res.ok) throw new Error("Failed to fetch orders");
+        const res = await fetch("http://localhost:6868/api/test-orders/statistics");
+        if (!res.ok) throw new Error("Failed to fetch statistics");
         const data = await res.json();
-        console.log("API Response:", data);
+        console.log("Statistics API Response:", data);
         
-        const orders = data.result?.items || [];
-        console.log("Orders to process:", orders);
-
-        // Count by status
-        const stats = { pending: 0, completed: 0, cancelled: 0 };
-        orders.forEach(order => {
-          const status = (order.status || "PENDING").toUpperCase();
-          if (status === "PENDING") stats.pending++;
-          else if (status === "COMPLETED") stats.completed++;
-          else if (status === "CANCELLED") stats.cancelled++;
-        });
-
-        console.log("Status counts:", stats);
-
-        // Group by week for chart
-        const weeklyStats = processWeeklyStats(orders);
-        console.log("Weekly stats for chart:", weeklyStats);
-
+        const stats = data.result || {};
+        
         setOrderStats({
-          total: orders.length,
-          pending: stats.pending,
-          completed: stats.completed,
-          cancelled: stats.cancelled,
-          weeklyData: weeklyStats
+          total: stats.total || 0,
+          pending: stats.pending || 0,
+          completed: stats.completed || 0,
+          cancelled: stats.cancelled || 0,
+          weeklyData: orderStats.weeklyData // Preserve existing weekly data
         });
       } catch (err) {
-        console.error("Error fetching orders:", err);
+        console.error("Error fetching statistics:", err);
       }
     }
 
@@ -112,8 +96,8 @@ export default function TestOrders() {
       return weekNo;
     }
 
-    fetchOrders();
-  }, []);
+    fetchStatistics();
+  }, [orderStats.weeklyData]);
 
   const summary = [
     {
