@@ -814,7 +814,7 @@ export default function OrdersTable() {
         onConfirm={async () => {
           try {
             const res = await fetch(
-              `http://localhost:6868/api/test-orders/${deleteId}`,
+              `http://localhost:6868/api/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortDir=${sortDir}`,
               { method: "DELETE" }
             );
             if (!res.ok) {
@@ -826,14 +826,30 @@ export default function OrdersTable() {
                 setDeleteId(null);
               }, 3000);
             } else {
-              // Sau khi xoá thành công:
-              // Nếu đã xoá phần tử cuối cùng của trang và không phải trang 1, thì lùi về trang trước
-              const isLastItem = orders.length === 1; // chỉ còn 1 phần tử trang này (sau khi xoá = 0)
-              if (isLastItem && page > 1) {
-                setPage(page - 1);
-                fetchOrdersWrapper(page - 1);
-              } else {
-                fetchOrdersWrapper();
+              const data = await res.json();
+              if (data?.result) {
+                if ((data.result.items || []).length > 0 || page === 1) {
+                  setTotalPages(data.result.totalPages || 1);
+                  setOrders(
+                    (data.result.items || []).map((order) => ({
+                      id: order.testOrderId,
+                      name: order.patientName,
+                      status: order.status || "Pending",
+                      date: order.dateOfBirth,
+                      creator: order.createdBy || "Unknown",
+                      dob: order.dateOfBirth,
+                      phone: order.phone,
+                      email: order.email,
+                      gender: order.gender,
+                      address: order.address,
+                      country: order.country,
+                      citizenId: order.citizenId,
+                    }))
+                  );
+                } else if (page > 1) {
+                  setPage(page - 1);
+                  fetchOrdersWrapper(page - 1);
+                }
               }
               setSuccessMsg("Delete test order successfully!");
               setDeleteError("");
