@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/test-orders/{orderId}/comments")
@@ -48,6 +49,18 @@ public class CommentController {
                 .timestamp(LocalDateTime.now())
                 .statusCode(200)
                 .message("Comments retrieved successfully")
+                .result(result)
+                .build();
+    }
+
+    @GetMapping("/all")
+    public RestResponse<List<CommentResponse>> getAllComments(@PathVariable String orderId) {
+        List<CommentResponse> result = commentService.getAllComments(orderId);
+
+        return RestResponse.<List<CommentResponse>>builder()
+                .timestamp(LocalDateTime.now())
+                .statusCode(200)
+                .message("All comments for order " + orderId + " retrieved successfully")
                 .result(result)
                 .build();
     }
