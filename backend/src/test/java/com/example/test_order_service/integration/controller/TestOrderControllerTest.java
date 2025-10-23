@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -745,106 +746,141 @@ public class TestOrderControllerTest {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // DELETE /api/test-orders/{orderId} - DELETE TEST ORDER
+    // DELETE /api/test-orders/{orderId} - SOFT DELETE TEST ORDER
     // ═══════════════════════════════════════════════════════════════
 
     @Nested
-    @DisplayName("DELETE /api/test-orders/{orderId} - Delete Test Order")
+    @DisplayName("DELETE /api/test-orders/{orderId} - Soft Delete Test Order")
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class DeleteTestOrderTests {
 
         @Test
         @Order(23)
-        @DisplayName("Should delete test order successfully")
+        @DisplayName("Should soft delete test order successfully and return updated page")
         public void deleteTestOrder_validOrderId_success() throws Exception {
-            //Given
+            // Given
             String orderId = "6b1f2e77-29d3-4e58-8a32-b9e7c3c3b1f0";
-            RestResponse<Void> deleteResponse = RestResponse.<Void>builder()
-                    .statusCode(200)
-                    .message("Test order " + orderId + " deleted successfully")
-                    .timestamp(LocalDateTime.now())
+
+            TestOrderResponse testOrderResponse = TestOrderResponse.builder()
+                    .testOrderId(orderId)
+                    .patientName("Nguyen Van A")
+                    .country("Vietnam")
+                    .status(TestOrderStatus.PENDING)
                     .build();
 
-            when(testOrderService.deleteTestOrder(orderId))
-                    .thenReturn(deleteResponse);
+            PageResponse<TestOrderResponse> pageResponse = PageResponse.<TestOrderResponse>builder()
+                    .currentPage(1)
+                    .totalPages(1)
+                    .items(List.of(testOrderResponse))
+                    .build();
 
-            //When & Then
+            when(testOrderService.deleteTestOrder(eq(orderId), any(Pageable.class), anyString()))
+                    .thenReturn(pageResponse);
+
+            // When & Then
             mockMvc.perform(MockMvcRequestBuilders
-                            .delete("/api/test-orders/" + orderId)
+                            .delete("/api/test-orders/{orderId}?page=1&size=6&keyword=", orderId)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(200))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Test order " + orderId + " deleted successfully"))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.result").doesNotExist());
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Test orders retrieved successfully"))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.items[0].testOrderId").value(orderId))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.currentPage").value(1))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.totalPages").value(1));
+
+            verify(testOrderService).deleteTestOrder(eq(orderId), any(Pageable.class), anyString());
         }
 
         @Test
         @Order(24)
-        @DisplayName("Should return 404 when deleting non-existent order")
+        @DisplayName("Should return 404 when deleting non-existent test order")
         public void deleteTestOrder_orderNotFound_fail() throws Exception {
-            //Given
+            // Given
             String nonExistentId = "non-existent-id";
-            when(testOrderService.deleteTestOrder(nonExistentId))
+            when(testOrderService.deleteTestOrder(eq(nonExistentId), any(Pageable.class), anyString()))
                     .thenThrow(new com.example.test_order_service.exception.ResourceNotFoundException("Test order not found"));
 
-            //When & Then
+            // When & Then
             mockMvc.perform(MockMvcRequestBuilders
-                            .delete("/api/test-orders/" + nonExistentId)
+                            .delete("/api/test-orders/{orderId}?page=1&size=6&keyword=", nonExistentId)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
                     .andExpect(MockMvcResultMatchers.status().isNotFound())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(404))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.error").value("Not Found"))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.message[0]").value("Test order not found"));
+
+            verify(testOrderService).deleteTestOrder(eq(nonExistentId), any(Pageable.class), anyString());
         }
 
         @Test
         @Order(25)
         @DisplayName("Should handle deletion of order with special characters in ID")
         public void deleteTestOrder_specialCharactersInId_success() throws Exception {
-            //Given
+            // Given
             String orderId = "order-123-abc-xyz";
-            RestResponse<Void> deleteResponse = RestResponse.<Void>builder()
-                    .statusCode(200)
-                    .message("Test order " + orderId + " deleted successfully")
-                    .timestamp(LocalDateTime.now())
+
+            TestOrderResponse testOrderResponse = TestOrderResponse.builder()
+                    .testOrderId(orderId)
+                    .patientName("Nguyen Van B")
+                    .country("Thailand")
+                    .status(TestOrderStatus.COMPLETED)
                     .build();
 
-            when(testOrderService.deleteTestOrder(orderId))
-                    .thenReturn(deleteResponse);
+            PageResponse<TestOrderResponse> pageResponse = PageResponse.<TestOrderResponse>builder()
+                    .currentPage(1)
+                    .totalPages(1)
+                    .items(List.of(testOrderResponse))
+                    .build();
 
-            //When & Then
+            when(testOrderService.deleteTestOrder(eq(orderId), any(Pageable.class), anyString()))
+                    .thenReturn(pageResponse);
+
+            // When & Then
             mockMvc.perform(MockMvcRequestBuilders
-                            .delete("/api/test-orders/" + orderId)
+                            .delete("/api/test-orders/{orderId}?page=1&size=6&keyword=", orderId)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
                     .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(200));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(200))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.items[0].testOrderId").value(orderId));
+
+            verify(testOrderService).deleteTestOrder(eq(orderId), any(Pageable.class), anyString());
         }
 
         @Test
         @Order(26)
         @DisplayName("Should handle deletion of order with UUID format")
         public void deleteTestOrder_uuidFormat_success() throws Exception {
-            //Given
+            // Given
             String uuidOrderId = "550e8400-e29b-41d4-a716-446655440000";
-            RestResponse<Void> deleteResponse = RestResponse.<Void>builder()
-                    .statusCode(200)
-                    .message("Test order " + uuidOrderId + " deleted successfully")
-                    .timestamp(LocalDateTime.now())
+
+            TestOrderResponse testOrderResponse = TestOrderResponse.builder()
+                    .testOrderId(uuidOrderId)
+                    .patientName("Nguyen Van C")
+                    .country("Singapore")
+                    .status(TestOrderStatus.PENDING)
                     .build();
 
-            when(testOrderService.deleteTestOrder(uuidOrderId))
-                    .thenReturn(deleteResponse);
+            PageResponse<TestOrderResponse> pageResponse = PageResponse.<TestOrderResponse>builder()
+                    .currentPage(1)
+                    .totalPages(1)
+                    .items(List.of(testOrderResponse))
+                    .build();
 
-            //When & Then
+            when(testOrderService.deleteTestOrder(eq(uuidOrderId), any(Pageable.class), anyString()))
+                    .thenReturn(pageResponse);
+
+            // When & Then
             mockMvc.perform(MockMvcRequestBuilders
-                            .delete("/api/test-orders/" + uuidOrderId)
+                            .delete("/api/test-orders/{orderId}?page=1&size=6&keyword=", uuidOrderId)
                             .contentType(MediaType.APPLICATION_JSON_VALUE))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(200))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Test order " + uuidOrderId + " deleted successfully"));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.items[0].testOrderId").value(uuidOrderId));
+
+            verify(testOrderService).deleteTestOrder(eq(uuidOrderId), any(Pageable.class), anyString());
         }
     }
+
 
     // ═══════════════════════════════════════════════════════════════
     // EDGE CASES AND ERROR SCENARIOS
