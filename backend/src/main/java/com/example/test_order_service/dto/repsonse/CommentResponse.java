@@ -14,13 +14,8 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentResponse {
     private String commentId;
-    private String testOrderId;
     private String commentText;
     private String createdBy;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime updatedAt;
 }

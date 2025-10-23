@@ -2,14 +2,18 @@ package com.example.test_order_service.serviceImpl;
 
 import com.example.test_order_service.dto.repsonse.PageResponse;
 import com.example.test_order_service.dto.repsonse.RestResponse;
+import com.example.test_order_service.dto.repsonse.TestOrderDetailResponse;
 import com.example.test_order_service.dto.repsonse.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.exception.ResourceNotFoundException;
+import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;
+import com.example.test_order_service.mapper.TestResultMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
+import com.example.test_order_service.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +28,8 @@ public class TestOrderServiceImpl implements TestOrderService {
 
     private final TestOrderRepository testOrderRepository;
     private final TestOrderMapper testOrderMapper;
+    private final TestResultMapper testResultMapper;
+    private final CommentMapper commentMapper;
 
     @Override
     public RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request) {
@@ -91,6 +97,26 @@ public class TestOrderServiceImpl implements TestOrderService {
     }
 
     @Override
+    public RestResponse<TestOrderDetailResponse> getTestOrderById(String orderId) {
+        TestOrder testOrder = testOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        TestOrderDetailResponse testOrderDetailResponse = testOrderMapper.toTestOrderDetailResponse(testOrder);
+
+        testOrderDetailResponse.setAge(DateUtils.calculateAge(testOrder.getDateOfBirth()));
+        testOrderDetailResponse.setTestResults(testResultMapper.toTestResultResponses(testOrder.getTestResults()));
+        testOrderDetailResponse.setComments(commentMapper.toCommentResponses(testOrder.getComments()));
+
+        return RestResponse.<TestOrderDetailResponse>builder()
+                .statusCode(200)
+                .result(testOrderDetailResponse)
+                .message("Test order retrieved successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+
+    @Override
     public RestResponse<?> getTestOrderStatistics() {
         long total = testOrderRepository.countActive();
         var groupedCounts = testOrderRepository.countByStatus();
@@ -122,5 +148,4 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .timestamp(java.time.LocalDateTime.now())
                 .build();
     }
-
 }

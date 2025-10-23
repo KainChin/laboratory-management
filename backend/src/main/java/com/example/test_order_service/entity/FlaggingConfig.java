@@ -29,9 +29,20 @@ public class FlaggingConfig {
     @Column(name = "max_value")
     private Double maxValue;
 
+    @Column(name = "critical_min_value")
+    private Double criticalMinValue;
+
+    @Column(name = "critical_max_value")
+    private Double criticalMaxValue;
+
     @Column(name = "unit", length = 20)
     private String unit;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
