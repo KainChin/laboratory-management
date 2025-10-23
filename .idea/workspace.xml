@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7962fe10-8b2a-463e-a7af-9e5d0509d094" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/ChartSection.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChartSection.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/DeleteConfirmationModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/DeleteConfirmationModal.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/TestOrders.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/TestOrders.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/OrdersTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/OrdersTable.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -635,59 +635,67 @@ export default function OrdersTable() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((row) => (
-              <tr key={row.id} className="border-b hover:bg-gray-50">
-                <td className="py-2 px-3">
-                  <div className="truncate" title={row.name}>
-                    {row.name}
-                  </div>
-                </td>
-                <td className="py-2 px-3">
-                  <div className="truncate">
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        statusColor[row.status]
-                      }`}
-                    >
-                      {row.status}
-                    </span>
-                  </div>
-                </td>
-                <td className="py-2 px-3">
-                  <div className="truncate" title={row.dob}>
-                    {row.dob || ""}
-                  </div>
-                </td>
-                <td className="py-2 px-3">
-                  <div className="truncate" title={row.creator}>
-                    {row.creator}
-                  </div>
-                </td>
-                <td className="py-2 px-3 text-center space-x-2">
-                  <button
-                    className="text-blue-500 hover:text-blue-700"
-                    onClick={() => openViewModal(row)}
-                  >
-                    <Eye size={15} />
-                  </button>
-                  <button
-                    className="text-orange-500 hover:text-orange-700"
-                    onClick={() => openEditModal(row)}
-                  >
-                    <Edit size={15} />
-                  </button>
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => {
-                      setDeleteId(row.id);
-                      setShowDeleteModal(true);
-                    }}
-                  >
-                    <Trash2 size={15} />
-                  </button>
+            {orders.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-8 text-center text-gray-500">
+                  Không có dữ liệu về bệnh nhân
                 </td>
               </tr>
-            ))}
+            ) : (
+              orders.map((row) => (
+                <tr key={row.id} className="border-b hover:bg-gray-50">
+                  <td className="py-2 px-3">
+                    <div className="truncate" title={row.name}>
+                      {row.name}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <div className="truncate">
+                      <span
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          statusColor[row.status]
+                        }`}
+                      >
+                        {row.status}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <div className="truncate" title={row.dob}>
+                      {row.dob || ""}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <div className="truncate" title={row.creator}>
+                      {row.creator}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3 text-center space-x-2">
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => openViewModal(row)}
+                    >
+                      <Eye size={15} />
+                    </button>
+                    <button
+                      className="text-orange-500 hover:text-orange-700"
+                      onClick={() => openEditModal(row)}
+                    >
+                      <Edit size={15} />
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => {
+                        setDeleteId(row.id);
+                        setShowDeleteModal(true);
+                      }}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
