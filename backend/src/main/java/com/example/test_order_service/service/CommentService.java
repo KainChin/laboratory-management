@@ -18,3 +18,4 @@ public interface CommentService {
     RestResponse<CommentResponse> updateComment(String orderId, String commentId, UpdateCommentRequest request);
     RestResponse<Void> deleteComment(String orderId, String commentId);
     List<CommentResponse> getAllComments(String orderId, Sort sort);
+}
