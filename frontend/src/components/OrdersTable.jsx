@@ -62,6 +62,18 @@ export default function OrdersTable() {
               citizenId: order.citizenId,
             }))
           );
+          // notify other components (ChartSection) that orders changed
+          try {
+            const mapped = items.map((order) => ({
+              id: order.testOrderId,
+              status: order.status || "Pending",
+              // prefer createdAt / createdDate / date fields if backend provides them
+              date: order.createdAt || order.createdDate || order.dateOfBirth || null,
+            }));
+            window.dispatchEvent(new CustomEvent("orders:updated", { detail: { orders: mapped } }));
+          } catch (err) {
+            // ignore dispatch errors
+          }
         } catch (err) {
           console.warn("Fetch orders failed:", err);
         }
@@ -84,6 +96,7 @@ export default function OrdersTable() {
 
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef(null);
+  const lastScaleRef = useRef(1);
   const [modalScale, setModalScale] = useState(1);
   const [mode, setMode] = useState("create");
   const [form, setForm] = useState({
@@ -97,10 +110,22 @@ export default function OrdersTable() {
     country: "",
     citizenId: "",
   });
-  // validation errors for form fields
-  const [errors, setErrors] = useState({});
-  // Lưu id đang edit để update đúng đơn hàng
-  const [editingId, setEditingId] = useState(null);
+  // local form inside modal to avoid parent re-renders clobbering input while typing
+  const [localForm, setLocalForm] = useState(form);
+   // validation errors for form fields
+   const [errors, setErrors] = useState({});
+   // Lưu id đang edit để update đúng đơn hàng
+   const [editingId, setEditingId] = useState(null);
+
+  // initialize modal local form only when modal opens / mode or editingId changes
+  useEffect(() => {
+    // chỉ reset khi vừa mở modal hoặc đổi mode / editingId để tránh ghi đè khi đang gõ
+    if (showModal && (mode === "create" || editingId)) {
+      setLocalForm(form);
+      setErrors({});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showModal, mode, editingId]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -123,14 +148,15 @@ export default function OrdersTable() {
     });
   }
 
-  // reusable date formatter to dd/MM/yyyy
+  // reusable date formatter to yyyy-MM-dd (phù hợp input[type=date]); không phá nếu date invalid
   function formatDate(dateStr) {
     if (!dateStr) return "";
     const d = new Date(dateStr);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
+    if (isNaN(d)) return dateStr;
     const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
 
   // gender mapping helpers
@@ -178,37 +204,37 @@ export default function OrdersTable() {
   }
 
   // validate form fields; return an object of errors (field -> message)
-  function validateForm() {
+  // accepts a form object so we can validate localForm without relying on parent `form`
+  function validateForm(f = form) {
     const e = {};
-    if (!form.patientName || !String(form.patientName).trim()) {
+    if (!f.patientName || !String(f.patientName).trim()) {
       e.patientName = "Patient name is required";
     }
-    if (!form.dob) {
+    if (!f.dob) {
       e.dob = "Date of birth is required";
     } else {
-      const dobDate = new Date(form.dob);
+      const dobDate = new Date(f.dob);
       const today = new Date();
-      // normalize time
       dobDate.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
       if (dobDate > today) {
         e.dob = "Date of birth cannot be in the future";
       }
     }
-    if (!form.phone || !String(form.phone).trim()) {
+    if (!f.phone || !String(f.phone).trim()) {
       e.phone = "Phone number is required";
-    } else if (!/^[0-9()+\-\s]{7,20}$/.test(form.phone)) {
+    } else if (!/^[0-9()+\-\s]{7,20}$/.test(f.phone)) {
       e.phone = "Phone number looks invalid";
     }
-    if (!form.email || !String(form.email).trim()) {
+    if (!f.email || !String(f.email).trim()) {
       e.email = "Email is required";
-    } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+    } else if (!/^\S+@\S+\.\S+$/.test(f.email)) {
       e.email = "Email is invalid";
     }
-    if (!form.gender || !String(form.gender).trim()) {
+    if (!f.gender || !String(f.gender).trim()) {
       e.gender = "Gender is required";
     }
-    if (!form.citizenId || !String(form.citizenId).trim()) {
+    if (!f.citizenId || !String(f.citizenId).trim()) {
       e.citizenId = "Citizen ID is required";
     }
     return e;
@@ -255,9 +281,11 @@ export default function OrdersTable() {
     setShowModal(true);
   }
 
-  async function handleCreate() {
+  // handleCreate accepts optional form object (use localForm when provided)
+  async function handleCreate(currentForm) {
+    const f = currentForm || form;
     // validate
-    const validation = validateForm();
+    const validation = validateForm(f);
     if (Object.keys(validation).length > 0) {
       setErrors(validation);
       return;
@@ -265,15 +293,15 @@ export default function OrdersTable() {
 
     // Build payload for backend
     const payload = {
-      patientName: form.patientName,
-      dateOfBirth: form.dob ? formatDate(form.dob) : formatDate(new Date()),
-      citizenId: form.citizenId,
-      country: form.country,
-      gender: selectToEnumGender(form.gender) || "",
-      status: form.status ? selectToEnumStatus(form.status) : undefined,
-      address: form.address,
-      email: form.email,
-      phone: form.phone,
+      patientName: f.patientName,
+      dateOfBirth: f.dob ? formatDate(f.dob) : formatDate(new Date()),
+      citizenId: f.citizenId,
+      country: f.country,
+      gender: selectToEnumGender(f.gender) || "",
+      status: f.status ? selectToEnumStatus(f.status) : undefined,
+      address: f.address,
+      email: f.email,
+      phone: f.phone,
     };
 
     try {
@@ -293,20 +321,20 @@ export default function OrdersTable() {
         ...orders,
         {
           id: created.id || `P00${orders.length + 1}`,
-          name: created.patientName || form.patientName,
+          name: created.patientName || f.patientName,
           status: created.status || "Pending",
           date:
             created.dateOfBirth ||
-            formatDate(form.dob) ||
+            formatDate(f.dob) ||
             formatDate(new Date()),
           creator: created.createdBy || "John. Smith",
-          dob: created.dateOfBirth || formatDate(form.dob),
-          phone: created.phone || form.phone,
-          email: created.email || form.email,
-          gender: created.gender || form.gender,
-          address: created.address || form.address,
-          country: created.country || form.country,
-          citizenId: created.citizenId || form.citizenId,
+          dob: created.dateOfBirth || formatDate(f.dob),
+          phone: created.phone || f.phone,
+          email: created.email || f.email,
+          gender: created.gender || f.gender,
+          address: created.address || f.address,
+          country: created.country || f.country,
+          citizenId: created.citizenId || f.citizenId,
         },
       ]);
       setShowModal(false);
@@ -321,28 +349,30 @@ export default function OrdersTable() {
     }
   }
 
-  function handleUpdate() {
+  // handleUpdate accepts optional form object (use localForm when provided)
+  function handleUpdate(currentForm) {
     // Send update to backend
     if (!editingId) {
       alert("No order selected to edit");
       return;
     }
+    const f = currentForm || form;
     // validate
-    const validation = validateForm();
+    const validation = validateForm(f);
     if (Object.keys(validation).length > 0) {
       setErrors(validation);
       return;
     }
 
     const payload = {
-      patientName: form.patientName || undefined,
-      dateOfBirth: form.dob ? formatDate(form.dob) : undefined,
-      gender: form.gender ? selectToEnumGender(form.gender) : undefined,
-      status: form.status ? selectToEnumStatus(form.status) : undefined,
-      phone: form.phone || undefined,
-      address: form.address || undefined,
-      email: form.email || undefined,
-      citizenId: form.citizenId || undefined,
+      patientName: f.patientName || undefined,
+      dateOfBirth: f.dob ? formatDate(f.dob) : undefined,
+      gender: f.gender ? selectToEnumGender(f.gender) : undefined,
+      status: f.status ? selectToEnumStatus(f.status) : undefined,
+      phone: f.phone || undefined,
+      address: f.address || undefined,
+      email: f.email || undefined,
+      citizenId: f.citizenId || undefined,
     };
 
     (async () => {
@@ -393,47 +423,79 @@ export default function OrdersTable() {
   // No local pagination, backend handles it
 
   // auto scale modal so it fits the viewport without scrollbars
+  // NOTE: do NOT depend on `form` to avoid rerunning measurement on every keystroke.
   useLayoutEffect(() => {
     let rafId;
+
     if (!showModal) {
-      setModalScale(1);
-      // restore body scroll when modal closed
       document.body.style.overflow = "";
+      if (lastScaleRef.current !== 1) {
+        lastScaleRef.current = 1;
+        if (modalScale !== 1) setModalScale(1);
+      }
       return;
     }
 
     // prevent background scrolling while modal open
     document.body.style.overflow = "hidden";
 
-    function updateScale() {
+    // measure natural size by cloning modal into an off-screen node to avoid touching real element
+    function measureNaturalRect() {
       const el = modalRef.current;
-      if (!el) {
-        setModalScale(1);
+      if (!el) return null;
+      try {
+        const clone = el.cloneNode(true);
+        clone.style.visibility = "hidden";
+        clone.style.position = "absolute";
+        clone.style.left = "-9999px";
+        clone.style.top = "0";
+        clone.style.transform = "scale(1)";
+        clone.style.transition = "none";
+        document.body.appendChild(clone);
+        const rect = clone.getBoundingClientRect();
+        document.body.removeChild(clone);
+        return rect;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function updateScale() {
+      const rect = measureNaturalRect();
+      if (!rect) {
+        if (lastScaleRef.current !== 1) {
+          lastScaleRef.current = 1;
+          setModalScale(1);
+        }
         return;
       }
-      // reset transform to measure natural size
-      el.style.transform = "scale(1)";
-      const rect = el.getBoundingClientRect();
+
       const h = rect.height;
       const w = rect.width;
       const vh = window.innerHeight;
       const vw = window.innerWidth;
-      const marginY = 48; // top+bottom spacing
-      const marginX = 48; // left+right spacing
+      const marginY = 48;
+      const marginX = 48;
       const scaleY = (vh - marginY) / Math.max(1, h);
       const scaleX = (vw - marginX) / Math.max(1, w);
-      const scale = Math.min(1, scaleX, scaleY);
-      setModalScale(scale);
+      const newScale = Math.min(1, scaleX, scaleY);
+
+      // only update when difference is noticeable to avoid re-renders while typing
+      if (Math.abs(newScale - lastScaleRef.current) > 0.005) {
+        lastScaleRef.current = newScale;
+        setModalScale(newScale);
+      }
     }
 
-    // measure after paint once, and also on resize
-    rafId = requestAnimationFrame(() => updateScale());
-    window.addEventListener("resize", updateScale);
+    rafId = requestAnimationFrame(updateScale);
+    const onResize = () => requestAnimationFrame(updateScale);
+    window.addEventListener("resize", onResize);
 
     return () => {
-      window.removeEventListener("resize", updateScale);
+      window.removeEventListener("resize", onResize);
       if (rafId) cancelAnimationFrame(rafId);
       document.body.style.overflow = "";
+      lastScaleRef.current = 1;
       setModalScale(1);
     };
   }, [showModal, mode]);
@@ -493,31 +555,64 @@ export default function OrdersTable() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left border-collapse">
+        {/* fixed table layout + colgroup to keep columns stable; truncate long content */}
+        <table
+          className="w-full text-sm text-left border-collapse"
+          style={{ tableLayout: "fixed" }}
+        >
+          <colgroup>
+            <col style={{ width: "35%" }} />
+            <col style={{ width: "15%" }} />
+            <col style={{ width: "18%" }} />
+            <col style={{ width: "22%" }} />
+            <col style={{ width: "10%" }} />
+          </colgroup>
           <thead>
             <tr className="bg-red-500 text-white">
-              <th className="py-2 px-3 rounded-tl-lg">Name</th>
-              <th className="py-2 px-3">Status</th>
-              <th className="py-2 px-3">Date of Birth</th>
-              <th className="py-2 px-3">Created By</th>
-              <th className="py-2 px-3 rounded-tr-lg text-center">Action</th>
+              <th className="py-2 px-3 rounded-tl-lg">
+                <div className="truncate">Name</div>
+              </th>
+              <th className="py-2 px-3">
+                <div className="truncate">Status</div>
+              </th>
+              <th className="py-2 px-3">
+                <div className="truncate">Date of Birth</div>
+              </th>
+              <th className="py-2 px-3">
+                <div className="truncate">Created By</div>
+              </th>
+              <th className="py-2 px-3 rounded-tr-lg text-center">
+                <div className="truncate">Action</div>
+              </th>
             </tr>
           </thead>
           <tbody>
             {orders.map((row) => (
               <tr key={row.id} className="border-b hover:bg-gray-50">
-                <td className="py-2 px-3">{row.name}</td>
                 <td className="py-2 px-3">
-                  <span
-                    className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                      statusColor[row.status]
-                    }`}
-                  >
-                    {row.status}
-                  </span>
+                  <div className="truncate" title={row.name}>
+                    {row.name}
+                  </div>
                 </td>
-                <td className="py-2 px-3">{row.dob}</td>
-                <td className="py-2 px-3">{row.creator}</td>
+                <td className="py-2 px-3">
+                  <div className="truncate">
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColor[row.status]}`}
+                    >
+                      {row.status}
+                    </span>
+                  </div>
+                </td>
+                <td className="py-2 px-3">
+                  <div className="truncate" title={row.dob}>
+                    {row.dob}
+                  </div>
+                </td>
+                <td className="py-2 px-3">
+                  <div className="truncate" title={row.creator}>
+                    {row.creator}
+                  </div>
+                </td>
                 <td className="py-2 px-3 text-center space-x-2">
                   <button
                     className="text-blue-500 hover:text-blue-700"
@@ -615,8 +710,12 @@ export default function OrdersTable() {
                   </label>
                   <input
                     name="patientName"
-                    value={form.patientName}
-                    onChange={handleChange}
+                    value={localForm.patientName}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setLocalForm((s) => ({ ...s, [name]: value }));
+                      setErrors((s) => ({ ...s, [name]: undefined }));
+                    }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
@@ -637,8 +736,12 @@ export default function OrdersTable() {
                   ) : (
                     <input
                       name="dob"
-                      value={form.dob}
-                      onChange={handleChange}
+                      value={localForm.dob}
+                      onChange={(e) => {
+                        const { name, value } = e.target;
+                        setLocalForm((s) => ({ ...s, [name]: value }));
+                        setErrors((s) => ({ ...s, [name]: undefined }));
+                      }}
                       type="date"
                       className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
                     />
@@ -654,8 +757,12 @@ export default function OrdersTable() {
                   </label>
                   <input
                     name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
+                    value={localForm.phone}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setLocalForm((s) => ({ ...s, [name]: value }));
+                      setErrors((s) => ({ ...s, [name]: undefined }));
+                    }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
@@ -669,8 +776,12 @@ export default function OrdersTable() {
                   </label>
                   <input
                     name="email"
-                    value={form.email}
-                    onChange={handleChange}
+                    value={localForm.email}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setLocalForm((s) => ({ ...s, [name]: value }));
+                      setErrors((s) => ({ ...s, [name]: undefined }));
+                    }}
                     type="email"
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
@@ -697,8 +808,12 @@ export default function OrdersTable() {
                   ) : (
                     <select
                       name="gender"
-                      value={form.gender}
-                      onChange={handleChange}
+                      value={localForm.gender}
+                      onChange={(e) => {
+                        const { name, value } = e.target;
+                        setLocalForm((s) => ({ ...s, [name]: value }));
+                        setErrors((s) => ({ ...s, [name]: undefined }));
+                      }}
                       className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
@@ -720,8 +835,12 @@ export default function OrdersTable() {
                   ) : (
                     <select
                       name="status"
-                      value={form.status}
-                      onChange={handleChange}
+                      value={localForm.status}
+                      onChange={(e) => {
+                        const { name, value } = e.target;
+                        setLocalForm((s) => ({ ...s, [name]: value }));
+                        setErrors((s) => ({ ...s, [name]: undefined }));
+                      }}
                       className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
@@ -740,8 +859,11 @@ export default function OrdersTable() {
                   </label>
                   <input
                     name="address"
-                    value={form.address}
-                    onChange={handleChange}
+                    value={localForm.address}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setLocalForm((s) => ({ ...s, [name]: value }));
+                    }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
@@ -753,8 +875,11 @@ export default function OrdersTable() {
                   </label>
                   <input
                     name="country"
-                    value={form.country}
-                    onChange={handleChange}
+                    value={localForm.country}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setLocalForm((s) => ({ ...s, [name]: value }));
+                    }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
@@ -765,8 +890,12 @@ export default function OrdersTable() {
                   </label>
                   <input
                     name="citizenId"
-                    value={form.citizenId}
-                    onChange={handleChange}
+                    value={localForm.citizenId}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setLocalForm((s) => ({ ...s, [name]: value }));
+                      setErrors((s) => ({ ...s, [name]: undefined }));
+                    }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
@@ -789,14 +918,14 @@ export default function OrdersTable() {
               </button>
               {mode === "edit" ? (
                 <button
-                  onClick={handleUpdate}
+                  onClick={() => handleUpdate(localForm)}
                   className="px-4 py-2 bg-red-500 text-white rounded-lg"
                 >
                   Save
                 </button>
               ) : mode === "view" ? null : (
                 <button
-                  onClick={handleCreate}
+                  onClick={() => handleCreate(localForm)}
                   className="px-4 py-2 bg-red-500 text-white rounded-lg"
                 >
                   Create
