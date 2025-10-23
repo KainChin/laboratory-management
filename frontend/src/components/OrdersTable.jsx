@@ -159,6 +159,15 @@ export default function OrdersTable() {
     return `${year}-${month}-${day}`;
   }
 
+  // convert yyyy-MM-dd from date input to dd/MM/yyyy for backend
+  function formatDateForBackend(dateStr) {
+    if (!dateStr) return "";
+    const parts = dateStr.split("-");
+    if (parts.length !== 3) return dateStr; // return original if not yyyy-MM-dd
+    const [yyyy, mm, dd] = parts;
+    return `${dd}/${mm}/${yyyy}`;
+  }
+
   // gender mapping helpers
   function enumToSelectGender(g) {
     if (!g) return "";
@@ -294,7 +303,7 @@ export default function OrdersTable() {
     // Build payload for backend
     const payload = {
       patientName: f.patientName,
-      dateOfBirth: f.dob ? formatDate(f.dob) : formatDate(new Date()),
+      dateOfBirth: f.dob ? formatDateForBackend(f.dob) : "",
       citizenId: f.citizenId,
       country: f.country,
       gender: selectToEnumGender(f.gender) || "",
@@ -366,7 +375,7 @@ export default function OrdersTable() {
 
     const payload = {
       patientName: f.patientName || undefined,
-      dateOfBirth: f.dob ? formatDate(f.dob) : undefined,
+      dateOfBirth: f.dob ? formatDateForBackend(f.dob) : undefined,
       gender: f.gender ? selectToEnumGender(f.gender) : undefined,
       status: f.status ? selectToEnumStatus(f.status) : undefined,
       phone: f.phone || undefined,
