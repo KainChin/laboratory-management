@@ -15,9 +15,12 @@ import com.example.test_order_service.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -96,5 +99,18 @@ public class CommentServiceImpl implements CommentService {
                 .message("Comment " + commentId + " deleted successfully")
                 .timestamp(LocalDateTime.now())
                 .build();
+    }
+
+    @Override
+    public List<CommentResponse> getAllComments(String orderId, Sort sort) {
+        // Đảm bảo test order tồn tại
+        testOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        List<Comment> comments = commentRepository.findAllByTestOrder_TestOrderId(orderId, sort);
+
+        return comments.stream()
+                .map(commentMapper::toCommentResponse)
+                .collect(Collectors.toList());
     }
 }
