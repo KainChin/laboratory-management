@@ -15,6 +15,7 @@ import com.example.test_order_service.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -101,12 +102,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentResponse> getAllComments(String orderId) {
+    public List<CommentResponse> getAllComments(String orderId, Sort sort) {
         // Đảm bảo test order tồn tại
         testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
-        List<Comment> comments = commentRepository.findAllByTestOrder_TestOrderId(orderId);
+        List<Comment> comments = commentRepository.findAllByTestOrder_TestOrderId(orderId, sort);
 
         return comments.stream()
                 .map(commentMapper::toCommentResponse)
