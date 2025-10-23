@@ -1,5 +1,11 @@
 import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
-import { useState, useEffect, useCallback, useRef, useLayoutEffect } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useLayoutEffect,
+} from "react";
 import { createPortal } from "react-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
@@ -46,6 +52,7 @@ export default function OrdersTable() {
           const result = await res.json();
           const items = result.result?.items || [];
           setTotalPages(result.result?.totalPages || 1);
+          // Format date from backend (assuming it's in dd/MM/yyyy format)
           setOrders(
             items.map((order) => ({
               id: order.testOrderId,
@@ -53,7 +60,8 @@ export default function OrdersTable() {
               status: order.status || "Pending",
               date: order.dateOfBirth,
               creator: order.createdBy || "Unknown",
-              dob: order.dateOfBirth,
+              // Preserve the original date format for display
+              dob: order.dateOfBirth || "",
               phone: order.phone,
               email: order.email,
               gender: order.gender,
@@ -68,11 +76,18 @@ export default function OrdersTable() {
               id: order.testOrderId,
               status: order.status || "Pending",
               // prefer createdAt / createdDate / date fields if backend provides them
-              date: order.createdAt || order.createdDate || order.dateOfBirth || null,
+              date:
+                order.createdAt ||
+                order.createdDate ||
+                order.dateOfBirth ||
+                null,
             }));
-            window.dispatchEvent(new CustomEvent("orders:updated", { detail: { orders: mapped } }));
+            window.dispatchEvent(
+              new CustomEvent("orders:updated", { detail: { orders: mapped } })
+            );
           } catch (err) {
-            // ignore dispatch errors
+            // log dispatch errors for debugging
+            console.error("Failed to dispatch orders:updated event:", err);
           }
         } catch (err) {
           console.warn("Fetch orders failed:", err);
@@ -89,9 +104,15 @@ export default function OrdersTable() {
 
   const statusColor = {
     Completed: "bg-green-100 text-green-700",
+    COMPLETED: "bg-green-100 text-green-700",
     Cancelled: "bg-red-100 text-red-700",
+    CANCELLED: "bg-red-100 text-red-700",
     Pending: "bg-blue-100 text-blue-700",
+    PENDING: "bg-blue-100 text-blue-700",
     Reviewed: "bg-purple-100 text-purple-700",
+    REVIEWED: "bg-purple-100 text-purple-700",
+    AI_Reviewed: "bg-orange-100 text-orange-700",
+    AI_REVIEWED: "bg-orange-100 text-orange-700",
   };
 
   const [showModal, setShowModal] = useState(false);
@@ -112,10 +133,10 @@ export default function OrdersTable() {
   });
   // local form inside modal to avoid parent re-renders clobbering input while typing
   const [localForm, setLocalForm] = useState(form);
-   // validation errors for form fields
-   const [errors, setErrors] = useState({});
-   // Lưu id đang edit để update đúng đơn hàng
-   const [editingId, setEditingId] = useState(null);
+  // validation errors for form fields
+  const [errors, setErrors] = useState({});
+  // Lưu id đang edit để update đúng đơn hàng
+  const [editingId, setEditingId] = useState(null);
 
   // initialize modal local form only when modal opens / mode or editingId changes
   useEffect(() => {
@@ -126,13 +147,6 @@ export default function OrdersTable() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showModal, mode, editingId]);
-
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setForm((s) => ({ ...s, [name]: value }));
-    // clear validation for this field when user types
-    setErrors((s) => ({ ...s, [name]: undefined }));
-  }
 
   function resetForm() {
     setForm({
@@ -157,6 +171,15 @@ export default function OrdersTable() {
     const month = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+  }
+
+  // convert yyyy-MM-dd from date input to dd/MM/yyyy for backend
+  function formatDateForBackend(dateStr) {
+    if (!dateStr) return "";
+    const parts = dateStr.split("-");
+    if (parts.length !== 3) return dateStr; // return original if not yyyy-MM-dd
+    const [yyyy, mm, dd] = parts;
+    return `${dd}/${mm}/${yyyy}`;
   }
 
   // gender mapping helpers
@@ -189,7 +212,7 @@ export default function OrdersTable() {
   function selectToEnumStatus(s) {
     if (!s) return "";
     if (s === "Pending") return "PENDING";
-    if (s === "Completed" ) return "COMPLETED";
+    if (s === "Completed") return "COMPLETED";
     if (s === "Cancelled") return "CANCELLED";
     return String(s).toUpperCase();
   }
@@ -233,6 +256,9 @@ export default function OrdersTable() {
     }
     if (!f.gender || !String(f.gender).trim()) {
       e.gender = "Gender is required";
+    }
+    if (!f.status || !String(f.status).trim()) {
+      e.status = "Status is required";
     }
     if (!f.citizenId || !String(f.citizenId).trim()) {
       e.citizenId = "Citizen ID is required";
@@ -283,7 +309,7 @@ export default function OrdersTable() {
 
   // handleCreate accepts optional form object (use localForm when provided)
   async function handleCreate(currentForm) {
-    const f = currentForm || form;
+    const f = currentForm || localForm;
     // validate
     const validation = validateForm(f);
     if (Object.keys(validation).length > 0) {
@@ -294,7 +320,7 @@ export default function OrdersTable() {
     // Build payload for backend
     const payload = {
       patientName: f.patientName,
-      dateOfBirth: f.dob ? formatDate(f.dob) : formatDate(new Date()),
+      dateOfBirth: f.dob ? formatDateForBackend(f.dob) : "",
       citizenId: f.citizenId,
       country: f.country,
       gender: selectToEnumGender(f.gender) || "",
@@ -324,9 +350,7 @@ export default function OrdersTable() {
           name: created.patientName || f.patientName,
           status: created.status || "Pending",
           date:
-            created.dateOfBirth ||
-            formatDate(f.dob) ||
-            formatDate(new Date()),
+            created.dateOfBirth || formatDate(f.dob) || formatDate(new Date()),
           creator: created.createdBy || "John. Smith",
           dob: created.dateOfBirth || formatDate(f.dob),
           phone: created.phone || f.phone,
@@ -341,6 +365,18 @@ export default function OrdersTable() {
       setSuccessMsg("Create test order successfully!");
       setTimeout(() => setSuccessMsg(""), 3000);
       resetForm();
+      setLocalForm({
+        patientName: "",
+        dob: "",
+        phone: "",
+        email: "",
+        gender: "",
+        status: "",
+        address: "",
+        country: "",
+        citizenId: "",
+      });
+      setErrors({});
       // REFRESH danh sách sau khi thêm
       fetchOrdersWrapper(1); // về trang 1 sau khi thêm mới
       setPage(1);
@@ -356,7 +392,7 @@ export default function OrdersTable() {
       alert("No order selected to edit");
       return;
     }
-    const f = currentForm || form;
+    const f = currentForm || localForm;
     // validate
     const validation = validateForm(f);
     if (Object.keys(validation).length > 0) {
@@ -366,7 +402,7 @@ export default function OrdersTable() {
 
     const payload = {
       patientName: f.patientName || undefined,
-      dateOfBirth: f.dob ? formatDate(f.dob) : undefined,
+      dateOfBirth: f.dob ? formatDateForBackend(f.dob) : undefined,
       gender: f.gender ? selectToEnumGender(f.gender) : undefined,
       status: f.status ? selectToEnumStatus(f.status) : undefined,
       phone: f.phone || undefined,
@@ -396,14 +432,14 @@ export default function OrdersTable() {
             o.id === editingId
               ? {
                   ...o,
-                  name: updated.patientName || form.patientName || o.name,
-          dob: updated.dateOfBirth || form.dob || o.dob,
-          status: updated.status || form.status || o.status,
-                  phone: updated.phone || form.phone || o.phone,
-                  email: updated.email || form.email || o.email,
-                  gender: updated.gender || form.gender || o.gender,
-                  address: updated.address || form.address || o.address,
-                  citizenId: updated.citizenId || form.citizenId || o.citizenId,
+                  name: updated.patientName || f.patientName || o.name,
+                  dob: updated.dateOfBirth || f.dob || o.dob,
+                  status: updated.status || f.status || o.status,
+                  phone: updated.phone || f.phone || o.phone,
+                  email: updated.email || f.email || o.email,
+                  gender: updated.gender || f.gender || o.gender,
+                  address: updated.address || f.address || o.address,
+                  citizenId: updated.citizenId || f.citizenId || o.citizenId,
                 }
               : o
           )
@@ -414,8 +450,20 @@ export default function OrdersTable() {
         setSuccessMsg("Update successfully!");
         setTimeout(() => setSuccessMsg(""), 3000);
         resetForm();
-      } catch (err) {
-        alert("Update failed: " + err.message);
+        setLocalForm({
+          patientName: "",
+          dob: "",
+          phone: "",
+          email: "",
+          gender: "",
+          status: "",
+          address: "",
+          country: "",
+          citizenId: "",
+        });
+        setErrors({});
+      } catch {
+        alert("Update failed");
       }
     })();
   }
@@ -455,7 +503,7 @@ export default function OrdersTable() {
         const rect = clone.getBoundingClientRect();
         document.body.removeChild(clone);
         return rect;
-      } catch (err) {
+      } catch {
         return null;
       }
     }
@@ -587,57 +635,67 @@ export default function OrdersTable() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((row) => (
-              <tr key={row.id} className="border-b hover:bg-gray-50">
-                <td className="py-2 px-3">
-                  <div className="truncate" title={row.name}>
-                    {row.name}
-                  </div>
-                </td>
-                <td className="py-2 px-3">
-                  <div className="truncate">
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColor[row.status]}`}
-                    >
-                      {row.status}
-                    </span>
-                  </div>
-                </td>
-                <td className="py-2 px-3">
-                  <div className="truncate" title={row.dob}>
-                    {row.dob}
-                  </div>
-                </td>
-                <td className="py-2 px-3">
-                  <div className="truncate" title={row.creator}>
-                    {row.creator}
-                  </div>
-                </td>
-                <td className="py-2 px-3 text-center space-x-2">
-                  <button
-                    className="text-blue-500 hover:text-blue-700"
-                    onClick={() => openViewModal(row)}
-                  >
-                    <Eye size={15} />
-                  </button>
-                  <button
-                    className="text-orange-500 hover:text-orange-700"
-                    onClick={() => openEditModal(row)}
-                  >
-                    <Edit size={15} />
-                  </button>
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => {
-                      setDeleteId(row.id);
-                      setShowDeleteModal(true);
-                    }}
-                  >
-                    <Trash2 size={15} />
-                  </button>
+            {orders.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-8 text-center text-gray-500">
+                  Không có dữ liệu về bệnh nhân
                 </td>
               </tr>
-            ))}
+            ) : (
+              orders.map((row) => (
+                <tr key={row.id} className="border-b hover:bg-gray-50">
+                  <td className="py-2 px-3">
+                    <div className="truncate" title={row.name}>
+                      {row.name}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <div className="truncate">
+                      <span
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          statusColor[row.status]
+                        }`}
+                      >
+                        {row.status}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <div className="truncate" title={row.dob}>
+                      {row.dob || ""}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <div className="truncate" title={row.creator}>
+                      {row.creator}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3 text-center space-x-2">
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => openViewModal(row)}
+                    >
+                      <Eye size={15} />
+                    </button>
+                    <button
+                      className="text-orange-500 hover:text-orange-700"
+                      onClick={() => openEditModal(row)}
+                    >
+                      <Edit size={15} />
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => {
+                        setDeleteId(row.id);
+                        setShowDeleteModal(true);
+                      }}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -687,20 +745,20 @@ export default function OrdersTable() {
             }}
             className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
           >
-             <h3 className="text-2xl text-red-500 font-bold text-center">
-               {mode === "view"
-                 ? "Detail Test Order Information"
-                 : mode === "edit"
-                 ? "UPDATE TEST ORDER"
-                 : "NEW TEST ORDER"}
-             </h3>
-             <p className="text-center text-sm text-gray-500 mb-6">
-               {mode === "view"
-                 ? "View patient information for this test order"
-                 : mode === "edit"
-                 ? "Update patient information for this test order"
-                 : "Enter patient information to create a new test order"}
-             </p>
+            <h3 className="text-2xl text-red-500 font-bold text-center">
+              {mode === "view"
+                ? "Detail Test Order Information"
+                : mode === "edit"
+                ? "UPDATE TEST ORDER"
+                : "NEW TEST ORDER"}
+            </h3>
+            <p className="text-center text-sm text-gray-500 mb-6">
+              {mode === "view"
+                ? "View patient information for this test order"
+                : mode === "edit"
+                ? "Update patient information for this test order"
+                : "Enter patient information to create a new test order"}
+            </p>
 
             <div className="border rounded-lg p-6 bg-gray-50">
               <div className="grid grid-cols-2 gap-4">
@@ -747,7 +805,9 @@ export default function OrdersTable() {
                     />
                   )}
                   {errors.dob && (
-                    <div className="text-sm text-red-600 mt-1">{errors.dob}</div>
+                    <div className="text-sm text-red-600 mt-1">
+                      {errors.dob}
+                    </div>
                   )}
                 </div>
 
@@ -767,7 +827,9 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.phone && (
-                    <div className="text-sm text-red-600 mt-1">{errors.phone}</div>
+                    <div className="text-sm text-red-600 mt-1">
+                      {errors.phone}
+                    </div>
                   )}
                 </div>
                 <div>
@@ -787,7 +849,9 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.email && (
-                    <div className="text-sm text-red-600 mt-1">{errors.email}</div>
+                    <div className="text-sm text-red-600 mt-1">
+                      {errors.email}
+                    </div>
                   )}
                 </div>
 
@@ -823,11 +887,15 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.gender && (
-                    <div className="text-sm text-red-600 mt-1">{errors.gender}</div>
+                    <div className="text-sm text-red-600 mt-1">
+                      {errors.gender}
+                    </div>
                   )}
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">Status</label>
+                  <label className="text-red-500 font-semibold text-sm">
+                    Status
+                  </label>
                   {mode === "view" ? (
                     <div className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white">
                       {form.status || ""}
@@ -850,7 +918,9 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.status && (
-                    <div className="text-sm text-red-600 mt-1">{errors.status}</div>
+                    <div className="text-sm text-red-600 mt-1">
+                      {errors.status}
+                    </div>
                   )}
                 </div>
                 <div>
@@ -900,7 +970,9 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.citizenId && (
-                    <div className="text-sm text-red-600 mt-1">{errors.citizenId}</div>
+                    <div className="text-sm text-red-600 mt-1">
+                      {errors.citizenId}
+                    </div>
                   )}
                 </div>
               </div>
@@ -911,6 +983,7 @@ export default function OrdersTable() {
                 onClick={() => {
                   setShowModal(false);
                   setMode("create");
+                  setErrors({});
                 }}
                 className="px-4 py-2 border border-gray-200 rounded-lg bg-white"
               >
@@ -943,7 +1016,7 @@ export default function OrdersTable() {
         onConfirm={async () => {
           try {
             const res = await fetch(
-              `http://localhost:6868/api/test-orders/${deleteId}`,
+              `http://localhost:6868/api/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=patientName&sortDir=${sortDir}`,
               { method: "DELETE" }
             );
             if (!res.ok) {
@@ -955,14 +1028,37 @@ export default function OrdersTable() {
                 setDeleteId(null);
               }, 3000);
             } else {
-              // Sau khi xoá thành công:
-              // Nếu đã xoá phần tử cuối cùng của trang và không phải trang 1, thì lùi về trang trước
-              const isLastItem = orders.length === 1; // chỉ còn 1 phần tử trang này (sau khi xoá = 0)
-              if (isLastItem && page > 1) {
-                setPage(page - 1);
-                fetchOrdersWrapper(page - 1);
-              } else {
-                fetchOrdersWrapper();
+              const data = await res.json();
+              if (data?.result) {
+                const items = data.result.items || [];
+                
+                // Nếu có items trong response, cập nhật danh sách
+                if (items.length > 0) {
+                  setTotalPages(data.result.totalPages || 1);
+                  setOrders(
+                    items.map((order) => ({
+                      id: order.testOrderId,
+                      name: order.patientName,
+                      status: order.status || "Pending",
+                      date: order.dateOfBirth,
+                      creator: order.createdBy || "Unknown",
+                      dob: order.dateOfBirth,
+                      phone: order.phone,
+                      email: order.email,
+                      gender: order.gender,
+                      address: order.address,
+                      country: order.country,
+                      citizenId: order.citizenId,
+                    }))
+                  );
+                } else {
+                  // Nếu result trả về mảng rỗng và không phải trang 1, gọi lại API với page nhỏ hơn 1 đơn vị
+                  if (page > 1) {
+                    setPage(page - 1);
+                    fetchOrdersWrapper(page - 1);
+                  }
+                  // Nếu đang ở trang 1 và không có test order nào thì không cần gọi lại API
+                }
               }
               setSuccessMsg("Delete test order successfully!");
               setDeleteError("");

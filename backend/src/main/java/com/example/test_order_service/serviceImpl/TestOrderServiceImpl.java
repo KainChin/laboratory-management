@@ -1,9 +1,6 @@
 package com.example.test_order_service.serviceImpl;
 
-import com.example.test_order_service.dto.repsonse.PageResponse;
-import com.example.test_order_service.dto.repsonse.RestResponse;
-import com.example.test_order_service.dto.repsonse.TestOrderDetailResponse;
-import com.example.test_order_service.dto.repsonse.TestOrderResponse;
+import com.example.test_order_service.dto.repsonse.*;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.TestOrder;
@@ -117,13 +114,15 @@ public class TestOrderServiceImpl implements TestOrderService {
 
 
     @Override
-    public RestResponse<?> getTestOrderStatistics() {
+    public RestResponse<TestOrderStatisticResponse> getTestOrderStatistics() {
         long total = testOrderRepository.countActive();
         var groupedCounts = testOrderRepository.countByStatus();
 
         long pending = 0;
         long completed = 0;
         long cancelled = 0;
+        long reviewed = 0;
+        long aiReviewed = 0;
 
         for (Object[] row : groupedCounts) {
             String status = row[0].toString();
@@ -132,20 +131,26 @@ public class TestOrderServiceImpl implements TestOrderService {
                 case "PENDING" -> pending = count;
                 case "COMPLETED" -> completed = count;
                 case "CANCELLED" -> cancelled = count;
+                case "REVIEWED" -> reviewed = count;
+                case "AI_REVIEWED" -> aiReviewed = count;
             }
         }
 
-        var result = new java.util.HashMap<String, Long>();
-        result.put("total", total);
-        result.put("pending", pending);
-        result.put("completed", completed);
-        result.put("cancelled", cancelled);
+        TestOrderStatisticResponse statistic = TestOrderStatisticResponse.builder()
+                .total(total)
+                .pending(pending)
+                .completed(completed)
+                .cancelled(cancelled)
+                .reviewed(reviewed)
+                .aiReviewed(aiReviewed)
+                .build();
 
-        return RestResponse.builder()
+        return RestResponse.<TestOrderStatisticResponse>builder()
                 .statusCode(200)
                 .message("Statistics retrieved successfully")
-                .result(result)
+                .result(statistic)
                 .timestamp(java.time.LocalDateTime.now())
                 .build();
     }
+
 }
