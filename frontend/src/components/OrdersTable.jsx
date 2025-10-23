@@ -116,7 +116,6 @@ export default function OrdersTable() {
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef(null);
   const lastScaleRef = useRef(1);
-  const lastScaleRef = useRef(1);
   const [modalScale, setModalScale] = useState(1);
   const [mode, setMode] = useState("create");
   const [form, setForm] = useState({
@@ -162,16 +161,11 @@ export default function OrdersTable() {
   }
 
   // reusable date formatter to yyyy-MM-dd (phù hợp input[type=date]); không phá nếu date invalid
-  // reusable date formatter to yyyy-MM-dd (phù hợp input[type=date]); không phá nếu date invalid
   function formatDate(dateStr) {
     if (!dateStr) return "";
     const d = new Date(dateStr);
     if (isNaN(d)) return dateStr;
-    if (isNaN(d)) return dateStr;
     const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
     const month = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
@@ -224,18 +218,13 @@ export default function OrdersTable() {
   // validate form fields; return an object of errors (field -> message)
   // accepts a form object so we can validate localForm without relying on parent `form`
   function validateForm(f = form) {
-  // accepts a form object so we can validate localForm without relying on parent `form`
-  function validateForm(f = form) {
     const e = {};
-    if (!f.patientName || !String(f.patientName).trim()) {
     if (!f.patientName || !String(f.patientName).trim()) {
       e.patientName = "Patient name is required";
     }
     if (!f.dob) {
-    if (!f.dob) {
       e.dob = "Date of birth is required";
     } else {
-      const dobDate = new Date(f.dob);
       const dobDate = new Date(f.dob);
       const today = new Date();
       dobDate.setHours(0, 0, 0, 0);
@@ -245,20 +234,15 @@ export default function OrdersTable() {
       }
     }
     if (!f.phone || !String(f.phone).trim()) {
-    if (!f.phone || !String(f.phone).trim()) {
       e.phone = "Phone number is required";
-    } else if (!/^[0-9()+\-\s]{7,20}$/.test(f.phone)) {
     } else if (!/^[0-9()+\-\s]{7,20}$/.test(f.phone)) {
       e.phone = "Phone number looks invalid";
     }
     if (!f.email || !String(f.email).trim()) {
-    if (!f.email || !String(f.email).trim()) {
       e.email = "Email is required";
-    } else if (!/^\S+@\S+\.\S+$/.test(f.email)) {
     } else if (!/^\S+@\S+\.\S+$/.test(f.email)) {
       e.email = "Email is invalid";
     }
-    if (!f.gender || !String(f.gender).trim()) {
     if (!f.gender || !String(f.gender).trim()) {
       e.gender = "Gender is required";
     }
@@ -317,7 +301,6 @@ export default function OrdersTable() {
     const f = currentForm || localForm;
     // validate
     const validation = validateForm(f);
-    const validation = validateForm(f);
     if (Object.keys(validation).length > 0) {
       setErrors(validation);
       return;
@@ -325,15 +308,6 @@ export default function OrdersTable() {
 
     // Build payload for backend
     const payload = {
-      patientName: f.patientName,
-      dateOfBirth: f.dob ? formatDate(f.dob) : formatDate(new Date()),
-      citizenId: f.citizenId,
-      country: f.country,
-      gender: selectToEnumGender(f.gender) || "",
-      status: f.status ? selectToEnumStatus(f.status) : undefined,
-      address: f.address,
-      email: f.email,
-      phone: f.phone,
       patientName: f.patientName,
       dateOfBirth: f.dob ? formatDate(f.dob) : formatDate(new Date()),
       citizenId: f.citizenId,
@@ -363,18 +337,10 @@ export default function OrdersTable() {
         {
           id: created.id || `P00${orders.length + 1}`,
           name: created.patientName || f.patientName,
-          name: created.patientName || f.patientName,
           status: created.status || "Pending",
           date:
             created.dateOfBirth || formatDate(f.dob) || formatDate(new Date()),
           creator: created.createdBy || "John. Smith",
-          dob: created.dateOfBirth || formatDate(f.dob),
-          phone: created.phone || f.phone,
-          email: created.email || f.email,
-          gender: created.gender || f.gender,
-          address: created.address || f.address,
-          country: created.country || f.country,
-          citizenId: created.citizenId || f.citizenId,
           dob: created.dateOfBirth || formatDate(f.dob),
           phone: created.phone || f.phone,
           email: created.email || f.email,
@@ -410,8 +376,6 @@ export default function OrdersTable() {
 
   // handleUpdate accepts optional form object (use localForm when provided)
   function handleUpdate(currentForm) {
-  // handleUpdate accepts optional form object (use localForm when provided)
-  function handleUpdate(currentForm) {
     // Send update to backend
     if (!editingId) {
       alert("No order selected to edit");
@@ -420,21 +384,12 @@ export default function OrdersTable() {
     const f = currentForm || localForm;
     // validate
     const validation = validateForm(f);
-    const validation = validateForm(f);
     if (Object.keys(validation).length > 0) {
       setErrors(validation);
       return;
     }
 
     const payload = {
-      patientName: f.patientName || undefined,
-      dateOfBirth: f.dob ? formatDate(f.dob) : undefined,
-      gender: f.gender ? selectToEnumGender(f.gender) : undefined,
-      status: f.status ? selectToEnumStatus(f.status) : undefined,
-      phone: f.phone || undefined,
-      address: f.address || undefined,
-      email: f.email || undefined,
-      citizenId: f.citizenId || undefined,
       patientName: f.patientName || undefined,
       dateOfBirth: f.dob ? formatDate(f.dob) : undefined,
       gender: f.gender ? selectToEnumGender(f.gender) : undefined,
@@ -506,17 +461,11 @@ export default function OrdersTable() {
 
   // auto scale modal so it fits the viewport without scrollbars
   // NOTE: do NOT depend on `form` to avoid rerunning measurement on every keystroke.
-  // NOTE: do NOT depend on `form` to avoid rerunning measurement on every keystroke.
   useLayoutEffect(() => {
     let rafId;
 
-
     if (!showModal) {
       document.body.style.overflow = "";
-      if (lastScaleRef.current !== 1) {
-        lastScaleRef.current = 1;
-        if (modalScale !== 1) setModalScale(1);
-      }
       if (lastScaleRef.current !== 1) {
         lastScaleRef.current = 1;
         if (modalScale !== 1) setModalScale(1);
@@ -527,8 +476,6 @@ export default function OrdersTable() {
     // prevent background scrolling while modal open
     document.body.style.overflow = "hidden";
 
-    // measure natural size by cloning modal into an off-screen node to avoid touching real element
-    function measureNaturalRect() {
     // measure natural size by cloning modal into an off-screen node to avoid touching real element
     function measureNaturalRect() {
       const el = modalRef.current;
@@ -560,13 +507,10 @@ export default function OrdersTable() {
         return;
       }
 
-
       const h = rect.height;
       const w = rect.width;
       const vh = window.innerHeight;
       const vw = window.innerWidth;
-      const marginY = 48;
-      const marginX = 48;
       const marginY = 48;
       const marginX = 48;
       const scaleY = (vh - marginY) / Math.max(1, h);
@@ -583,25 +527,11 @@ export default function OrdersTable() {
     rafId = requestAnimationFrame(updateScale);
     const onResize = () => requestAnimationFrame(updateScale);
     window.addEventListener("resize", onResize);
-      const newScale = Math.min(1, scaleX, scaleY);
-
-      // only update when difference is noticeable to avoid re-renders while typing
-      if (Math.abs(newScale - lastScaleRef.current) > 0.005) {
-        lastScaleRef.current = newScale;
-        setModalScale(newScale);
-      }
-    }
-
-    rafId = requestAnimationFrame(updateScale);
-    const onResize = () => requestAnimationFrame(updateScale);
-    window.addEventListener("resize", onResize);
 
     return () => {
       window.removeEventListener("resize", onResize);
-      window.removeEventListener("resize", onResize);
       if (rafId) cancelAnimationFrame(rafId);
       document.body.style.overflow = "";
-      lastScaleRef.current = 1;
       lastScaleRef.current = 1;
       setModalScale(1);
     };
@@ -674,35 +604,8 @@ export default function OrdersTable() {
             <col style={{ width: "22%" }} />
             <col style={{ width: "10%" }} />
           </colgroup>
-        {/* fixed table layout + colgroup to keep columns stable; truncate long content */}
-        <table
-          className="w-full text-sm text-left border-collapse"
-          style={{ tableLayout: "fixed" }}
-        >
-          <colgroup>
-            <col style={{ width: "35%" }} />
-            <col style={{ width: "15%" }} />
-            <col style={{ width: "18%" }} />
-            <col style={{ width: "22%" }} />
-            <col style={{ width: "10%" }} />
-          </colgroup>
           <thead>
             <tr className="bg-red-500 text-white">
-              <th className="py-2 px-3 rounded-tl-lg">
-                <div className="truncate">Name</div>
-              </th>
-              <th className="py-2 px-3">
-                <div className="truncate">Status</div>
-              </th>
-              <th className="py-2 px-3">
-                <div className="truncate">Date of Birth</div>
-              </th>
-              <th className="py-2 px-3">
-                <div className="truncate">Created By</div>
-              </th>
-              <th className="py-2 px-3 rounded-tr-lg text-center">
-                <div className="truncate">Action</div>
-              </th>
               <th className="py-2 px-3 rounded-tl-lg">
                 <div className="truncate">Name</div>
               </th>
@@ -852,12 +755,6 @@ export default function OrdersTable() {
                       setLocalForm((s) => ({ ...s, [name]: value }));
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
-                    value={localForm.patientName}
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-                      setLocalForm((s) => ({ ...s, [name]: value }));
-                      setErrors((s) => ({ ...s, [name]: undefined }));
-                    }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
@@ -878,12 +775,6 @@ export default function OrdersTable() {
                   ) : (
                     <input
                       name="dob"
-                      value={localForm.dob}
-                      onChange={(e) => {
-                        const { name, value } = e.target;
-                        setLocalForm((s) => ({ ...s, [name]: value }));
-                        setErrors((s) => ({ ...s, [name]: undefined }));
-                      }}
                       value={localForm.dob}
                       onChange={(e) => {
                         const { name, value } = e.target;
@@ -913,12 +804,6 @@ export default function OrdersTable() {
                       setLocalForm((s) => ({ ...s, [name]: value }));
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
-                    value={localForm.phone}
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-                      setLocalForm((s) => ({ ...s, [name]: value }));
-                      setErrors((s) => ({ ...s, [name]: undefined }));
-                    }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
@@ -934,12 +819,6 @@ export default function OrdersTable() {
                   </label>
                   <input
                     name="email"
-                    value={localForm.email}
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-                      setLocalForm((s) => ({ ...s, [name]: value }));
-                      setErrors((s) => ({ ...s, [name]: undefined }));
-                    }}
                     value={localForm.email}
                     onChange={(e) => {
                       const { name, value } = e.target;
@@ -980,12 +859,6 @@ export default function OrdersTable() {
                         setLocalForm((s) => ({ ...s, [name]: value }));
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
-                      value={localForm.gender}
-                      onChange={(e) => {
-                        const { name, value } = e.target;
-                        setLocalForm((s) => ({ ...s, [name]: value }));
-                        setErrors((s) => ({ ...s, [name]: undefined }));
-                      }}
                       className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
@@ -1017,12 +890,6 @@ export default function OrdersTable() {
                         setLocalForm((s) => ({ ...s, [name]: value }));
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
-                      value={localForm.status}
-                      onChange={(e) => {
-                        const { name, value } = e.target;
-                        setLocalForm((s) => ({ ...s, [name]: value }));
-                        setErrors((s) => ({ ...s, [name]: undefined }));
-                      }}
                       className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
@@ -1048,11 +915,6 @@ export default function OrdersTable() {
                       const { name, value } = e.target;
                       setLocalForm((s) => ({ ...s, [name]: value }));
                     }}
-                    value={localForm.address}
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-                      setLocalForm((s) => ({ ...s, [name]: value }));
-                    }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
@@ -1069,11 +931,6 @@ export default function OrdersTable() {
                       const { name, value } = e.target;
                       setLocalForm((s) => ({ ...s, [name]: value }));
                     }}
-                    value={localForm.country}
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-                      setLocalForm((s) => ({ ...s, [name]: value }));
-                    }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
@@ -1084,12 +941,6 @@ export default function OrdersTable() {
                   </label>
                   <input
                     name="citizenId"
-                    value={localForm.citizenId}
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-                      setLocalForm((s) => ({ ...s, [name]: value }));
-                      setErrors((s) => ({ ...s, [name]: undefined }));
-                    }}
                     value={localForm.citizenId}
                     onChange={(e) => {
                       const { name, value } = e.target;
@@ -1122,14 +973,12 @@ export default function OrdersTable() {
               {mode === "edit" ? (
                 <button
                   onClick={() => handleUpdate(localForm)}
-                  onClick={() => handleUpdate(localForm)}
                   className="px-4 py-2 bg-red-500 text-white rounded-lg"
                 >
                   Save
                 </button>
               ) : mode === "view" ? null : (
                 <button
-                  onClick={() => handleCreate(localForm)}
                   onClick={() => handleCreate(localForm)}
                   className="px-4 py-2 bg-red-500 text-white rounded-lg"
                 >
