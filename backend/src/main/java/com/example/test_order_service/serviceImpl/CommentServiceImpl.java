@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -96,5 +98,18 @@ public class CommentServiceImpl implements CommentService {
                 .message("Comment " + commentId + " deleted successfully")
                 .timestamp(LocalDateTime.now())
                 .build();
+    }
+
+    @Override
+    public List<CommentResponse> getAllComments(String orderId) {
+        // Đảm bảo test order tồn tại
+        testOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        List<Comment> comments = commentRepository.findAllByTestOrder_TestOrderId(orderId);
+
+        return comments.stream()
+                .map(commentMapper::toCommentResponse)
+                .collect(Collectors.toList());
     }
 }
