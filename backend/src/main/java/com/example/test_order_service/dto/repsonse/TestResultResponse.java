@@ -27,6 +27,5 @@ public class TestResultResponse {
     private ResultFlag flag;
     private TestResultStatus status;
     private String createdBy;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 }
