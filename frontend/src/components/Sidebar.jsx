@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Menu,
   Home,
@@ -11,32 +12,38 @@ import {
 } from "lucide-react";
 
 export default function Sidebar() {
-  const menu = [Home, Users, FlaskConical, ClipboardList, Clock, BarChart2];
+  const navigate = useNavigate();
+
+  // menu items: nếu có `to` => click sẽ navigate tới đường dẫn đó
+  const items = [
+    { Icon: Home, to: "/test-orders" }, // home -> test orders
+    { Icon: Users },
+    { Icon: FlaskConical },
+    { Icon: ClipboardList, to: "/test-orders/detail" }, // thứ 4 -> detail
+    { Icon: Clock },
+    { Icon: BarChart2 },
+  ];
 
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   useEffect(() => {
     function onScroll() {
-      setShowTopBtn(window.scrollY > 200); // hiện khi cuộn quá 200px, chỉnh nếu cần
+      setShowTopBtn(window.scrollY > 200);
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ensure main content is not hidden behind the fixed sidebar
   useEffect(() => {
-    const SIDEBAR_WIDTH = "4rem"; // w-16 = 4rem (64px)
-
+    const SIDEBAR_WIDTH = "4rem";
     function applyPadding() {
-      // only apply on wide screens (avoid mobile layout conflicts)
       if (window.innerWidth >= 640) {
         document.body.style.paddingLeft = SIDEBAR_WIDTH;
       } else {
         document.body.style.paddingLeft = "";
       }
     }
-
     applyPadding();
     window.addEventListener("resize", applyPadding);
     return () => {
@@ -55,12 +62,15 @@ export default function Sidebar() {
         <button className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition">
           <Menu size={20} />
         </button>
+
         <div className="flex flex-col space-y-6 mt-2">
-          {menu.map((Icon, i) => (
+          {items.map(({ Icon, to }, i) => (
             <button
               key={i}
+              onClick={to ? () => navigate(to) : undefined}
               className="p-2 rounded-lg hover:bg-white/30 transition"
               aria-label={`menu-${i}`}
+              title={to || `menu-${i}`}
             >
               <Icon size={18} />
             </button>
@@ -68,7 +78,6 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* nút mũi tên ở góc dưới phải (trắng) */}
       <button
         onClick={scrollToTop}
         aria-label="Back to top"
