@@ -1,7 +1,8 @@
-import InfoCard from "../components/InfoCard";
-import ChartSection from "../components/ChartSection";
-import ActivityCard from "../components/ActivityCard";
-import OrdersTable from "../components/OrdersTable";
+import InfoCard from "../components/ViewTestOrder/InfoCard";
+import ChartSection from "../components/ViewTestOrder/ChartSection";
+import ActivityCard from "../components/ViewTestOrder/ActivityCard";
+import OrdersTable from "../components/ViewTestOrder/OrdersTable";
+import DeleteConfirmationModal from "../components/ViewTestOrder/DeleteConfirmationModal";
 import { BarChart3, Clock3, CheckCircle2, XCircle } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
