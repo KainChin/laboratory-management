@@ -4,6 +4,7 @@ import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.enumForEntity.ResultFlag;
 import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

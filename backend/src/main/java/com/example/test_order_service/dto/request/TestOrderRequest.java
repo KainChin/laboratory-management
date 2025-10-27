@@ -6,6 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class TestOrderRequest {
     private String patientName;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
+    @PastOrPresent(message = "Date of birth cannot be in the future")
     private LocalDate dateOfBirth;
 
     @NotBlank(message = "Citizen ID is required")
