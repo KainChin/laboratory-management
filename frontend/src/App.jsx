@@ -16,7 +16,7 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<TestOrders />} />
                 <Route path="/test-orders" element={<TestOrders />} />
-                <Route path="/test-orders/detail" element={<DetailTestOrder />} />
+                <Route path="/test-orders/detail/:id" element={<DetailTestOrder />} />
               </Routes>
             </div>
           </main>
