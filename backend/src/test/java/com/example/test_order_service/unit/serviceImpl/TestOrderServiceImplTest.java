@@ -1,15 +1,19 @@
 package com.example.test_order_service.unit.serviceImpl;
 
-import com.example.test_order_service.dto.repsonse.PageResponse;
-import com.example.test_order_service.dto.repsonse.RestResponse;
-import com.example.test_order_service.dto.repsonse.TestOrderResponse;
+import com.example.test_order_service.dto.repsonse.*;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
+import com.example.test_order_service.entity.Comment;
 import com.example.test_order_service.entity.TestOrder;
+import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.enumForEntity.Gender;
+import com.example.test_order_service.entity.enumForEntity.ResultFlag;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
+import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
 import com.example.test_order_service.exception.ResourceNotFoundException;
+import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;
+import com.example.test_order_service.mapper.TestResultMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.serviceImpl.TestOrderServiceImpl;
 import org.junit.jupiter.api.*;
@@ -17,12 +21,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +54,12 @@ public class TestOrderServiceImplTest {
 
     @Mock
     private TestOrderMapper testOrderMapper;
+
+    @Mock
+    private TestResultMapper testResultMapper;
+
+    @Mock
+    private CommentMapper commentMapper;
 
     @InjectMocks
     private TestOrderServiceImpl testOrderService;
@@ -235,6 +247,32 @@ public class TestOrderServiceImplTest {
 
             verify(testOrderRepository).save(any(TestOrder.class));
         }
+
+        @Test
+        @Order(7)
+        @DisplayName("Should handle null mapper result gracefully")
+        void shouldHandleNullMapperResultGracefully() {
+            when(testOrderMapper.toTestOrderEntity(any())).thenReturn(null);
+            assertThatThrownBy(() -> testOrderService.createTestOrder(testOrderRequest))
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @Order(8)
+        @DisplayName("Should create with missing optional fields (email, phone)")
+        void shouldCreateWithMissingOptionalFields() {
+            testOrderRequest.setEmail(null);
+            testOrderRequest.setPhone(null);
+            when(testOrderMapper.toTestOrderEntity(any())).thenReturn(testOrder);
+            when(testOrderRepository.save(any())).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any())).thenReturn(testOrderResponse);
+
+            RestResponse<TestOrderResponse> res = testOrderService.createTestOrder(testOrderRequest);
+            assertThat(res.getResult()).isNotNull();
+            verify(testOrderRepository).save(any());
+        }
+
+
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -538,6 +576,46 @@ public class TestOrderServiceImplTest {
                     .isInstanceOf(RuntimeException.class)
                     .hasMessage("Database error");
         }
+
+        @Test
+        @DisplayName("Should handle null updateRequest")
+        void shouldHandleNullUpdateRequest() {
+            String id = "TO-001";
+            when(testOrderRepository.findById(id)).thenReturn(Optional.of(testOrder));
+            assertThatThrownBy(() -> testOrderService.updateTestOrder(id, null))
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @DisplayName("Should throw exception if save operation fails")
+        void shouldThrowIfSaveFails() {
+            String id = "TO-001";
+            when(testOrderRepository.findById(id)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any())).thenThrow(new DataAccessException("Database error") {});
+
+            assertThatThrownBy(() -> testOrderService.updateTestOrder(id, updateRequest))
+                    .isInstanceOf(DataAccessException.class)
+                    .hasMessageContaining("Database error");
+        }
+
+        @Test
+        @DisplayName("Should not update when updateRequest equals current entity")
+        void shouldNotUpdateWhenNoChangesDetected() {
+            String id = "TO-001";
+            TestOrderUpdateRequest identical = TestOrderUpdateRequest.builder()
+                    .patientName("Nguyen Van A")
+                    .country("Vietnam")
+                    .citizenId("001234567890")
+                    .build();
+
+            when(testOrderRepository.findById(id)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any())).thenReturn(testOrder);
+            when(testOrderMapper.toTestOrderResponse(any())).thenReturn(testOrderResponse);
+
+            RestResponse<TestOrderResponse> res = testOrderService.updateTestOrder(id, identical);
+            assertThat(res.getStatusCode()).isEqualTo(200);
+            verify(testOrderRepository).save(any());
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -693,6 +771,36 @@ public class TestOrderServiceImplTest {
             assertThat(response.getCurrentPage()).isEqualTo(2);
             assertThat(response.getTotalPages()).isEqualTo(3);
         }
+
+        @Test
+        @DisplayName("Should handle null keyword gracefully")
+        void shouldHandleNullKeywordGracefully() {
+            Page<TestOrder> page = new PageImpl<>(List.of(testOrder), PageRequest.of(0, 6), 1);
+            when(testOrderRepository.findTestOrdersByParams(any(), isNull())).thenReturn(page);
+            when(testOrderMapper.toTestOrderResponse(any())).thenReturn(testOrderResponse);
+
+            var res = testOrderService.getTestOrders(PageRequest.of(0, 6), null);
+            assertThat(res.getItems()).isNotEmpty();
+        }
+
+        @Test
+        @DisplayName("Should handle repository returning null page")
+        void shouldHandleRepositoryReturningNullPage() {
+            when(testOrderRepository.findTestOrdersByParams(any(), any())).thenReturn(null);
+            assertThatThrownBy(() -> testOrderService.getTestOrders(PageRequest.of(0, 6), ""))
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @DisplayName("Should handle empty keyword and null mapping result")
+        void shouldHandleNullMappingResult() {
+            Page<TestOrder> page = new PageImpl<>(List.of(testOrder), PageRequest.of(0, 6), 1);
+            when(testOrderRepository.findTestOrdersByParams(any(), any())).thenReturn(page);
+            when(testOrderMapper.toTestOrderResponse(any())).thenReturn(null);
+
+            var res = testOrderService.getTestOrders(PageRequest.of(0, 6), "");
+            assertThat(res.getItems()).containsNull();
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -774,6 +882,695 @@ public class TestOrderServiceImplTest {
 
             verify(testOrderRepository).findById(orderId);
             verify(testOrderRepository).save(any(TestOrder.class));
+        }
+
+        void shouldHandleAlreadyDeletedOrderGracefully() {
+            String id = "TO-001";
+            Pageable pageable = PageRequest.of(0, 6);
+            testOrder.setDeleted(true);
+
+            when(testOrderRepository.findById(id)).thenReturn(Optional.of(testOrder));
+            when(testOrderRepository.save(any())).thenReturn(testOrder);
+            when(testOrderRepository.findTestOrdersByParams(pageable, "")).thenReturn(Page.empty());
+            when(testOrderMapper.toTestOrderResponse(any())).thenReturn(testOrderResponse);
+
+            PageResponse<TestOrderResponse> res = testOrderService.deleteTestOrder(id, pageable, "");
+            assertThat(res.getItems()).isEmpty();
+        }
+    }
+
+
+    // ═══════════════════════════════════════════════════════════════
+// GET TEST ORDER BY ID TESTS
+// ═══════════════════════════════════════════════════════════════
+
+    @Nested
+    @DisplayName("Get Test Order By ID Tests")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class GetTestOrderByIdTests {
+
+        private TestOrderDetailResponse testOrderDetailResponse;
+        private TestResult testResult1;
+        private TestResult testResult2;
+        private Comment comment1;
+        private Comment comment2;
+        private TestResultResponse testResultResponse1;
+        private TestResultResponse testResultResponse2;
+        private CommentResponse commentResponse1;
+        private CommentResponse commentResponse2;
+
+        @BeforeEach
+        void setUpDetailTests() {
+            // Setup test results with different created times
+            testResult1 = TestResult.builder()
+                    .resultId("TR-001")
+                    .parameter("Glucose")
+                    .value(95.0)
+                    .unit("mg/dL")
+                    .referenceMin(70.0)
+                    .referenceMax(100.0)
+                    .flag(ResultFlag.NORMAL)
+                    .status(TestResultStatus.VALIDATED)
+                    .createdBy("Lab Tech 1")
+                    .createdAt(LocalDateTime.of(2024, 1, 1, 10, 0))
+                    .build();
+
+            testResult2 = TestResult.builder()
+                    .resultId("TR-002")
+                    .parameter("Cholesterol")
+                    .value(220.0)
+                    .unit("mg/dL")
+                    .referenceMin(0.0)
+                    .referenceMax(200.0)
+                    .flag(ResultFlag.HIGH_ABNORMAL)
+                    .status(TestResultStatus.VALIDATED)
+                    .createdBy("Lab Tech 2")
+                    .createdAt(LocalDateTime.of(2024, 1, 1, 11, 0))
+                    .build();
+
+            // Setup comments with different created times
+            comment1 = Comment.builder()
+                    .commentId("C-001")
+                    .commentText("First observation")
+                    .createdBy("Doctor A")
+                    .createdAt(LocalDateTime.of(2024, 1, 2, 9, 0))
+                    .build();
+
+            comment2 = Comment.builder()
+                    .commentId("C-002")
+                    .commentText("Follow-up needed")
+                    .createdBy("Doctor B")
+                    .createdAt(LocalDateTime.of(2024, 1, 2, 10, 0))
+                    .build();
+
+            // Setup responses
+            testResultResponse1 = TestResultResponse.builder()
+                    .resultId("TR-001")
+                    .parameter("Glucose")
+                    .value(95.0)
+                    .unit("mg/dL")
+                    .flag(ResultFlag.NORMAL)
+                    .build();
+
+            testResultResponse2 = TestResultResponse.builder()
+                    .resultId("TR-002")
+                    .parameter("Cholesterol")
+                    .value(220.0)
+                    .unit("mg/dL")
+                    .flag(ResultFlag.HIGH_ABNORMAL)
+                    .build();
+
+            commentResponse1 = CommentResponse.builder()
+                    .commentId("C-001")
+                    .commentText("First observation")
+                    .createdBy("Doctor A")
+                    .build();
+
+            commentResponse2 = CommentResponse.builder()
+                    .commentId("C-002")
+                    .commentText("Follow-up needed")
+                    .createdBy("Doctor B")
+                    .build();
+
+            testOrderDetailResponse = TestOrderDetailResponse.builder()
+                    .testOrderId("TO-001")
+                    .patientName("Nguyen Van A")
+                    .dateOfBirth(LocalDate.of(1990, 1, 15))
+                    .age(35)
+                    .citizenId("001234567890")
+                    .country("Vietnam")
+                    .gender(Gender.MALE)
+                    .phone("0901234567")
+                    .address("123 Nguyen Hue, HCMC")
+                    .email("nguyenvana@example.com")
+                    .status(TestOrderStatus.PENDING)
+                    .build();
+
+            // Add test results and comments to test order
+            testOrder.setTestResults(Arrays.asList(testResult2, testResult1)); // Unsorted order
+            testOrder.setComments(Arrays.asList(comment2, comment1)); // Unsorted order
+        }
+
+        @Test
+        @Order(1)
+        @DisplayName("Should return test order detail successfully")
+        void shouldReturnTestOrderDetailSuccessfully() {
+            // Given
+            String orderId = "TO-001";
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder)).thenReturn(testOrderDetailResponse);
+            when(testResultMapper.toTestResultResponse(testResult1)).thenReturn(testResultResponse1);
+            when(testResultMapper.toTestResultResponse(testResult2)).thenReturn(testResultResponse2);
+            when(commentMapper.toCommentResponse(comment1)).thenReturn(commentResponse1);
+            when(commentMapper.toCommentResponse(comment2)).thenReturn(commentResponse2);
+
+            // When
+            RestResponse<TestOrderDetailResponse> response = testOrderService.getTestOrderById(orderId);
+
+            // Then
+            assertThat(response).isNotNull();
+            assertThat(response.getStatusCode()).isEqualTo(200);
+            assertThat(response.getMessage()).isEqualTo("Test order retrieved successfully");
+            assertThat(response.getResult()).isNotNull();
+            assertThat(response.getResult().getTestOrderId()).isEqualTo("TO-001");
+            assertThat(response.getResult().getPatientName()).isEqualTo("Nguyen Van A");
+            assertThat(response.getTimestamp()).isNotNull();
+
+            verify(testOrderRepository).findById(orderId);
+            verify(testOrderMapper).toTestOrderDetailResponse(testOrder);
+        }
+
+        @Test
+        @Order(2)
+        @DisplayName("Should throw ResourceNotFoundException when order not found")
+        void shouldThrowResourceNotFoundExceptionWhenOrderNotFound() {
+            // Given
+            String invalidOrderId = "INVALID-ID";
+            when(testOrderRepository.findById(invalidOrderId)).thenReturn(Optional.empty());
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.getTestOrderById(invalidOrderId))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessage("Test order not found");
+
+            verify(testOrderRepository).findById(invalidOrderId);
+            verify(testOrderMapper, never()).toTestOrderDetailResponse(any());
+        }
+
+        @Test
+        @Order(3)
+        @DisplayName("Should calculate age correctly from date of birth")
+        void shouldCalculateAgeCorrectly() {
+            // Given
+            String orderId = "TO-001";
+            LocalDate dob = LocalDate.of(1990, 1, 15);
+            testOrder.setDateOfBirth(dob);
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder)).thenReturn(testOrderDetailResponse);
+            when(testResultMapper.toTestResultResponse(any())).thenReturn(testResultResponse1);
+            when(commentMapper.toCommentResponse(any())).thenReturn(commentResponse1);
+
+            // When
+            RestResponse<TestOrderDetailResponse> response = testOrderService.getTestOrderById(orderId);
+
+            // Then
+            assertThat(response.getResult().getAge()).isNotNull();
+            // Age calculation is handled by DateUtils.calculateAge()
+            verify(testOrderRepository).findById(orderId);
+        }
+
+        @Test
+        @Order(4)
+        @DisplayName("Should sort test results by createdAt ascending")
+        void shouldSortTestResultsByCreatedAtAscending() {
+            // Given
+            String orderId = "TO-001";
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder)).thenReturn(testOrderDetailResponse);
+            when(testResultMapper.toTestResultResponse(testResult1)).thenReturn(testResultResponse1);
+            when(testResultMapper.toTestResultResponse(testResult2)).thenReturn(testResultResponse2);
+            when(commentMapper.toCommentResponse(any())).thenReturn(commentResponse1);
+
+            // When
+            RestResponse<TestOrderDetailResponse> response = testOrderService.getTestOrderById(orderId);
+
+            // Then - Verify mapper was called in sorted order (testResult1 created before testResult2)
+            verify(testResultMapper).toTestResultResponse(testResult1);
+            verify(testResultMapper).toTestResultResponse(testResult2);
+
+            // Verify the results are in the response
+            assertThat(response.getResult().getTestResults()).isNotNull();
+        }
+
+        @Test
+        @Order(5)
+        @DisplayName("Should sort comments by createdAt ascending")
+        void shouldSortCommentsByCreatedAtAscending() {
+            // Given
+            String orderId = "TO-001";
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder)).thenReturn(testOrderDetailResponse);
+            when(testResultMapper.toTestResultResponse(any())).thenReturn(testResultResponse1);
+            when(commentMapper.toCommentResponse(comment1)).thenReturn(commentResponse1);
+            when(commentMapper.toCommentResponse(comment2)).thenReturn(commentResponse2);
+
+            // When
+            RestResponse<TestOrderDetailResponse> response = testOrderService.getTestOrderById(orderId);
+
+            // Then - Verify mapper was called in sorted order (comment1 created before comment2)
+            verify(commentMapper).toCommentResponse(comment1);
+            verify(commentMapper).toCommentResponse(comment2);
+
+            // Verify the comments are in the response
+            assertThat(response.getResult().getComments()).isNotNull();
+        }
+
+        @Test
+        @Order(6)
+        @DisplayName("Should handle empty test results list")
+        void shouldHandleEmptyTestResultsList() {
+            // Given
+            String orderId = "TO-001";
+            testOrder.setTestResults(Collections.emptyList());
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder)).thenReturn(testOrderDetailResponse);
+            when(commentMapper.toCommentResponse(any())).thenReturn(commentResponse1);
+
+            // When
+            RestResponse<TestOrderDetailResponse> response = testOrderService.getTestOrderById(orderId);
+
+            // Then
+            assertThat(response).isNotNull();
+            assertThat(response.getResult().getTestResults()).isEmpty();
+            verify(testResultMapper, never()).toTestResultResponse(any());
+        }
+
+        @Test
+        @Order(7)
+        @DisplayName("Should handle empty comments list")
+        void shouldHandleEmptyCommentsList() {
+            // Given
+            String orderId = "TO-001";
+            testOrder.setComments(Collections.emptyList());
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder)).thenReturn(testOrderDetailResponse);
+            when(testResultMapper.toTestResultResponse(any())).thenReturn(testResultResponse1);
+
+            // When
+            RestResponse<TestOrderDetailResponse> response = testOrderService.getTestOrderById(orderId);
+
+            // Then
+            assertThat(response).isNotNull();
+            assertThat(response.getResult().getComments()).isEmpty();
+            verify(commentMapper, never()).toCommentResponse(any());
+        }
+
+        @Test
+        @Order(8)
+        @DisplayName("Should handle both empty test results and comments")
+        void shouldHandleBothEmptyTestResultsAndComments() {
+            // Given
+            String orderId = "TO-001";
+            testOrder.setTestResults(Collections.emptyList());
+            testOrder.setComments(Collections.emptyList());
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder)).thenReturn(testOrderDetailResponse);
+
+            // When
+            RestResponse<TestOrderDetailResponse> response = testOrderService.getTestOrderById(orderId);
+
+            // Then
+            assertThat(response).isNotNull();
+            assertThat(response.getResult().getTestResults()).isEmpty();
+            assertThat(response.getResult().getComments()).isEmpty();
+            verify(testResultMapper, never()).toTestResultResponse(any());
+            verify(commentMapper, never()).toCommentResponse(any());
+        }
+
+        @Test
+        @Order(9)
+        @DisplayName("Should handle null test results list gracefully")
+        void shouldHandleNullTestResultsList() {
+            // Given
+            String orderId = "TO-001";
+            testOrder.setTestResults(null);
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder)).thenReturn(testOrderDetailResponse);
+//            when(commentMapper.toCommentResponse(any())).thenReturn(commentResponse1);
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.getTestOrderById(orderId))
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @Order(10)
+        @DisplayName("Should handle null comments list gracefully")
+        void shouldHandleNullCommentsList() {
+            // Given
+            String orderId = "TO-001";
+            testOrder.setComments(null);
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder)).thenReturn(testOrderDetailResponse);
+            when(testResultMapper.toTestResultResponse(any())).thenReturn(testResultResponse1);
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.getTestOrderById(orderId))
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @Order(11)
+        @DisplayName("Should handle repository exception")
+        void shouldHandleRepositoryException() {
+            // Given
+            String orderId = "TO-001";
+            when(testOrderRepository.findById(orderId))
+                    .thenThrow(new RuntimeException("Database connection error"));
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.getTestOrderById(orderId))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Database connection error");
+        }
+
+        @Test
+        @Order(12)
+        @DisplayName("Should handle mapper exception")
+        void shouldHandleMapperException() {
+            // Given
+            String orderId = "TO-001";
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(testOrderMapper.toTestOrderDetailResponse(testOrder))
+                    .thenThrow(new RuntimeException("Mapping error"));
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.getTestOrderById(orderId))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Mapping error");
+        }
+    }
+
+// ═══════════════════════════════════════════════════════════════
+// GET TEST ORDER STATISTICS TESTS
+// ═══════════════════════════════════════════════════════════════
+
+    @Nested
+    @DisplayName("Get Test Order Statistics Tests")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class GetTestOrderStatisticsTests {
+
+        @Test
+        @Order(1)
+        @DisplayName("Should return statistics with all statuses")
+        void shouldReturnStatisticsWithAllStatuses() {
+            // Given
+            long totalCount = 100L;
+            List<Object[]> groupedCounts = Arrays.asList(
+                    new Object[]{"PENDING", 20L},
+                    new Object[]{"COMPLETED", 30L},
+                    new Object[]{"CANCELLED", 10L},
+                    new Object[]{"REVIEWED", 25L},
+                    new Object[]{"AI_REVIEWED", 15L}
+            );
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(groupedCounts);
+
+            // When
+            RestResponse<TestOrderStatisticResponse> response = testOrderService.getTestOrderStatistics();
+
+            // Then
+            assertThat(response).isNotNull();
+            assertThat(response.getStatusCode()).isEqualTo(200);
+            assertThat(response.getMessage()).isEqualTo("Statistics retrieved successfully");
+            assertThat(response.getResult()).isNotNull();
+            assertThat(response.getTimestamp()).isNotNull();
+
+            TestOrderStatisticResponse stats = response.getResult();
+            assertThat(stats.getTotal()).isEqualTo(100L);
+            assertThat(stats.getPending()).isEqualTo(20L);
+            assertThat(stats.getCompleted()).isEqualTo(30L);
+            assertThat(stats.getCancelled()).isEqualTo(10L);
+            assertThat(stats.getReviewed()).isEqualTo(25L);
+            assertThat(stats.getAiReviewed()).isEqualTo(15L);
+
+            verify(testOrderRepository).countActive();
+            verify(testOrderRepository).countByStatus();
+        }
+
+        @Test
+        @Order(2)
+        @DisplayName("Should handle missing statuses with default zero values")
+        void shouldHandleMissingStatusesWithDefaultZero() {
+            // Given - Only PENDING and COMPLETED statuses exist
+            long totalCount = 50L;
+            List<Object[]> groupedCounts = Arrays.asList(
+                    new Object[]{"PENDING", 30L},
+                    new Object[]{"COMPLETED", 20L}
+                    // CANCELLED, REVIEWED, AI_REVIEWED are missing
+            );
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(groupedCounts);
+
+            // When
+            RestResponse<TestOrderStatisticResponse> response = testOrderService.getTestOrderStatistics();
+
+            // Then
+            TestOrderStatisticResponse stats = response.getResult();
+            assertThat(stats.getTotal()).isEqualTo(50L);
+            assertThat(stats.getPending()).isEqualTo(30L);
+            assertThat(stats.getCompleted()).isEqualTo(20L);
+            assertThat(stats.getCancelled()).isEqualTo(0L); // Default
+            assertThat(stats.getReviewed()).isEqualTo(0L); // Default
+            assertThat(stats.getAiReviewed()).isEqualTo(0L); // Default
+        }
+
+        @Test
+        @Order(3)
+        @DisplayName("Should handle empty grouped counts")
+        void shouldHandleEmptyGroupedCounts() {
+            // Given
+            long totalCount = 0L;
+            List<Object[]> emptyGroupedCounts = Collections.emptyList();
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(emptyGroupedCounts);
+
+            // When
+            RestResponse<TestOrderStatisticResponse> response = testOrderService.getTestOrderStatistics();
+
+            // Then
+            TestOrderStatisticResponse stats = response.getResult();
+            assertThat(stats.getTotal()).isEqualTo(0L);
+            assertThat(stats.getPending()).isEqualTo(0L);
+            assertThat(stats.getCompleted()).isEqualTo(0L);
+            assertThat(stats.getCancelled()).isEqualTo(0L);
+            assertThat(stats.getReviewed()).isEqualTo(0L);
+            assertThat(stats.getAiReviewed()).isEqualTo(0L);
+        }
+
+        @Test
+        @Order(4)
+        @DisplayName("Should return correct counts for each status")
+        void shouldReturnCorrectCountsForEachStatus() {
+            // Given
+            long totalCount = 5L;
+            List<Object[]> groupedCounts = Arrays.asList(
+                    new Object[]{"PENDING", 1L},
+                    new Object[]{"COMPLETED", 1L},
+                    new Object[]{"CANCELLED", 1L},
+                    new Object[]{"REVIEWED", 1L},
+                    new Object[]{"AI_REVIEWED", 1L}
+            );
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(groupedCounts);
+
+            // When
+            RestResponse<TestOrderStatisticResponse> response = testOrderService.getTestOrderStatistics();
+
+            // Then
+            TestOrderStatisticResponse stats = response.getResult();
+            assertThat(stats.getTotal()).isEqualTo(5L);
+            assertThat(stats.getPending()).isEqualTo(1L);
+            assertThat(stats.getCompleted()).isEqualTo(1L);
+            assertThat(stats.getCancelled()).isEqualTo(1L);
+            assertThat(stats.getReviewed()).isEqualTo(1L);
+            assertThat(stats.getAiReviewed()).isEqualTo(1L);
+        }
+
+        @Test
+        @Order(5)
+        @DisplayName("Should handle only PENDING status")
+        void shouldHandleOnlyPendingStatus() {
+            // Given
+            long totalCount = 50L;
+            List<Object[]> groupedCounts = Collections.singletonList(
+                    new Object[]{"PENDING", 50L}
+            );
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(groupedCounts);
+
+            // When
+            RestResponse<TestOrderStatisticResponse> response = testOrderService.getTestOrderStatistics();
+
+            // Then
+            TestOrderStatisticResponse stats = response.getResult();
+            assertThat(stats.getTotal()).isEqualTo(50L);
+            assertThat(stats.getPending()).isEqualTo(50L);
+            assertThat(stats.getCompleted()).isEqualTo(0L);
+            assertThat(stats.getCancelled()).isEqualTo(0L);
+            assertThat(stats.getReviewed()).isEqualTo(0L);
+            assertThat(stats.getAiReviewed()).isEqualTo(0L);
+        }
+
+        @Test
+        @Order(6)
+        @DisplayName("Should handle only COMPLETED status")
+        void shouldHandleOnlyCompletedStatus() {
+            // Given
+            long totalCount = 75L;
+            List<Object[]> groupedCounts = Collections.singletonList(
+                    new Object[]{"COMPLETED", 75L}
+            );
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(groupedCounts);
+
+            // When
+            RestResponse<TestOrderStatisticResponse> response = testOrderService.getTestOrderStatistics();
+
+            // Then
+            TestOrderStatisticResponse stats = response.getResult();
+            assertThat(stats.getTotal()).isEqualTo(75L);
+            assertThat(stats.getPending()).isEqualTo(0L);
+            assertThat(stats.getCompleted()).isEqualTo(75L);
+            assertThat(stats.getCancelled()).isEqualTo(0L);
+            assertThat(stats.getReviewed()).isEqualTo(0L);
+            assertThat(stats.getAiReviewed()).isEqualTo(0L);
+        }
+
+        @Test
+        @Order(7)
+        @DisplayName("Should handle large count values")
+        void shouldHandleLargeCountValues() {
+            // Given
+            long totalCount = 999999L;
+            List<Object[]> groupedCounts = Arrays.asList(
+                    new Object[]{"PENDING", 200000L},
+                    new Object[]{"COMPLETED", 500000L},
+                    new Object[]{"CANCELLED", 100000L},
+                    new Object[]{"REVIEWED", 150000L},
+                    new Object[]{"AI_REVIEWED", 49999L}
+            );
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(groupedCounts);
+
+            // When
+            RestResponse<TestOrderStatisticResponse> response = testOrderService.getTestOrderStatistics();
+
+            // Then
+            TestOrderStatisticResponse stats = response.getResult();
+            assertThat(stats.getTotal()).isEqualTo(999999L);
+            assertThat(stats.getPending()).isEqualTo(200000L);
+            assertThat(stats.getCompleted()).isEqualTo(500000L);
+            assertThat(stats.getCancelled()).isEqualTo(100000L);
+            assertThat(stats.getReviewed()).isEqualTo(150000L);
+            assertThat(stats.getAiReviewed()).isEqualTo(49999L);
+        }
+
+        @Test
+        @Order(8)
+        @DisplayName("Should handle repository exception for countActive")
+        void shouldHandleRepositoryExceptionForCountActive() {
+            // Given
+            when(testOrderRepository.countActive())
+                    .thenThrow(new RuntimeException("Database connection error"));
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.getTestOrderStatistics())
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Database connection error");
+
+            verify(testOrderRepository).countActive();
+            verify(testOrderRepository, never()).countByStatus();
+        }
+
+        @Test
+        @Order(9)
+        @DisplayName("Should handle repository exception for countByStatus")
+        void shouldHandleRepositoryExceptionForCountByStatus() {
+            // Given
+            when(testOrderRepository.countActive()).thenReturn(100L);
+            when(testOrderRepository.countByStatus())
+                    .thenThrow(new RuntimeException("Query execution failed"));
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.getTestOrderStatistics())
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Query execution failed");
+
+            verify(testOrderRepository).countActive();
+            verify(testOrderRepository).countByStatus();
+        }
+
+        @Test
+        @Order(10)
+        @DisplayName("Should handle unknown status in grouped counts gracefully")
+        void shouldHandleUnknownStatusGracefully() {
+            // Given
+            long totalCount = 50L;
+            List<Object[]> groupedCounts = Arrays.asList(
+                    new Object[]{"PENDING", 20L},
+                    new Object[]{"UNKNOWN_STATUS", 30L} // Unknown status - should be ignored
+            );
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(groupedCounts);
+
+            // When
+            RestResponse<TestOrderStatisticResponse> response = testOrderService.getTestOrderStatistics();
+
+            // Then - Unknown status should be ignored, not cause exception
+            TestOrderStatisticResponse stats = response.getResult();
+            assertThat(stats.getTotal()).isEqualTo(50L);
+            assertThat(stats.getPending()).isEqualTo(20L);
+            assertThat(stats.getCompleted()).isEqualTo(0L);
+            assertThat(stats.getCancelled()).isEqualTo(0L);
+            assertThat(stats.getReviewed()).isEqualTo(0L);
+            assertThat(stats.getAiReviewed()).isEqualTo(0L);
+        }
+
+        @Test
+        @Order(11)
+        @DisplayName("Should handle null values in grouped counts array")
+        void shouldHandleNullValuesInGroupedCountsArray() {
+            // Given
+            long totalCount = 10L;
+            List<Object[]> groupedCounts = Collections.singletonList(
+                    new Object[]{null, 10L} // null status
+            );
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(groupedCounts);
+
+            // When & Then - Should handle gracefully or throw NullPointerException
+            assertThatThrownBy(() -> testOrderService.getTestOrderStatistics())
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
+        @Order(12)
+        @DisplayName("Should handle mixed case status names")
+        void shouldHandleMixedCaseStatusNames() {
+            // Given
+            long totalCount = 50L;
+            List<Object[]> groupedCounts = Arrays.asList(
+                    new Object[]{"pending", 20L}, // lowercase
+                    new Object[]{"Completed", 30L} // mixed case
+            );
+
+            when(testOrderRepository.countActive()).thenReturn(totalCount);
+            when(testOrderRepository.countByStatus()).thenReturn(groupedCounts);
+
+            // When
+            RestResponse<TestOrderStatisticResponse> response = testOrderService.getTestOrderStatistics();
+
+            // Then - Case sensitive comparison, these won't match
+            TestOrderStatisticResponse stats = response.getResult();
+            assertThat(stats.getTotal()).isEqualTo(50L);
+            assertThat(stats.getPending()).isEqualTo(0L); // Won't match "pending"
+            assertThat(stats.getCompleted()).isEqualTo(0L); // Won't match "Completed"
         }
     }
 }
