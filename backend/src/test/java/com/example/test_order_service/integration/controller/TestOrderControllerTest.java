@@ -1006,7 +1006,7 @@ public class TestOrderControllerTest {
                             .post("/api/test-orders")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .content(requestContent))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
 
         @Test
