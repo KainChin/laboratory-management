@@ -3,6 +3,8 @@ import { Link, useParams, useNavigate, Routes, Route } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Loading from "../../components/Loading";
 import TestOrders from "../TestOrders"; // Import TestOrders component
+import PatientInfo from "./PatientInfo"; // Import PatientInfo component
+import OrderMeta from "./OrderMeta"; // Import OrderMeta component
 
 export default function DetailTestOrder() {
   const navigate = useNavigate();
@@ -16,13 +18,22 @@ export default function DetailTestOrder() {
     async function fetchTestOrder() {
       try {
         const response = await fetch(`http://localhost:6868/api/test-orders/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch test order details');
-        }
-        const data = await response.json();
-        setTestOrder(data.result);
+        const payload = await response.json();
+        console.log("[DetailTestOrder] raw payload:", payload);
+
+        const src = payload?.result ?? payload; // nếu parent trả cả payload hoặc chỉ result
+        const normalized = {
+          ...src,
+          patientName: src.patientName ?? src.name ?? src.patient?.name ?? "",
+          dateOfBirth: src.dateOfBirth ?? src.dob ?? src.patient?.dateOfBirth ?? "",
+          name: src.patientName ?? src.name ?? "",
+          dob: src.dateOfBirth ?? src.dob ?? "",
+        };
+        console.log("[DetailTestOrder.jsx] normalized:", normalized);
+        setTestOrder(normalized);
         setLoading(false);
       } catch (err) {
+        console.error(err);
         setError(err.message);
         setLoading(false);
       }
@@ -30,13 +41,14 @@ export default function DetailTestOrder() {
 
     fetchTestOrder();
   }, [id]);
+
   // Add fade-in effect when component mounts
   useEffect(() => {
-    document.body.style.opacity = '1';
-    document.body.style.transition = 'opacity 0.3s ease';
+    document.body.style.opacity = "1";
+    document.body.style.transition = "opacity 0.3s ease";
     return () => {
-      document.body.style.opacity = '';
-      document.body.style.transition = '';
+      document.body.style.opacity = "";
+      document.body.style.transition = "";
     };
   }, []);
 
@@ -48,19 +60,16 @@ export default function DetailTestOrder() {
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="absolute -left-2 -top-2 w-12 h-12 bg-red-50 rounded-full"></div>
-              <button 
+              <button
                 onClick={() => {
                   setIsNavigating(true);
-                  // Add fade out effect to the current page
-                  document.body.style.opacity = '0';
-                  document.body.style.transition = 'opacity 0.3s ease';
-                  
+                  document.body.style.opacity = "0";
+                  document.body.style.transition = "opacity 0.3s ease";
+
                   setTimeout(() => {
-                    // Scroll to top smoothly
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    // Navigate after animation
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                     setTimeout(() => {
-                      navigate('/');  // Chuyển về trang chính (Test Orders Lists)
+                      navigate("/"); // Quay lại trang danh sách
                     }, 300);
                   }, 200);
                 }}
@@ -70,7 +79,9 @@ export default function DetailTestOrder() {
               </button>
             </div>
             <div>
-              <h1 className="text-[28px] font-bold text-[#f65f63] tracking-wide">TEST ORDER DETAIL</h1>
+              <h1 className="text-[28px] font-bold text-[#f65f63] tracking-wide">
+                TEST ORDER DETAIL
+              </h1>
               <div className="text-gray-500 mt-1">ORDER ID: {id}</div>
             </div>
           </div>
@@ -87,47 +98,15 @@ export default function DetailTestOrder() {
             ) : testOrder ? (
               <div className="grid grid-cols-3 gap-6">
                 <div className="col-span-2 bg-gray-50 p-6 rounded-lg">
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600">Patient Name</label>
-                        <div className="mt-1 p-2 bg-white rounded border">{testOrder.patientName}</div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600">Date of Birth</label>
-                        <div className="mt-1 p-2 bg-white rounded border">{testOrder.dateOfBirth}</div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600">Gender</label>
-                        <div className="mt-1 p-2 bg-white rounded border">{testOrder.gender}</div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600">Status</label>
-                        <div className="mt-1 p-2 bg-white rounded border">{testOrder.status}</div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600">Phone</label>
-                        <div className="mt-1 p-2 bg-white rounded border">{testOrder.phone}</div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600">Email</label>
-                        <div className="mt-1 p-2 bg-white rounded border">{testOrder.email}</div>
-                      </div>
-                      <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-600">Address</label>
-                        <div className="mt-1 p-2 bg-white rounded border">{testOrder.address}</div>
-                      </div>
-                    </div>
-                  </div>
+                  {/* left: Patient info */}
+                  {/* pass whole normalized object so PatientInfo can read patientName / name / dob */}
+                  <PatientInfo patient={testOrder} />
+                  {/* other left children */}
                 </div>
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h3 className="font-medium mb-4">Activity Log</h3>
-                  <div className="space-y-3">
-                    <div className="text-sm text-gray-500">
-                      Created by: {testOrder.createdBy}
-                    </div>
-                    {/* Add more activity information here */}
-                  </div>
+
+                <div>
+                  {/* PHẢI truyền testOrder (normalized) */}
+                  <OrderMeta order={testOrder} />
                 </div>
               </div>
             ) : (
@@ -136,10 +115,10 @@ export default function DetailTestOrder() {
           </div>
         </div>
       </div>
+
       <Routes>
         <Route path="/" element={<TestOrders />} />
         <Route path="/test-orders" element={<TestOrders />} />
-        {/* Add other routes here */}
       </Routes>
     </div>
   );
