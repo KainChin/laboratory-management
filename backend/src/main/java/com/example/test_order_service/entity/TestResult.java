@@ -1,7 +1,5 @@
 package com.example.test_order_service.entity;
 
-import com.example.test_order_service.entity.enumForEntity.ResultFlag;
-import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,7 +24,6 @@ public class TestResult {
 
     @ManyToOne
     @JoinColumn(name = "test_order_id", nullable = false)
-    @JsonBackReference
     private TestOrder testOrder;
 
     @Column(name = "parameter", nullable = false, length = 50)
@@ -38,15 +35,21 @@ public class TestResult {
     @Column(name = "unit", length = 20)
     private String unit;
 
-    @Column(name = "reference_min")
-    private Double referenceMin;
+    @Column(name = "min_value")
+    private Double minValue;
 
-    @Column(name = "reference_max")
-    private Double referenceMax;
+    @Column(name = "max_value")
+    private Double maxValue;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "flag", length = 30)
-    private ResultFlag flag;
+    // Reference ranges are commented out for future use
+//    @Column(name = "reference_min")
+//    private Double referenceMin;
+//
+//    @Column(name = "reference_max")
+//    private Double referenceMax;
+
+    @Column(name = "flag")
+    private Boolean flag;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 30)
@@ -64,7 +67,7 @@ public class TestResult {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.status = TestResultStatus.PENDING;
+        this.status = TestResultStatus.COMPLETED;
     }
 
     @PreUpdate

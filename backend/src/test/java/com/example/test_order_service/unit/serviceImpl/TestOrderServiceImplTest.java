@@ -7,7 +7,6 @@ import com.example.test_order_service.entity.Comment;
 import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.enumForEntity.Gender;
-import com.example.test_order_service.entity.enumForEntity.ResultFlag;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
 import com.example.test_order_service.exception.ResourceNotFoundException;
