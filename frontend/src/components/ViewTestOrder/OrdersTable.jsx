@@ -7,7 +7,9 @@ import {
   useLayoutEffect,
 } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import Loading from "../Loading";
 
 // Modal portal so the overlay covers the whole viewport
 function Modal({ children }) {
@@ -20,6 +22,8 @@ function Modal({ children }) {
 }
 
 export default function OrdersTable() {
+  const navigate = useNavigate();
+  const [isNavigating, setIsNavigating] = useState(false);
   // const PAGE_SIZE and page/setPage are now declared above for backend pagination
   const [totalPages, setTotalPages] = useState(1);
   const [keyword, setKeyword] = useState("");
@@ -100,6 +104,30 @@ export default function OrdersTable() {
 
   useEffect(() => {
     fetchOrdersWrapper();
+
+    // Check if we should scroll to table (coming from detail page)
+    if (localStorage.getItem('scrollToTable')) {
+      // Remove the flag
+      localStorage.removeItem('scrollToTable');
+      
+      // Wait for data to load and component to render
+      setTimeout(() => {
+        // Tìm vị trí của bảng và header
+        const tableSection = document.querySelector('table');
+        const headerSection = document.querySelector('.flex.justify-between.items-center.mb-3');
+        
+        if (tableSection && headerSection) {
+          // Lấy vị trí của header của bảng
+          const headerOffset = headerSection.getBoundingClientRect().top + window.pageYOffset;
+          
+          // Cuộn đến vị trí của header bảng, thêm offset 100px để header bảng nằm đẹp trên màn hình
+          window.scrollTo({
+            top: headerOffset - 100,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
   }, [fetchOrdersWrapper]);
 
   const statusColor = {
@@ -550,6 +578,7 @@ export default function OrdersTable() {
 
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative">
+      {isNavigating && <Loading />}
       {successMsg && (
         <div className="absolute left-1/2 -translate-x-1/2 top-2 bg-green-100 text-green-700 px-6 py-2 rounded-lg shadow font-semibold z-50">
           {successMsg}
@@ -645,7 +674,19 @@ export default function OrdersTable() {
               orders.map((row) => (
                 <tr key={row.id} className="border-b hover:bg-gray-50">
                   <td className="py-2 px-3">
-                    <div className="truncate" title={row.name}>
+                    <div 
+                      className="truncate hover:text-red-500 cursor-pointer transition-colors" 
+                      title={row.name}
+                      onClick={() => {
+                        setIsNavigating(true);
+                        // Cuộn lên đầu trang với animation mượt mà
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        // Đợi animation cuộn hoàn thành (500ms) trước khi chuyển trang
+                        setTimeout(() => {
+                          navigate(`/test-orders/detail/${row.id}`);
+                        }, 500);
+                      }}
+                    >
                       {row.name}
                     </div>
                   </td>

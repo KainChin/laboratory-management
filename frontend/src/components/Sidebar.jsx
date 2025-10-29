@@ -18,8 +18,8 @@ export default function Sidebar() {
   const items = [
     { Icon: Home, to: "/test-orders" }, // home -> test orders
     { Icon: Users },
-    { Icon: FlaskConical },
-    { Icon: ClipboardList, to: "/test-orders/detail" }, // thứ 4 -> detail
+    { Icon: FlaskConical }, // Removed navigation, now using name click instead
+    { Icon: ClipboardList },
     { Icon: Clock },
     { Icon: BarChart2 },
   ];

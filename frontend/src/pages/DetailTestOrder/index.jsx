@@ -1,14 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import PatientInfo from "./components/PatientInfo";
 import OrderMeta from "./components/OrderMeta";
 import TestResult from "./components/TestResult";
 import Comments from "./components/Comments";
 import QuickActions from "./components/QuickActions";
 import StatusChart from "./components/StatusChart";
+import Loading from "../../components/Loading";
 import "./DetailTestOrder.css";
 
 export default function DetailTestOrder() {
+  const navigate = useNavigate();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  // Add fade-in effect when component mounts
+  useEffect(() => {
+    document.body.style.opacity = '1';
+    document.body.style.transition = 'opacity 0.3s ease';
+    return () => {
+      document.body.style.opacity = '';
+      document.body.style.transition = '';
+    };
+  }, []);
+
   const order = {
     id: "P001",
     patient: {
@@ -40,15 +55,33 @@ export default function DetailTestOrder() {
 
   return (
     <div className="dto-page">
+      {isNavigating && <Loading />}
       <div className="dto-page-header">
-        <button className="dto-back">
-          <ArrowLeft size={16} />
-        </button>
+        <div className="relative">
+          <div className="absolute -left-1 -top-1 w-10 h-10 bg-red-50 rounded-full"></div>
+          <button 
+            onClick={() => {
+              setIsNavigating(true);
+              // Add fade out effect
+              document.body.style.opacity = '0';
+              document.body.style.transition = 'opacity 0.3s ease';
+              
+              setTimeout(() => {
+                // Store the scroll position we want in localStorage
+                localStorage.setItem('scrollToTable', 'true');
+                navigate('/');
+              }, 200);
+            }}
+            className="relative z-10 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all duration-300 transform hover:scale-105 active:scale-95"
+          >
+            <ArrowLeft size={20} />
+          </button>
+        </div>
 
         <div>
-          <h1 className="dto-title">TEST ORDER DETAIL</h1>
-          <div className="order-id">
-            ORDER ID: <b>{order.id}</b>
+          <h1 className="text-[28px] font-bold text-[#f65f63] tracking-[0.35em] leading-tight">TEST ORDER DETAIL</h1>
+          <div className="text-gray-600 text-sm">
+            ORDER ID: <span className="font-medium">{order.id}</span>
           </div>
         </div>
 
