@@ -1,46 +1,153 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate, Routes, Route } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams, Routes, Route } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Loading from "../../components/Loading";
 import TestOrders from "../TestOrders"; // Import TestOrders component
 import PatientInfo from "./PatientInfo"; // Import PatientInfo component
 import OrderMeta from "./OrderMeta"; // Import OrderMeta component
 
-export default function DetailTestOrder() {
+// ---------- internal TestResults component (no new file) ----------
+function _severityBadge(status, flag) {
+  const f = (flag || "").toString().toUpperCase();
+  const s = (status || "").toString().toUpperCase();
+
+  if (f.includes("HIGH") || f.includes("LOW") || f.includes("ABNORMAL")) {
+    return { label: "Critical", classes: "bg-rose-100 text-rose-700" };
+  }
+  if (s === "PENDING") return { label: "Pending", classes: "bg-blue-100 text-blue-700" };
+  if (s === "VALIDATED") return { label: "Abnormal", classes: "bg-amber-100 text-amber-700" };
+  if (s === "APPROVED") return { label: "Normal", classes: "bg-emerald-100 text-emerald-700" };
+  return { label: s || "-", classes: "bg-gray-100 text-gray-800" };
+}
+
+function _flagBadge(flag) {
+  const f = (flag || "").toString().toUpperCase();
+  if (!f) return { label: "-", classes: "bg-gray-100 text-gray-800" };
+  return { label: f, classes: "bg-amber-100 text-amber-800" };
+}
+
+function TestResults({ results = [] }) {
+  return (
+    <section className="bg-white rounded-lg border p-6 shadow-sm">
+      <div className="flex items-center mb-4">
+        <div className="p-2 rounded-full bg-rose-50 mr-3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="#f65f63" strokeWidth="1.5" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-semibold text-rose-600">Test Result</h3>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-gray-500 text-left border-y">
+              <th className="py-4 px-4">Test Name</th>
+              <th className="py-4 px-4">Result</th>
+              <th className="py-4 px-4">Reference Range</th>
+              <th className="py-4 px-4">Status</th>
+              <th className="py-4 px-4">Flag</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {results.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="py-6 text-center text-gray-400">
+                  No test results
+                </td>
+              </tr>
+            ) : (
+              results.map((r) => {
+                const sev = _severityBadge(r.status, r.flag);
+                const fb = _flagBadge(r.flag);
+                const value = r.value !== undefined && r.unit ? `${r.value} ${r.unit}` : r.value ?? "-";
+                const refRange =
+                  r.referenceMin !== undefined && r.referenceMax !== undefined
+                    ? `${r.referenceMin} - ${r.referenceMax}`
+                    : r.referenceMin ?? r.referenceMax ?? "-";
+                return (
+                  <tr key={r.resultId} className="border-t last:border-b">
+                    <td className="py-4 px-4 align-top">
+                      <div className="text-gray-700 font-medium">{r.parameter ?? "-"}</div>
+                    </td>
+
+                    <td className="py-4 px-4 align-top text-gray-700 font-medium">{value}</td>
+
+                    <td className="py-4 px-4 align-top text-gray-500">{refRange}</td>
+
+                    <td className="py-4 px-4 align-top">
+                      <span
+                        className={`${sev.classes} inline-block px-4 py-1 rounded-full text-sm font-semibold`}
+                      >
+                        {sev.label}
+                      </span>
+                    </td>
+
+                    <td className="py-4 px-4 align-top">
+                      <span
+                        className={`${fb.classes} inline-block px-3 py-1 rounded-full text-sm font-medium`}
+                      >
+                        {fb.label}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+// ---------- end TestResults component ----------
+
+export default function DetailTestOrder(props) {
   const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
   const { id } = useParams();
   const [testOrder, setTestOrder] = useState(null);
+  const [testResults, setTestResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch order data from the API and normalize
   useEffect(() => {
-    async function fetchTestOrder() {
+    let mounted = true;
+
+    async function fetchData() {
       try {
-        const response = await fetch(`http://localhost:6868/api/test-orders/${id}`);
-        const payload = await response.json();
+        // adjust URL if different; keep same host/port you use
+        const id = props?.match?.params?.id ?? props?.id ?? (window.location.pathname.split("/").pop());
+        const res = await fetch(`http://localhost:6868/api/test-orders/${id}`);
+        const payload = await res.json();
         console.log("[DetailTestOrder] raw payload:", payload);
 
-        const src = payload?.result ?? payload; // nếu parent trả cả payload hoặc chỉ result
+        const src = payload?.result ?? payload ?? {};
         const normalized = {
           ...src,
           patientName: src.patientName ?? src.name ?? src.patient?.name ?? "",
           dateOfBirth: src.dateOfBirth ?? src.dob ?? src.patient?.dateOfBirth ?? "",
-          name: src.patientName ?? src.name ?? "",
-          dob: src.dateOfBirth ?? src.dob ?? "",
         };
-        console.log("[DetailTestOrder.jsx] normalized:", normalized);
+
+        if (!mounted) return;
         setTestOrder(normalized);
+        setTestResults(Array.isArray(normalized.testResults) ? normalized.testResults : []);
         setLoading(false);
       } catch (err) {
         console.error(err);
-        setError(err.message);
+        if (!mounted) return;
+        setError(err.message || "Failed to fetch");
         setLoading(false);
       }
     }
 
-    fetchTestOrder();
-  }, [id]);
+    fetchData();
+    return () => {
+      mounted = false;
+    };
+  }, [props]);
 
   // Add fade-in effect when component mounts
   useEffect(() => {
@@ -112,6 +219,15 @@ export default function DetailTestOrder() {
             ) : (
               <div className="text-center py-8">No test order found</div>
             )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-6">
+          {/* left columns ... */}
+
+          {/* Test Results full width row */}
+          <div className="col-span-3 mt-6">
+            <TestResults results={testResults} />
           </div>
         </div>
       </div>
