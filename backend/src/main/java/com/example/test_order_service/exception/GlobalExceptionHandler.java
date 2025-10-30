@@ -128,4 +128,16 @@ public class GlobalExceptionHandler {
                 .build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<RestResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+        RestResponse<Void> response = RestResponse.<Void>builder()
+                .timestamp(LocalDateTime.now())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(List.of(ex.getMessage()))
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }
