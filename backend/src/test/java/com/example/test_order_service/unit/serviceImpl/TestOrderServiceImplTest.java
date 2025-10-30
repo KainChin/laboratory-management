@@ -926,10 +926,10 @@ public class TestOrderServiceImplTest {
                     .parameter("Glucose")
                     .value(95.0)
                     .unit("mg/dL")
-                    .referenceMin(70.0)
-                    .referenceMax(100.0)
-                    .flag(ResultFlag.NORMAL)
-                    .status(TestResultStatus.VALIDATED)
+                    .minValue(70.0)
+                    .maxValue(100.0)
+                    .flag(false)
+                    .status(TestResultStatus.COMPLETED)
                     .createdBy("Lab Tech 1")
                     .createdAt(LocalDateTime.of(2024, 1, 1, 10, 0))
                     .build();
@@ -939,10 +939,10 @@ public class TestOrderServiceImplTest {
                     .parameter("Cholesterol")
                     .value(220.0)
                     .unit("mg/dL")
-                    .referenceMin(0.0)
-                    .referenceMax(200.0)
-                    .flag(ResultFlag.HIGH_ABNORMAL)
-                    .status(TestResultStatus.VALIDATED)
+                    .minValue(0.0)
+                    .maxValue(200.0)
+                    .flag(true)
+                    .status(TestResultStatus.COMPLETED)
                     .createdBy("Lab Tech 2")
                     .createdAt(LocalDateTime.of(2024, 1, 1, 11, 0))
                     .build();
@@ -968,7 +968,7 @@ public class TestOrderServiceImplTest {
                     .parameter("Glucose")
                     .value(95.0)
                     .unit("mg/dL")
-                    .flag(ResultFlag.NORMAL)
+                    .flag(false)
                     .build();
 
             testResultResponse2 = TestResultResponse.builder()
@@ -976,7 +976,7 @@ public class TestOrderServiceImplTest {
                     .parameter("Cholesterol")
                     .value(220.0)
                     .unit("mg/dL")
-                    .flag(ResultFlag.HIGH_ABNORMAL)
+                    .flag(true)
                     .build();
 
             commentResponse1 = CommentResponse.builder()
