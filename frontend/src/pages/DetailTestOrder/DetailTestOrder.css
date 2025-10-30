@@ -1,3 +1,81 @@
+/* Add nice fonts + small typography tuning for the page */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@500;600;700&display=swap');
+
+:root{
+  --ui-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --heading-font: "Poppins", var(--ui-font);
+  --muted: #6b7280;
+  --base: #111827;
+}
+
+/* global */
+html, body {
+  font-family: var(--ui-font);
+  color: var(--base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--heading-font);
+  letter-spacing: -0.01em;
+  color: var(--base);
+  margin: 0 0 6px 0;
+}
+
+/* subtle weight adjustments */
+body, input, textarea, button, select {
+  font-family: var(--ui-font);
+  font-weight: 400;
+}
+
+/* make titles / section headers slightly bolder */
+.card h3, .card .card-title, .comment-author {
+  font-family: var(--heading-font);
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* muted text */
+.muted, .muted.small-desc, .dto-empty {
+  color: var(--muted);
+  font-style: normal;
+  font-weight: 300;
+}
+
+/* comment content use comfortable size */
+.comment-body {
+  font-size: 15px;
+  color: #111827;
+  line-height: 1.6;
+}
+
+/* inputs and buttons consistent */
+input, textarea {
+  font-family: var(--ui-font);
+  font-size: 15px;
+}
+
+/* small niceties */
+.icon-sq, .icon-btn {
+  font-family: var(--ui-font);
+}
+
+/* optional: increase contrast on action buttons */
+.btn-primary {
+  font-family: var(--heading-font);
+  font-weight: 600;
+}
+
+/* responsive tweak: slightly larger text on small screens */
+@media (max-width: 720px) {
+  html, body { font-size: 15px; }
+  .comment-body { font-size: 15px; }
+}
+
 .dto-page { padding: 28px 12px; font-family: Inter, Arial, sans-serif; color:#111827; background:transparent; }
 .dto-page-header { display:flex; align-items:center; gap:18px; margin-bottom:18px; }
 .dto-back { width:40px; height:40px; border-radius:50%; background:#fff0f0; border:1px solid #ffd6d6; color:#ef4444; display:flex; align-items:center; justify-content:center; cursor:pointer; }
@@ -190,3 +268,102 @@
   .dto-header-actions { display:none; }
   .dto-back { margin-right:6px; }
 }
+
+/* Make Order ID stand out */
+.order-id {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: "Poppins", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-weight: 700;               /* make bolder */
+  font-size: 13px;
+  color: #ef4444;                 /* changed to red for visibility */
+  background: linear-gradient(180deg, #ffffff 0%, #fff7f7 100%); /* subtle warm background */
+  border: 1px solid rgba(239,68,68,0.12);
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(239,68,68,0.08);
+  letter-spacing: 0.2px;
+  transition: transform .12s ease, box-shadow .12s ease;
+  line-height: 1;
+  max-width: 100%;
+  word-break: break-all;
+  vertical-align: middle;
+}
+.order-id::after { color: #ef4444; border-color: rgba(239,68,68,0.12); }
+
+/* hover to indicate interactivity and emphasize */
+.order-id:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(15,23,42,0.10);
+}
+
+/* Constrain comments list and add scrollbar so page won't grow too long */
+.comments-list {
+  max-height: 360px;        /* adjust height as needed */
+  overflow-y: auto;
+  padding-right: 8px;       /* avoid content under scrollbar */
+}
+
+/* Nice thin scrollbar (WebKit) */
+.comments-list::-webkit-scrollbar {
+  width: 8px;
+}
+.comments-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.comments-list::-webkit-scrollbar-thumb {
+  background: rgba(15,23,42,0.08);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.comments-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(15,23,42,0.14);
+}
+
+/* Firefox */
+.comments-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15,23,42,0.08) transparent;
+}
+
+/* Responsive tweak: reduce max height on small screens */
+@media (max-width: 720px) {
+  .comments-list {
+    max-height: 260px;
+  }
+}
+
+/* Page back navigation loader */
+.page-loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15,23,42,0.08);
+  backdrop-filter: blur(2px);
+}
+
+.loader-spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 6px solid rgba(255,255,255,0.9);
+  border-top-color: #ef4444; /* accent color */
+  box-shadow: 0 8px 24px rgba(15,23,42,0.12);
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* optional: subtle scale-in when shown */
+.page-loader-overlay .loader-spinner {
+  transform-origin: center;
+  animation: spin 0.85s linear infinite;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+.page-loader-overlay { opacity: 1; transition: opacity 200ms ease; }
