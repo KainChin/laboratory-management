@@ -34,6 +34,10 @@ public class TestOrderServiceImpl implements TestOrderService {
 
     @Override
     public RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("No test results provided");
+        }
+
         TestOrder testOrder = testOrderMapper.toTestOrderEntity(request);
         testOrder.setCreatedBy("System");
 

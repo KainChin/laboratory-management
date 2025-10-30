@@ -13,14 +13,11 @@ import com.example.test_order_service.repository.CommentRepository;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,15 +29,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public RestResponse<CommentResponse> createComment(String orderId, CreateCommentRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("No test results provided");
+        }
+
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
         Comment comment = commentMapper.toCommentEntity(request);
         comment.setTestOrder(testOrder);
-
-        if (comment.getCreatedAt() == null) {
-            comment.setCreatedAt(LocalDateTime.now());
-        }
+        comment.setCreatedBy("System");
 
         Comment saved = commentRepository.save(comment);
         CommentResponse response = commentMapper.toCommentResponse(saved);
@@ -54,27 +52,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public PageResponse<CommentResponse> getComments(String orderId, Pageable pageable) {
-        // Ensure test order exists
-        testOrderRepository.findById(orderId)
+    public RestResponse<CommentResponse> updateComment(String orderId, String commentId, UpdateCommentRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("No test results provided");
+        }
+
+        TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
-        Page<Comment> page = commentRepository.findByTestOrder_TestOrderId(orderId, pageable);
-
-        return PageResponse.<CommentResponse>builder()
-                .currentPage(page.getNumber() + 1)
-                .totalPages(page.getTotalPages())
-                .items(page.stream().map(commentMapper::toCommentResponse).toList())
-                .build();
-    }
-
-    @Override
-    public RestResponse<CommentResponse> updateComment(String orderId, String commentId, UpdateCommentRequest request) {
         Comment comment = commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
-        comment.setCommentText(request.getCommentText());
-        comment.setUpdatedAt(LocalDateTime.now());
+        comment.setCommentText(comment.getCommentText() != null ? comment.getCommentText() : request.getCommentText());
 
         Comment saved = commentRepository.save(comment);
         CommentResponse response = commentMapper.toCommentResponse(saved);
@@ -89,6 +78,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public RestResponse<Void> deleteComment(String orderId, String commentId) {
+        TestOrder testOrder = testOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
         Comment comment = commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
@@ -102,15 +94,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentResponse> getAllComments(String orderId, Sort sort) {
+    public List<CommentResponse> getAllComments(String orderId) {
         // Đảm bảo test order tồn tại
         testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
-        List<Comment> comments = commentRepository.findAllByTestOrder_TestOrderId(orderId, sort);
-
-        return comments.stream()
+        return commentRepository.findAllByTestOrder_TestOrderId(orderId).stream()
+                .sorted(Comparator.comparing(Comment::getCreatedAt))
                 .map(commentMapper::toCommentResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

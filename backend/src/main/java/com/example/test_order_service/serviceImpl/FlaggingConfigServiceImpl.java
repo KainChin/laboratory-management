@@ -2,7 +2,6 @@ package com.example.test_order_service.serviceImpl;
 
 import com.example.test_order_service.dto.repsonse.FlaggingConfigResponse;
 import com.example.test_order_service.dto.repsonse.RestResponse;
-import com.example.test_order_service.entity.FlaggingConfig;
 import com.example.test_order_service.mapper.FlaggingConfigMapper;
 import com.example.test_order_service.repository.FlaggingConfigRepository;
 import com.example.test_order_service.service.FlaggingConfigService;
