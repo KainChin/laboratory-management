@@ -271,6 +271,20 @@ public class TestOrderServiceImplTest {
             verify(testOrderRepository).save(any());
         }
 
+        @Test
+        @Order(9)
+        @DisplayName("Should throw RuntimeException when save fails")
+        void shouldThrowRuntimeExceptionWhenSaveFails() {
+            // Given
+            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
+            when(testOrderRepository.save(any(TestOrder.class)))
+                    .thenThrow(new RuntimeException("Generic save error"));
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.createTestOrder(testOrderRequest))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Generic save error");
+        }
 
     }
 
