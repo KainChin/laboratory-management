@@ -1,14 +1,11 @@
-/* ===== DetailTestOrder styles (updated) =====
-   Reworked table spacing, badges, alignment and card visuals
-   to better match the provided design.
-*/
-
 .dto-page { padding: 28px 12px; font-family: Inter, Arial, sans-serif; color:#111827; background:transparent; }
 .dto-page-header { display:flex; align-items:center; gap:18px; margin-bottom:18px; }
 .dto-back { width:40px; height:40px; border-radius:50%; background:#fff0f0; border:1px solid #ffd6d6; color:#ef4444; display:flex; align-items:center; justify-content:center; cursor:pointer; }
 .dto-title { margin:0; color:#ef4444; font-weight:800; font-size:22px; letter-spacing:1px; }
 .order-id { margin-top:6px; color:#6b7280; font-size:13px; }
 .dto-header-actions { margin-left:auto; display:flex; gap:10px; }
+.btn-outline { background:#ffb6b6; color:#fff; padding:8px 12px; border-radius:8px; border:none; cursor:pointer; box-shadow:0 2px 0 rgba(0,0,0,0.03); }
+.btn-outline:hover{ opacity:.95; }
 
 /* grid */
 .dto-grid { display:grid; grid-template-columns: 1fr 360px; gap:22px; align-items:start; }
@@ -36,142 +33,160 @@
 .status-row { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
 .status-left { display:flex; align-items:center; gap:8px; }
 
-/* badges (legacy) */
+/* badges */
 .badge { padding:6px 12px; border-radius:999px; font-size:13px; color:#fff; display:inline-block; min-width:72px; text-align:center; }
 .badge.green { background:#10b981; }
 .badge.yellow { background:#f59e0b; }
 .badge.red { background:#ef4444; }
 
-/* ===== Test Result card (new look) ===== */
+/* result table */
+.result-table { width:100%; border-collapse:collapse; margin-top:8px; font-size:14px; }
+.result-table th { text-align:left; color:#6b7280; padding:10px 8px; font-weight:700; font-size:13px; text-transform:none; }
+.result-table td { padding:12px 8px; border-top:1px solid #f3f4f6; color:#111827; vertical-align:middle; }
+.icon-col { width:40px; text-align:center; }
+.icon-success { color:#10b981; }
+.icon-warn { color:#f59e0b; }
+.icon-critical { color:#ef4444; }
+.test-name { font-weight:700; }
+
+/* flag pill */
+.flag { background:#fde68a; color:#92400e; padding:4px 10px; border-radius:999px; font-size:12px; }
+
+/* comments */
+.small-desc { color:#6b7280; font-size:13px; margin-bottom:8px; }
+.comments-list { display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+.comment { background:#fff; border-left:3px solid #f3f4f6; padding:14px; border-radius:6px; position:relative; }
+.comment-author { margin-bottom:8px; color:#111827; font-weight:700; }
+.comment-body { color:#111827; line-height:1.4; }
+.comment-actions { position:absolute; right:12px; top:12px; display:flex; gap:8px; }
+.icon-btn { border:none; background:transparent; color:#3b82f6; cursor:pointer; padding:4px; }
+
+/* comment input */
+.comment-input { display:flex; gap:10px; margin-top:12px; align-items:center; }
+.comment-input input { flex:1; padding:14px 12px; border-radius:8px; border:1px solid #e5e7eb; font-size:14px; }
+.btn-primary { background:#ef4444; color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+
+/* quick actions */
+.quick-actions .actions-list { display:flex; flex-direction:column; gap:12px; margin-top:10px; }
+.btn-green{ background:#10b981; color:#fff; border:none; padding:10px; border-radius:8px; }
+.btn-purple{ background:#7c3aed; color:#fff; border:none; padding:10px; border-radius:8px; }
+.btn-orange{ background:#f59e0b; color:#fff; border:none; padding:10px; border-radius:8px; }
+.btn-red{ background:#ef4444; color:#fff; border:none; padding:10px; border-radius:8px; }
+.full{ width:100%; }
+
+/* status chart */
+.status-card .donut-wrap { display:flex; justify-content:center; align-items:center; padding:16px 0; }
+.donut { transform:rotate(-90deg); overflow:visible; }
+
+/* Card & header */
 .dto-card {
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid #eef2f7;
-  padding: 20px;
+  padding: 18px;
   box-sizing: border-box;
-  margin-bottom: 26px; /* space to comments */
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.03);
+  margin-bottom: 22px; /* tạo khoảng cách giữa bảng và phần comment bên dưới */
 }
-
-/* header inside card */
-.dto-card-header { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.dto-card-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
 .dto-icon {
-  width:40px; height:40px; border-radius:10px;
-  background:#fff6f7; display:flex; align-items:center; justify-content:center; color:#ef4444;
-  border:1px solid #ffe3e6;
+  width:36px; height:36px; border-radius:8px;
+  background:#fff1f2; display:flex; align-items:center; justify-content:center; color:#f43f5e;
 }
-.dto-title { margin:0; color:#ef4444; font-size:20px; font-weight:800; }
+.dto-title { margin:0; color:#f43f5e; font-size:18px; font-weight:700; }
 
-/* Table: simpler, centered content in status/flag columns */
-.dto-table {
-  width:100%;
-  border-collapse:collapse;
-  font-family:inherit;
-  margin:0;
-}
+/* Table basic + layout tweaks */
+.dto-table { width:100%; border-collapse:collapse; font-family:inherit; margin:0; }
 .dto-table thead tr { border-bottom: 1px solid #eef2f7; }
-.dto-table th, .dto-table td { padding:14px 12px; vertical-align:middle; }
 
-/* Header styling */
+/* Header */
 .dto-th {
-  text-align:left;
-  color:#374151;
-  font-weight:700;
-  font-size:15px;
-  padding: 12px 12px;
+  text-align:left; padding:12px 10px; color:#374151; font-weight:700; font-size:15px;
+  vertical-align:middle;
 }
 
-/* Force center alignment for status/flag columns (header + cells) */
-.dto-th.status-col, .dto-th.flag-col,
-.dto-td.status-col, .dto-td.flag-col {
-  text-align:center;
+/* Make status and flag headers centered like image */
+.dto-th.status-col,
+.dto-th.flag-col,
+.dto-td.status-col,
+.dto-td.flag-col {
+  text-align: center;
 }
 
-/* Column widths tuned to match image */
-.icon-col { width:48px; text-align:center; }
-.name-col  { width:260px; }
-.result-col { width:170px; }
-.ref-col   { width:170px; }
+/* Cells */
+.dto-td {
+  padding:12px 10px; vertical-align:middle; color:#374151; font-size:14px;
+}
+
+/* Columns sizes adjusted */
+.icon-col { width:40px; }
+.name-col { width:260px; }
+.result-col { width:160px; }
+.ref-col { width:160px; }
 .status-col { width:140px; }
-.flag-col   { width:110px; }
+.flag-col { width:110px; }
 
-/* Row visuals */
+/* Row separators */
 .dto-row { border-top:1px solid #f3f4f6; }
-.dto-row:hover { background: rgba(15,23,42,0.01); }
 
-/* Parameter text */
-.dto-param { font-weight:700; color:#0f172a; font-size:15px; }
+/* Parameter name (no meta) */
+.dto-param { font-weight:600; }
 
-/* Result and reference text */
-.dto-result { color:#0f172a; font-size:14px; }
-.dto-ref { color:#6b7280; font-size:14px; }
-
-/* Status badge (bigger pill with white text to match image) */
-.dto-badge {
-  display:inline-block;
-  padding:8px 20px;
-  border-radius:9999px;
-  font-weight:700;
-  font-size:13px;
-  line-height:1;
-  min-width:92px;
-  box-sizing:border-box;
-  text-align:center;
-}
-/* strong colors like image */
-.dto-badge-normal   { background:#10B981; color:#ffffff; }
-.dto-badge-abnormal { background:#F59E0B; color:#ffffff; }
-.dto-badge-pending  { background:#3B82F6; color:#ffffff; }
-.dto-badge-critical { background:#EF4444; color:#ffffff; }
-.dto-badge-unknown  { background:#E5E7EB; color:#374151; }
-
-/* Flag pills: smaller, pastel background */
-.dto-flag {
-  display:inline-block;
-  padding:6px 12px;
-  border-radius:9999px;
-  font-weight:700;
-  font-size:13px;
-  line-height:1;
-  box-sizing:border-box;
-  min-width:72px;
-  text-align:center;
-}
-.dto-flag-high    { background:#FECACA; color:#7F1D1D; } /* soft red */
-.dto-flag-low     { background:#BFDBFE; color:#1E3A8A; } /* soft blue */
-.dto-flag-normal  { background:#FEF3C7; color:#92400E; }
-.dto-flag-default { background:#F3F4F6; color:#374151; }
-
-/* Icons color classes */
-.icon-normal { color:#10B981; }
-.icon-warn   { color:#F59E0B; }
-.icon-critical { color:#EF4444; }
-
-/* Uniform vertical centering for cells that contain badges */
-.dto-td.status-col .dto-badge,
-.dto-td.flag-col .dto-flag {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* Make table compact but airy */
-.dto-table td { padding-top:12px; padding-bottom:12px; }
-
-/* Empty / error row */
-.dto-empty { padding:22px; text-align:center; color:#9CA3AF; font-weight:600; }
+/* Empty / error */
+.dto-empty { padding:20px; text-align:center; color:#9CA3AF; }
 .dto-error { color:#DC2626; }
 
-/* Comments spacing (ensure distance from table) */
-.comments-list { margin-top:20px; display:flex; flex-direction:column; gap:12px; }
+/* Badges (status) - tuned sizes to match image */
+.dto-badge {
+  display:inline-block;
+  padding:6px 18px; /* wider pill for status */
+  border-radius:9999px;
+  font-weight:600;
+  font-size:13px;
+  line-height:1;
+  min-width:84px;
+  box-sizing: border-box;
+  text-align:center;
+}
+.dto-badge-normal { background:#10B981; color:#ffffff; }        /* green */
+.dto-badge-abnormal { background:#F59E0B; color:#ffffff; }      /* amber */
+.dto-badge-pending { background:#3B82F6; color:#ffffff; }       /* blue */
+.dto-badge-critical { background:#EF4444; color:#ffffff; }      /* red */
+.dto-badge-unknown { background:#E5E7EB; color:#374151; }       /* gray */
 
-/* Responsive */
+/* Flags - smaller pills */
+.dto-flag {
+  display:inline-block;
+  padding:6px 10px; /* narrower than status */
+  border-radius:9999px;
+  font-weight:600;
+  font-size:13px;
+  line-height:1;
+  box-sizing: border-box;
+  text-align:center;
+  min-width:64px;
+}
+.dto-flag-high { background:#FCA5A5; color:#7F1D1D; }   /* light red */
+.dto-flag-low { background:#93C5FD; color:#1E3A8A; }    /* blue */
+.dto-flag-normal { background:#FEF3C7; color:#92400E; }/* amber */
+.dto-flag-default { background:#F3F4F6; color:#374151; }
+
+/* Icons colors */
+.icon-normal { color:#10B981; }
+.icon-abnormal { color:#F59E0B; }
+.icon-critical { color:#EF4444; }
+
+/* Slightly increase row height for visual spacing */
+.dto-td { padding-top:14px; padding-bottom:14px; }
+
+/* Responsive tweaks */
+@media (max-width:800px) {
+  .name-col { width:160px; }
+  .result-col, .ref-col { width:120px; }
+  .dto-badge { min-width: 70px; padding:6px 12px; }
+  .dto-flag { min-width:56px; padding:6px 8px; }
+}
 @media (max-width: 980px) {
   .dto-grid { grid-template-columns: 1fr; }
   .dto-header-actions { display:none; }
   .dto-back { margin-right:6px; }
-  .name-col { width: 45%; }
-  .result-col, .ref-col { width: 30%; }
-  .dto-badge { min-width:76px; padding:6px 12px; }
-  .dto-flag { min-width:60px; padding:6px 8px; }
 }
