@@ -111,6 +111,7 @@ export default function DetailTestOrder(props) {
   const [testResults, setTestResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loadingBack, setLoadingBack] = useState(false);
 
   // Fetch order data from the API and normalize
   useEffect(() => {
@@ -159,28 +160,36 @@ export default function DetailTestOrder(props) {
     };
   }, []);
 
+  function handleBackClick(e) {
+    e?.preventDefault?.();
+    // show loader then navigate back (gives smooth UX)
+    setLoadingBack(true);
+    // small delay so user sees animation; adjust 300-600ms as desired
+    setTimeout(() => {
+      // navigate back - change to router navigate if you use react-router
+      if (window.history.length > 1) window.history.back();
+      else window.location.href = "/"; // fallback
+    }, 350);
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {isNavigating && <Loading />}
+    <div className="min-h-screen bg-gray-50 dto-page">
+      {/* overlay loader */}
+      {loadingBack && (
+        <div className="page-loader-overlay" aria-hidden>
+          <div className="loader-spinner" />
+        </div>
+      )}
+
       <div className="max-w-full mx-auto px-6 py-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="absolute -left-2 -top-2 w-12 h-12 bg-red-50 rounded-full"></div>
               <button
-                onClick={() => {
-                  setIsNavigating(true);
-                  document.body.style.opacity = "0";
-                  document.body.style.transition = "opacity 0.3s ease";
-
-                  setTimeout(() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                    setTimeout(() => {
-                      navigate("/"); // Quay lại trang danh sách
-                    }, 300);
-                  }, 200);
-                }}
+                onClick={handleBackClick}
                 className="relative z-10 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all duration-300 transform hover:scale-105 active:scale-95"
+                title="Back"
               >
                 <ArrowLeft size={24} />
               </button>
