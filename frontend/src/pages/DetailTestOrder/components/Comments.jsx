@@ -96,7 +96,38 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
         const src = payload?.result ?? payload ?? {};
         if (!mounted) return;
         // limit number of items rendered to avoid page growth (adjust cap as needed)
-        const list = Array.isArray(src.comments) ? src.comments : [];
+        let list = Array.isArray(src.comments) ? src.comments.slice() : [];
+
+        // Try to parse known datetime fields and sort newest first when possible
+        const parseDate = (c) => {
+          if (!c) return NaN;
+          const keys = ["createdAt","created_at","createdOn","created_on","createdDate","created_date","timestamp","time","created"];
+          for (const k of keys) {
+            const v = c[k];
+            if (v == null) continue;
+            // if object with .seconds (firebase) or ._seconds
+            if (typeof v === "object") {
+              if (v.seconds != null) return Number(v.seconds) * 1000 + (v.nanoseconds ? Math.floor(v.nanoseconds/1000000) : 0);
+              if (v._seconds != null) return Number(v._seconds) * 1000;
+            }
+            const n = Date.parse(String(v));
+            if (!isNaN(n)) return n;
+          }
+          return NaN;
+        };
+
+        const hasValidDate = list.some((c) => !isNaN(parseDate(c)));
+        if (hasValidDate) {
+          list.sort((a, b) => {
+            const da = parseDate(a);
+            const db = parseDate(b);
+            return (isNaN(db) ? 0 : db) - (isNaN(da) ? 0 : da); // newest first
+          });
+        } else {
+          // no date fields detected — assume server returns oldest-first and reverse so newest on top
+          list = list.reverse();
+        }
+
         setComments(list.slice(0, 100));
       } catch (err) {
         if (!mounted) return;
