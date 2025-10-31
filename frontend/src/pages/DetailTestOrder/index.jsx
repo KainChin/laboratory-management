@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PatientInfo from "./components/PatientInfo";
 import OrderMeta from "./components/OrderMeta";
 import TestResult from "./components/TestResult";
@@ -12,7 +12,41 @@ import "./DetailTestOrder.css";
 
 export default function DetailTestOrder() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch order data from the API
+  useEffect(() => {
+    async function fetchTestOrder() {
+      try {
+        const res = await fetch(`http://localhost:6868/api/test-orders/${id}`);
+        const payload = await res.json();
+        console.log("[DetailTestOrder index.jsx] raw payload:", payload);
+
+        const src = payload?.result ?? payload;
+        const normalized = {
+          ...src,
+          patientName: src.patientName ?? src.name ?? src.patient?.name ?? "",
+          dateOfBirth: src.dateOfBirth ?? src.dob ?? src.patient?.dateOfBirth ?? "",
+          name: src.patientName ?? src.name ?? "",
+          dob: src.dateOfBirth ?? src.dob ?? "",
+        };
+        console.log("[DetailTestOrder index.jsx] normalized:", normalized);
+        console.log("Order state (index.jsx):", normalized);
+        setOrder(normalized);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError(err.message);
+        setLoading(false);
+      }
+    }
+
+    fetchTestOrder();
+  }, [id]);
 
   // Add fade-in effect when component mounts
   useEffect(() => {
@@ -24,34 +58,30 @@ export default function DetailTestOrder() {
     };
   }, []);
 
-  const order = {
-    id: "P001",
-    patient: {
-      name: "Nguyễn Văn A",
-      gender: "Male",
-      phone: "0234 654 769",
-      address: "123 Main Street, City, State 12345",
-      dob: "29/06/1997",
-      age: 45,
-      email: "nguyenvana@gmail.com",
-      citizenId: "0124 456 789",
-    },
-    meta: {
-      created: "29/05/2025",
-      createdBy: "John. Smith",
-      runDate: "30/05/2025",
-      runBy: "Selena Gomez",
-      reviewedDate: "01/06/2025",
-      reviewedBy: "Justitia",
-      status: "Completed",
-    },
-    tests: [
-      { name: "CBC", result: "6.810^3/µL", ref: "4.0-10.0", status: "Normal", flag: "" },
-      { name: "Hemoglobin", result: "12.5g/dL", ref: "13.5-16.5", status: "Abnormal", flag: "Low" },
-      { name: "Glucose", result: "180mg/dL", ref: "70-100", status: "Critical", flag: "High" },
-      { name: "Creatinine", result: "1.1mg/dL", ref: "0.7-1.3", status: "Normal", flag: "" },
-    ],
+  // Handle navigation back
+  const handleGoBack = () => {
+    setIsNavigating(true);
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.3s ease';
+
+    setTimeout(() => {
+      localStorage.setItem('scrollToTable', 'true');
+      navigate('/');
+    }, 200);
   };
+
+  // Loading state or error handling
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500">{error}</div>;
+  }
+
+  if (!order) {
+    return <div className="text-center py-8">No test order found</div>;
+  }
 
   return (
     <div className="dto-page">
@@ -59,19 +89,8 @@ export default function DetailTestOrder() {
       <div className="dto-page-header">
         <div className="relative">
           <div className="absolute -left-1 -top-1 w-10 h-10 bg-red-50 rounded-full"></div>
-          <button 
-            onClick={() => {
-              setIsNavigating(true);
-              // Add fade out effect
-              document.body.style.opacity = '0';
-              document.body.style.transition = 'opacity 0.3s ease';
-              
-              setTimeout(() => {
-                // Store the scroll position we want in localStorage
-                localStorage.setItem('scrollToTable', 'true');
-                navigate('/');
-              }, 200);
-            }}
+          <button
+            onClick={handleGoBack}
             className="relative z-10 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all duration-300 transform hover:scale-105 active:scale-95"
           >
             <ArrowLeft size={20} />
@@ -81,7 +100,7 @@ export default function DetailTestOrder() {
         <div>
           <h1 className="text-[28px] font-bold text-[#f65f63] tracking-[0.35em] leading-tight">TEST ORDER DETAIL</h1>
           <div className="text-gray-600 text-sm">
-            ORDER ID: <span className="font-medium">{order.id}</span>
+            ORDER ID: <span className="font-medium">{order.testOrderId}</span>
           </div>
         </div>
 
@@ -93,15 +112,15 @@ export default function DetailTestOrder() {
 
       <div className="dto-grid">
         <div className="dto-left-col">
-          <PatientInfo patient={order.patient} />
-          <TestResult tests={order.tests} />
-          <Comments />
+          <PatientInfo patient={order} />
+          <TestResult tests={order.testResults} />
+          <Comments comments={order.comments} />
         </div>
 
         <div className="dto-right-col">
-          <OrderMeta meta={order.meta} />
+          <OrderMeta order={order} />
           <QuickActions />
-          <StatusChart />
+          <StatusChart status={order.status} />
         </div>
       </div>
     </div>

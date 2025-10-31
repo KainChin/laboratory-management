@@ -11,10 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CreateCommentRequest {
-
     @NotBlank(message = "Comment text is required")
     private String commentText;
-
-    @NotBlank(message = "Created by is required")
-    private String createdBy;
 }

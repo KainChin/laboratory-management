@@ -6,6 +6,8 @@ import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.Comment;
 import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.TestResult;
+import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
+import com.example.test_order_service.event.publisher.MonitoringEventPublisher;
 import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;
@@ -14,11 +16,11 @@ import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
 import com.example.test_order_service.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -31,13 +33,29 @@ public class TestOrderServiceImpl implements TestOrderService {
     private final TestOrderMapper testOrderMapper;
     private final TestResultMapper testResultMapper;
     private final CommentMapper commentMapper;
+    
+    // Optional: Event publisher sẽ chỉ inject nếu có sẵn
+    @Autowired(required = false)
+    private MonitoringEventPublisher eventPublisher;
 
     @Override
     public RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("No test results provided");
+        }
+
         TestOrder testOrder = testOrderMapper.toTestOrderEntity(request);
         testOrder.setCreatedBy("System");
 
-        TestOrderResponse response = testOrderMapper.toTestOrderResponse(testOrderRepository.save(testOrder));
+        // Save trước - business logic quan trọng nhất!
+        TestOrder savedOrder = testOrderRepository.save(testOrder);
+        
+        // Publish event (nếu event publisher có sẵn)
+        if (eventPublisher != null) {
+            eventPublisher.publishTestOrderCreated(savedOrder);
+        }
+
+        TestOrderResponse response = testOrderMapper.toTestOrderResponse(savedOrder);
 
         return RestResponse.<TestOrderResponse>builder()
                 .statusCode(200)
@@ -64,6 +82,11 @@ public class TestOrderServiceImpl implements TestOrderService {
     public RestResponse<TestOrderResponse> updateTestOrder(String orderId, TestOrderUpdateRequest request) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+        
+        // Lưu status cũ trước khi update
+        TestOrderStatus oldStatus = testOrder.getStatus();
+        
+        // Update các fields
         testOrder.setCitizenId(request.getCitizenId() != null ? request.getCitizenId() : testOrder.getCitizenId());
         testOrder.setPatientName(
                 request.getPatientName() != null ? request.getPatientName() : testOrder.getPatientName());
@@ -76,7 +99,17 @@ public class TestOrderServiceImpl implements TestOrderService {
         testOrder.setAddress(request.getAddress() != null ? request.getAddress() : testOrder.getAddress());
         testOrder.setEmail(request.getEmail() != null ? request.getEmail() : testOrder.getEmail());
 
-        TestOrderResponse response = testOrderMapper.toTestOrderResponse(testOrderRepository.save(testOrder));
+        TestOrder savedOrder = testOrderRepository.save(testOrder);
+        
+        // Publish event nếu status thay đổi
+        if (eventPublisher != null && 
+            request.getStatus() != null && 
+            !oldStatus.equals(savedOrder.getStatus())) {
+            
+            eventPublisher.publishStatusChanged(orderId, oldStatus, savedOrder.getStatus());
+        }
+
+        TestOrderResponse response = testOrderMapper.toTestOrderResponse(savedOrder);
 
         return RestResponse.<TestOrderResponse>builder()
                 .statusCode(200)

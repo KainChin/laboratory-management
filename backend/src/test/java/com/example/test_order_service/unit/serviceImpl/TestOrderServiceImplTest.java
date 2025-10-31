@@ -7,7 +7,6 @@ import com.example.test_order_service.entity.Comment;
 import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.enumForEntity.Gender;
-import com.example.test_order_service.entity.enumForEntity.ResultFlag;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
 import com.example.test_order_service.exception.ResourceNotFoundException;
@@ -272,6 +271,20 @@ public class TestOrderServiceImplTest {
             verify(testOrderRepository).save(any());
         }
 
+        @Test
+        @Order(9)
+        @DisplayName("Should throw RuntimeException when save fails")
+        void shouldThrowRuntimeExceptionWhenSaveFails() {
+            // Given
+            when(testOrderMapper.toTestOrderEntity(any(TestOrderRequest.class))).thenReturn(testOrder);
+            when(testOrderRepository.save(any(TestOrder.class)))
+                    .thenThrow(new RuntimeException("Generic save error"));
+
+            // When & Then
+            assertThatThrownBy(() -> testOrderService.createTestOrder(testOrderRequest))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Generic save error");
+        }
 
     }
 
@@ -927,10 +940,10 @@ public class TestOrderServiceImplTest {
                     .parameter("Glucose")
                     .value(95.0)
                     .unit("mg/dL")
-                    .referenceMin(70.0)
-                    .referenceMax(100.0)
-                    .flag(ResultFlag.NORMAL)
-                    .status(TestResultStatus.VALIDATED)
+                    .minValue(70.0)
+                    .maxValue(100.0)
+                    .flag(false)
+                    .status(TestResultStatus.COMPLETED)
                     .createdBy("Lab Tech 1")
                     .createdAt(LocalDateTime.of(2024, 1, 1, 10, 0))
                     .build();
@@ -940,10 +953,10 @@ public class TestOrderServiceImplTest {
                     .parameter("Cholesterol")
                     .value(220.0)
                     .unit("mg/dL")
-                    .referenceMin(0.0)
-                    .referenceMax(200.0)
-                    .flag(ResultFlag.HIGH_ABNORMAL)
-                    .status(TestResultStatus.VALIDATED)
+                    .minValue(0.0)
+                    .maxValue(200.0)
+                    .flag(true)
+                    .status(TestResultStatus.COMPLETED)
                     .createdBy("Lab Tech 2")
                     .createdAt(LocalDateTime.of(2024, 1, 1, 11, 0))
                     .build();
@@ -969,7 +982,7 @@ public class TestOrderServiceImplTest {
                     .parameter("Glucose")
                     .value(95.0)
                     .unit("mg/dL")
-                    .flag(ResultFlag.NORMAL)
+                    .flag(false)
                     .build();
 
             testResultResponse2 = TestResultResponse.builder()
@@ -977,7 +990,7 @@ public class TestOrderServiceImplTest {
                     .parameter("Cholesterol")
                     .value(220.0)
                     .unit("mg/dL")
-                    .flag(ResultFlag.HIGH_ABNORMAL)
+                    .flag(true)
                     .build();
 
             commentResponse1 = CommentResponse.builder()
