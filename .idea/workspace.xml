@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7962fe10-8b2a-463e-a7af-9e5d0509d094" name="Changes" comment="" />
+    <list default="true" id="7962fe10-8b2a-463e-a7af-9e5d0509d094" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/example/test_order_service/unit/serviceImpl/CommentServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/example/test_order_service/unit/serviceImpl/CommentServiceImplTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/example/test_order_service/unit/serviceImpl/TestOrderServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/example/test_order_service/unit/serviceImpl/TestOrderServiceImplTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -33,6 +40,9 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.TestOrderServiceApplication.executor": "Run",
+    "Maven.test_order_service [clean].executor": "Run",
+    "Maven.test_order_service [install].executor": "Run",
+    "Maven.test_order_service [verify].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
