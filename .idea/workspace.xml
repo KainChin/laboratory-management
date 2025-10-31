@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="7962fe10-8b2a-463e-a7af-9e5d0509d094" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +58,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\03.SoftwareEngineerFPT\Semester06\laboratory-management\backend\src\main\java\com\example\test_order_service" />
+    </key>
+  </component>
   <component name="RunManager" selected="Spring Boot.TestOrderServiceApplication">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="laboratory-management" />
@@ -145,7 +149,7 @@
       <workItem from="1760920987263" duration="6382000" />
       <workItem from="1761696642895" duration="2850000" />
       <workItem from="1761871323150" duration="1227000" />
-      <workItem from="1761878658856" duration="612000" />
+      <workItem from="1761878658856" duration="1417000" />
     </task>
     <servers />
   </component>
