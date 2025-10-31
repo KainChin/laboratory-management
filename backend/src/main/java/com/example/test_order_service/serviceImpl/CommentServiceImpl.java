@@ -63,7 +63,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
-        comment.setCommentText(request.getCommentText() != null ? request.getCommentText() : comment.getCommentText());
+        comment.setCommentText(comment.getCommentText() != null ? request.getCommentText() : comment.getCommentText());
 
         Comment saved = commentRepository.save(comment);
         CommentResponse response = commentMapper.toCommentResponse(saved);
