@@ -1,14 +1,14 @@
 package com.example.test_order_service.entity;
 
-import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "test_results")
@@ -26,34 +26,25 @@ public class TestResult {
     @JoinColumn(name = "test_order_id", nullable = false)
     private TestOrder testOrder;
 
-    @Column(name = "parameter", nullable = false, length = 50)
-    private String parameter;
+//   @Column(name = "patient_id", nullable = false)
+//    private String patientId;
 
-    @Column(name = "value", nullable = false, length = 50)
-    private Double value;
+    //blood collection tube -> UUID
+    @Column(name = "blood_collection_id", nullable = false)
+    private String bloodCollectionId;
 
-    @Column(name = "unit", length = 20)
-    private String unit;
+    @Column(name = "instrument_name", length = 100)
+    private String instrumentName;
 
-    @Column(name = "min_value")
-    private Double minValue;
+    @Lob
+    @Column(name = "hl7_raw_data", nullable = false)
+    private String hl7RawData;
 
-    @Column(name = "max_value")
-    private Double maxValue;
-
-    // Reference ranges are commented out for future use
-//    @Column(name = "reference_min")
-//    private Double referenceMin;
-//
-//    @Column(name = "reference_max")
-//    private Double referenceMax;
-
-    @Column(name = "flag")
-    private Boolean flag;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 30)
-    private TestResultStatus status;
+    private String status; // COMPLETE / AI_REVIEW / REVIEWED / REJECTED
+
+    @OneToMany(mappedBy = "testResult", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TestResultParameter> testResultParameter;
 
     @Column(name = "created_by")
     private String createdBy;
@@ -67,7 +58,6 @@ public class TestResult {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.status = TestResultStatus.COMPLETED;
     }
 
     @PreUpdate

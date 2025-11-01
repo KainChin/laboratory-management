@@ -14,7 +14,7 @@ import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.mapper.TestResultMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
-import com.example.test_order_service.utils.DateUtils;
+import com.example.test_order_service.utils.GeneralUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,10 +46,11 @@ public class TestOrderServiceImpl implements TestOrderService {
 
         TestOrder testOrder = testOrderMapper.toTestOrderEntity(request);
         testOrder.setCreatedBy("System");
+        testOrder.setBloodCollectionId(GeneralUtils.generateBloodCollectionId(testOrderRepository.count()));
 
         // Save trước - business logic quan trọng nhất!
         TestOrder savedOrder = testOrderRepository.save(testOrder);
-        
+
         // Publish event (nếu event publisher có sẵn)
         if (eventPublisher != null) {
             eventPublisher.publishTestOrderCreated(savedOrder);
@@ -137,7 +138,7 @@ public class TestOrderServiceImpl implements TestOrderService {
 
         TestOrderDetailResponse testOrderDetailResponse = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
-        testOrderDetailResponse.setAge(DateUtils.calculateAge(testOrder.getDateOfBirth()));
+        testOrderDetailResponse.setAge(GeneralUtils.calculateAge(testOrder.getDateOfBirth()));
 
         List<TestResultResponse> sortedTestResults = testOrder.getTestResults().stream()
                 .sorted(Comparator.comparing(TestResult::getCreatedAt))

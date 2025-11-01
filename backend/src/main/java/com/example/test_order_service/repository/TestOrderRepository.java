@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TestOrderRepository extends JpaRepository<TestOrder, String> {
     @Query("SELECT t FROM TestOrder t where t.deleted = false AND t.patientName ILIKE CONCAT('%', :keyword, '%')")
@@ -18,4 +19,6 @@ public interface TestOrderRepository extends JpaRepository<TestOrder, String> {
 
     @Query("SELECT t.status AS status, COUNT(t) AS count FROM TestOrder t WHERE t.deleted = false GROUP BY t.status")
     List<Object[]> countByStatus();
+
+    Optional<TestOrder> findByBloodCollectionId(String bloodCollectionId);
 }

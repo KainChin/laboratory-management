@@ -1,26 +1,23 @@
 package com.example.test_order_service.dto.repsonse;
 
-import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
+import com.example.test_order_service.entity.TestOrder;
+import com.example.test_order_service.entity.TestResultParameter;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 public class TestResultResponse {
-    private String resultId;
-    private String parameter;
-    private Double value;
-    private String unit;
-    private Double minValue;
-    private Double maxValue;
-    private Boolean flag;
-    private TestResultStatus status;
-    private String createdBy;
-    private LocalDateTime createdAt;
+    private String bloodCollectionId;
+    private String instrumentName;
+    private String status;
+    private List<TestResultParameter> testResultParameter;
 }

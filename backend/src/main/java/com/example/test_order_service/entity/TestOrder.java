@@ -2,6 +2,7 @@ package com.example.test_order_service.entity;
 
 import com.example.test_order_service.entity.enumForEntity.Gender;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -52,6 +54,10 @@ public class TestOrder {
     @Column(name = "email", length = 100)
     private String email;
 
+    //blood collection tube -> UUID
+    @Column(name = "blood_collection_id", nullable = false)
+    private String bloodCollectionId;
+
     @Column(name = "status", nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
     private TestOrderStatus status;
@@ -81,6 +87,7 @@ public class TestOrder {
     private boolean deleted;
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<TestResult> testResults;
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)

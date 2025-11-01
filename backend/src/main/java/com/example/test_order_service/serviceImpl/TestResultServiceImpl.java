@@ -1,21 +1,129 @@
 package com.example.test_order_service.serviceImpl;
 
 import com.example.test_order_service.dto.repsonse.RestResponse;
-import com.example.test_order_service.dto.request.TestResultRequest;
+import com.example.test_order_service.dto.repsonse.TestResultResponse;
+import com.example.test_order_service.entity.TestOrder;
+import com.example.test_order_service.entity.TestResult;
+import com.example.test_order_service.entity.TestResultParameter;
+import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
+import com.example.test_order_service.mapper.TestResultMapper;
+import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.repository.TestResultRepository;
 import com.example.test_order_service.service.TestResultService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class TestResultServiceImpl implements TestResultService {
     private final TestResultRepository testResultRepository;
+    private final TestOrderRepository testOrderRepository;
+
+    private final TestResultMapper testResultMapper;
+
+    @Transactional
+    public RestResponse<?> getResultByBloodCollectionId(String bloodCollectionId) {
+        TestResult testResult = testResultRepository.findByBloodCollectionId(bloodCollectionId)
+                .orElseThrow(() -> new IllegalArgumentException("Test result not found for blood collection Id: " + bloodCollectionId));
+
+        TestResultResponse testResultResponse = testResultMapper.toTestResultResponse(testResult);
+
+        return RestResponse.<TestResultResponse>builder()
+                .statusCode(200)
+                .result(testResultResponse)
+                .message("Retrived test result successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 
     @Override
-    public RestResponse<Void> createTestResult(String orderId, List<TestResultRequest> request) {
-        return null;
+    public RestResponse<?> receiveHl7(String rawHl7) {
+        if (rawHl7 == null || rawHl7.isBlank()) {
+            throw new IllegalArgumentException("HL7 message is empty");
+        }
+
+        String[] lines = rawHl7.split("\\r?\\n");
+        String bloodCollectionId = null;
+        String instrument = "";
+        List<TestResultParameter> params = new ArrayList<>();
+
+        for (String line : lines) {
+            if (line == null || line.isBlank()) continue;
+            String[] parts = line.split("\\|");
+            if (parts.length == 0) continue;
+
+            if (parts[0].equals("OBR")) {
+                bloodCollectionId = parts.length > 2 && !parts[2].isBlank() ? parts[2] :
+                        (parts.length > 3 ? parts[3] : null);
+            } else if (parts[0].equals("OBX")) {
+                if (parts.length < 6) continue;
+
+                TestResultParameter p = new TestResultParameter();
+                p.setSequence(safeInt(parts, 1));
+                p.setObxIdentifier(parts.length > 3 ? parts[3] : "UNKNOWN");
+
+                // OBX-3 = "WBC^White Blood Cell"
+                String[] idSplit = parts[3].split("\\^");
+                p.setParamCode(idSplit[0]);
+                p.setParamName(idSplit.length > 1 ? idSplit[1] : idSplit[0]);
+
+                p.setValue(parts.length > 5 ? parts[5] : null);
+                p.setUnit(parts.length > 6 ? parts[6] : null);
+                p.setRefRange(parts.length > 7 ? parts[7] : null);
+                p.setFlag(parts.length > 8 ? parts[8] : "N");
+                p.setComputedBy("HL7 Parser v2.0");
+
+                params.add(p);
+            }
+        }
+
+        if (bloodCollectionId == null) {
+            throw new IllegalArgumentException("Missing blood collection id number in HL7 message");
+        }
+
+        final String finalBloodCollectionId = bloodCollectionId.trim();
+
+        TestOrder order = testOrderRepository.findByBloodCollectionId(finalBloodCollectionId).orElseThrow(() -> new IllegalArgumentException("TestOrder not found for blood collection Id: " + finalBloodCollectionId));
+
+        TestResult result = TestResult.builder()
+                .testOrder(order)
+//                .patientId(order.getPatientId())
+                .bloodCollectionId(order.getBloodCollectionId())
+                .instrumentName(instrument)
+                .hl7RawData(rawHl7)
+                .status("COMPLETE")
+                .build();
+
+        for (TestResultParameter p : params) {
+            p.setTestResult(result);
+            p.setTestOrder(order);
+        }
+
+        result.setTestResultParameter(params);
+
+        testResultRepository.save(result);
+
+        order.setStatus(TestOrderStatus.COMPLETED);
+        testOrderRepository.save(order);
+
+        return RestResponse.<TestResult>builder()
+                .statusCode(200)
+                .result(result)
+                .message("HL7 parsing successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    private int safeInt(String[] parts, int index) {
+        try {
+            return Integer.parseInt(parts[index]);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }
