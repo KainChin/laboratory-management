@@ -19,5 +19,5 @@ public class TestResultResponse {
     private String bloodCollectionId;
     private String instrumentName;
     private String status;
-    private List<TestResultParameter> testResultParameter;
+    private List<TestResultParameterResponse> testResultParameter;
 }

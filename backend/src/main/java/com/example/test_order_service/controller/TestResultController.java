@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/results")
+@RequestMapping("/api/test-results")
 @RequiredArgsConstructor
 public class TestResultController {
     private final TestResultService testResultService;

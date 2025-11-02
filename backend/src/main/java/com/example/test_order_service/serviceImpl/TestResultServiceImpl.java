@@ -50,12 +50,17 @@ public class TestResultServiceImpl implements TestResultService {
         String[] lines = rawHl7.split("\\r?\\n");
         String bloodCollectionId = null;
         String instrument = "";
-        List<TestResultParameter> params = new ArrayList<>();
+        List<TestResultParameter> testResultParameterList = new ArrayList<>();
 
         for (String line : lines) {
             if (line == null || line.isBlank()) continue;
             String[] parts = line.split("\\|");
+
             if (parts.length == 0) continue;
+
+            if (parts[0].equals("MSH")) {
+                instrument = parts.length > 2 ? parts[2] : "";
+            }
 
             if (parts[0].equals("OBR")) {
                 bloodCollectionId = parts.length > 2 && !parts[2].isBlank() ? parts[2] :
@@ -63,22 +68,22 @@ public class TestResultServiceImpl implements TestResultService {
             } else if (parts[0].equals("OBX")) {
                 if (parts.length < 6) continue;
 
-                TestResultParameter p = new TestResultParameter();
-                p.setSequence(safeInt(parts, 1));
-                p.setObxIdentifier(parts.length > 3 ? parts[3] : "UNKNOWN");
+                TestResultParameter testResultParameter = new TestResultParameter();
+                testResultParameter.setSequence(safeInt(parts, 1));
+                testResultParameter.setObxIdentifier(parts.length > 3 ? parts[3] : "UNKNOWN");
 
                 // OBX-3 = "WBC^White Blood Cell"
                 String[] idSplit = parts[3].split("\\^");
-                p.setParamCode(idSplit[0]);
-                p.setParamName(idSplit.length > 1 ? idSplit[1] : idSplit[0]);
+                testResultParameter.setParamCode(idSplit[0]);
+                testResultParameter.setParamName(idSplit.length > 1 ? idSplit[1] : idSplit[0]);
 
-                p.setValue(parts.length > 5 ? parts[5] : null);
-                p.setUnit(parts.length > 6 ? parts[6] : null);
-                p.setRefRange(parts.length > 7 ? parts[7] : null);
-                p.setFlag(parts.length > 8 ? parts[8] : "N");
-                p.setComputedBy("HL7 Parser v2.0");
+                testResultParameter.setValue(parts.length > 5 ? parts[5] : null);
+                testResultParameter.setUnit(parts.length > 6 ? parts[6] : null);
+                testResultParameter.setRefRange(parts.length > 7 ? parts[7] : null);
+                testResultParameter.setFlag(parts.length > 8 ? parts[8] : "N");
+                testResultParameter.setComputedBy("HL7 Parser v2.0");
 
-                params.add(p);
+                testResultParameterList.add(testResultParameter);
             }
         }
 
@@ -99,12 +104,12 @@ public class TestResultServiceImpl implements TestResultService {
                 .status("COMPLETE")
                 .build();
 
-        for (TestResultParameter p : params) {
+        for (TestResultParameter p : testResultParameterList) {
             p.setTestResult(result);
             p.setTestOrder(order);
         }
 
-        result.setTestResultParameter(params);
+        result.setTestResultParameter(testResultParameterList);
 
         testResultRepository.save(result);
 

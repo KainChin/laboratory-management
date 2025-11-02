@@ -5,13 +5,13 @@ import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.Comment;
 import com.example.test_order_service.entity.TestOrder;
-import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.event.publisher.MonitoringEventPublisher;
 import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.mapper.TestResultMapper;
+import com.example.test_order_service.mapper.TestResultParameterMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
 import com.example.test_order_service.utils.GeneralUtils;
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -33,7 +34,8 @@ public class TestOrderServiceImpl implements TestOrderService {
     private final TestOrderMapper testOrderMapper;
     private final TestResultMapper testResultMapper;
     private final CommentMapper commentMapper;
-    
+    private final TestResultParameterMapper testResultParameterMapper;
+
     // Optional: Event publisher sẽ chỉ inject nếu có sẵn
     @Autowired(required = false)
     private MonitoringEventPublisher eventPublisher;
@@ -137,19 +139,13 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
         TestOrderDetailResponse testOrderDetailResponse = testOrderMapper.toTestOrderDetailResponse(testOrder);
-
         testOrderDetailResponse.setAge(GeneralUtils.calculateAge(testOrder.getDateOfBirth()));
 
-        List<TestResultResponse> sortedTestResults = testOrder.getTestResults().stream()
-                .sorted(Comparator.comparing(TestResult::getCreatedAt))
-                .map(testResultMapper::toTestResultResponse)
-                .toList();
         List<CommentResponse> sortedComments = testOrder.getComments().stream()
                 .sorted(Comparator.comparing(Comment::getCreatedAt))
                 .map(commentMapper::toCommentResponse)
                 .toList();
 
-        testOrderDetailResponse.setTestResults(sortedTestResults);
         testOrderDetailResponse.setComments(sortedComments);
 
         return RestResponse.<TestOrderDetailResponse>builder()
@@ -159,7 +155,6 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
-
 
     @Override
     public RestResponse<TestOrderStatisticResponse> getTestOrderStatistics() {
@@ -200,5 +195,4 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .timestamp(java.time.LocalDateTime.now())
                 .build();
     }
-
 }

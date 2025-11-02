@@ -37,6 +37,6 @@ public class TestOrderDetailResponse {
     private String reviewedBy;
     private LocalDateTime reviewedAt;
 
-    private List<TestResultResponse> testResults;
+    private TestResultResponse testResults;
     private List<CommentResponse> comments;
 }
