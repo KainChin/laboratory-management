@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { MessageSquare, Edit2, Trash2, Check, X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { MessageSquare, Edit2, Trash2 } from "lucide-react";
 import "../DetailTestOrder.css";
 
 export default function Comments({ orderId: propOrderId = null, currentUser = null }) {
@@ -10,33 +11,29 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState(null);
 
-  // confirmation state: comment id that requests confirmation
-  const [confirmId, setConfirmId] = useState(null);
-  const [confirmSide, setConfirmSide] = useState("right"); // 'right' or 'left'
-  const commentRefs = useRef({}); // store DOM node per comment id
-
-  // edit state
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
   const [editingSaving, setEditingSaving] = useState(false);
 
-  // success notification for edits
   const [successId, setSuccessId] = useState(null);
   const [successMsg, setSuccessMsg] = useState("");
   const successTimerRef = useRef(null);
 
-  // ref to scrollable comments container
   const commentsListRef = useRef(null);
+  const editingInputRef = useRef(null);
+  const commentRefs = useRef({});
+
+  // confirm portal state (rendered to document.body)
+  const [confirmPortal, setConfirmPortal] = useState(null);
+  // shape: { commentId, top, left, width, height, vertical, pointerLeft }
 
   const getOrderId = () => {
     if (propOrderId) return String(propOrderId).trim();
     const parts = window.location.pathname.split("/").filter(Boolean);
     return parts[parts.length - 1] ?? "";
   };
-  
-  // helper to determine createdBy value
+
   const getCreatedBy = () => {
-    // if caller passed currentUser as string or object
     if (currentUser) {
       if (typeof currentUser === "string" && currentUser.trim()) return currentUser.trim();
       if (typeof currentUser === "object") {
@@ -51,14 +48,11 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
         );
       }
     }
-
-    // try common localStorage keys (string or JSON)
     try {
       const tryKeys = ["user", "currentUser", "userName", "username"];
       for (const k of tryKeys) {
         const v = localStorage.getItem(k);
         if (!v) continue;
-        // try parse JSON
         try {
           const obj = JSON.parse(v);
           if (obj) {
@@ -72,13 +66,10 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
             if (found) return String(found);
           }
         } catch (_) {
-          // not JSON, treat as plain string
           if (typeof v === "string" && v.trim()) return v.trim();
         }
       }
     } catch (_) {}
-
-    // fallback value so server validation won't block
     return "System";
   };
 
@@ -95,17 +86,14 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
         const payload = await res.json();
         const src = payload?.result ?? payload ?? {};
         if (!mounted) return;
-        // limit number of items rendered to avoid page growth (adjust cap as needed)
         let list = Array.isArray(src.comments) ? src.comments.slice() : [];
 
-        // Try to parse known datetime fields and sort newest first when possible
         const parseDate = (c) => {
           if (!c) return NaN;
           const keys = ["createdAt","created_at","createdOn","created_on","createdDate","created_date","timestamp","time","created"];
           for (const k of keys) {
             const v = c[k];
             if (v == null) continue;
-            // if object with .seconds (firebase) or ._seconds
             if (typeof v === "object") {
               if (v.seconds != null) return Number(v.seconds) * 1000 + (v.nanoseconds ? Math.floor(v.nanoseconds/1000000) : 0);
               if (v._seconds != null) return Number(v._seconds) * 1000;
@@ -121,10 +109,9 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
           list.sort((a, b) => {
             const da = parseDate(a);
             const db = parseDate(b);
-            return (isNaN(db) ? 0 : db) - (isNaN(da) ? 0 : da); // newest first
+            return (isNaN(db) ? 0 : db) - (isNaN(da) ? 0 : da);
           });
         } else {
-          // no date fields detected — assume server returns oldest-first and reverse so newest on top
           list = list.reverse();
         }
 
@@ -142,7 +129,6 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
     return () => { mounted = false; };
   }, [propOrderId]);
 
-  // clear success timer on unmount
   useEffect(() => {
     return () => {
       if (successTimerRef.current) clearTimeout(successTimerRef.current);
@@ -158,10 +144,7 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
       const id = getOrderId();
       if (!id) throw new Error("Missing orderId");
 
-      const payloadBody = {
-        commentText: trimmed,
-      };
-      // ensure createdBy is always sent (server requires it)
+      const payloadBody = { commentText: trimmed };
       const createdBy = getCreatedBy();
       if (createdBy) payloadBody.createdBy = createdBy;
 
@@ -183,11 +166,7 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
       const payload = await res.json().catch(() => null);
       const created = payload?.result ?? payload;
       if (created && (created.commentId || created.commentId === "")) {
-        // prepend new comment and keep container scrolled to top so page doesn't grow
-        setComments((s) => {
-          const next = [created, ...s];
-          return next.slice(0, 100); // cap to prevent long page
-        });
+        setComments((s) => [created, ...s].slice(0, 100));
       } else {
         const r2 = await fetch(`http://localhost:6868/api/test-orders/${encodeURIComponent(id)}`);
         if (r2.ok) {
@@ -199,8 +178,6 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
       }
 
       setText("");
-
-      // ensure scroll stays at top (use rAF/timeout so DOM updated)
       requestAnimationFrame(() => {
         if (commentsListRef.current) commentsListRef.current.scrollTop = 0;
       });
@@ -235,11 +212,10 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
       console.error("Delete comment error:", err);
     } finally {
       setDeletingId(null);
-      setConfirmId(null);
+      setConfirmPortal(null);
     }
   }
 
-  // EDIT: open inline editor
   function requestEdit(comment) {
     const cid = comment.commentId ?? comment.id ?? null;
     if (!cid) return;
@@ -279,19 +255,19 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
       const payload = await res.json().catch(() => null);
       const updated = payload?.result ?? payload;
 
-      // update local list (prefer server returned fields)
       setComments((prev) =>
-        prev.map((c) => {
-          const cid = c.commentId ?? c.id ?? null;
-          if (cid !== commentId) return c;
-          if (updated && (updated.commentId || updated.commentText)) return { ...c, ...updated };
-          return { ...c, commentText: trimmed };
-        }).slice(0, 100)
+        prev
+          .map((c) => {
+            const cid = c.commentId ?? c.id ?? null;
+            if (cid !== commentId) return c;
+            if (updated && (updated.commentId || updated.commentText)) return { ...c, ...updated };
+            return { ...c, commentText: trimmed };
+          })
+          .slice(0, 100)
       );
 
-      // show inline success badge near edited comment
       setSuccessId(commentId);
-      setSuccessMsg("Updated successfully");
+      setSuccessMsg("Updated");
       if (successTimerRef.current) clearTimeout(successTimerRef.current);
       successTimerRef.current = setTimeout(() => {
         setSuccessId(null);
@@ -308,42 +284,64 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
     }
   }
 
-  // Request delete: scroll comment into view and compute side for popup
-  function requestDelete(commentId) {
-    const el = commentRefs.current[commentId];
-    const container = commentsListRef.current;
-    const DLG_W = 320; // estimated dialog width
-
-    // default side
-    setConfirmSide("right");
-
-    if (el && container) {
-      // bring comment to center of the container (smooth)
-      const elRect = el.getBoundingClientRect();
-      const contRect = container.getBoundingClientRect();
-      const currentScroll = container.scrollTop;
-      const targetScroll = currentScroll + (elRect.top - (contRect.top + contRect.height / 2));
-      container.scrollTo({ top: Math.max(0, targetScroll), behavior: "smooth" });
-
-      // compute available space and flip if needed after scroll completes (small delay)
-      setTimeout(() => {
-        const updatedRect = el.getBoundingClientRect();
-        const rightSpace = window.innerWidth - updatedRect.right;
-        const leftSpace = updatedRect.left;
-        if (rightSpace < DLG_W + 24 && leftSpace >= DLG_W + 24) {
-          setConfirmSide("left");
-        } else {
-          setConfirmSide("right");
-        }
-      }, 220);
+  // new: render confirmation dialog as a portal so it's never clipped by overflow
+  function openConfirmPortal(commentId, btnEl) {
+    // estimate dialog size and pointer, compute fixed coords
+    const DLG_W = 320;
+    const DLG_H = 120;
+    try {
+      if (!btnEl || !btnEl.getBoundingClientRect) throw new Error("no btnEl");
+      const btnRect = btnEl.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      // prefer below
+      let vertical = "below";
+      let top = Math.round(btnRect.bottom + 8);
+      if (btnRect.bottom + 8 + DLG_H > vh && btnRect.top - 8 - DLG_H >= 0) {
+        vertical = "above";
+        top = Math.round(btnRect.top - 8 - DLG_H);
+      }
+      // center horizontally on button, clamp to viewport
+      let left = Math.round(btnRect.left + btnRect.width / 2 - DLG_W / 2);
+      left = Math.max(8, Math.min(left, vw - DLG_W - 8));
+      const pointerCenter = Math.round(btnRect.left + btnRect.width / 2);
+      const pointerLeft = Math.max(12, Math.min(DLG_W - 12, pointerCenter - left));
+      setConfirmPortal({ commentId, top, left, width: DLG_W, height: DLG_H, vertical, pointerLeft });
+    } catch (e) {
+      // fallback: clear portal (could render inline)
+      setConfirmPortal({ commentId, top: null });
     }
+  }
 
-    // show confirmation (will appear after scroll/side computed)
-    setConfirmId(commentId);
-  }
-  function cancelDelete() {
-    setConfirmId(null);
-  }
+  // close portal on scroll/resize/escape/click outside
+  useEffect(() => {
+    if (!confirmPortal) return;
+    function onScroll() {
+      setConfirmPortal(null);
+    }
+    function onResize() {
+      setConfirmPortal(null);
+    }
+    function onKey(e) {
+      if (e.key === "Escape") setConfirmPortal(null);
+    }
+    function onDown(e) {
+      // if click is outside portal area close it (portal element in body has id 'comment-confirm-portal')
+      const el = document.getElementById("comment-confirm-portal");
+      if (!el) return;
+      if (!el.contains(e.target)) setConfirmPortal(null);
+    }
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onResize);
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onDown);
+    return () => {
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onDown);
+    };
+  }, [confirmPortal]);
 
   return (
     <section className="card">
@@ -360,12 +358,11 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
 
       {error && <div style={{ color: "#dc2626", marginBottom: 8 }}>{error}</div>}
 
-      {/* set maxHeight so only ~3 comments show; overflow creates scrollbar */}
       <div
         className="comments-list"
         ref={commentsListRef}
         style={{
-          maxHeight: 260,         // ~3 comments height — chỉnh nếu cần
+          maxHeight: 260,
           overflowY: "auto",
           paddingRight: 8,
         }}
@@ -377,124 +374,110 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
         ) : (
           comments.map((c, i) => {
             const cid = c.commentId ?? c.id ?? String(i);
-            const showingConfirm = confirmId === cid;
             const isEditing = editingId === cid;
             const isSuccess = successId === cid;
             return (
-              <div className="comment" key={cid} style={{ position: "relative" }} ref={(el) => { commentRefs.current[cid] = el; }}>
-                <div className="comment-author"><b>{c.createdBy ?? c.author ?? "Unknown"}</b></div>
+              <div
+                className="comment"
+                key={cid}
+                style={{ position: "relative", padding: 12, borderRadius: 8, marginBottom: 10, background: "#fff", boxShadow: "0 6px 14px rgba(12,18,26,0.04)" }}
+                ref={(el) => {
+                  commentRefs.current[cid] = el;
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                  <div>
+                    <div className="comment-author" style={{ marginBottom: 6, fontSize: 14 }}>
+                      <b>{c.createdBy ?? c.author ?? "Unknown"}</b>
+                    </div>
 
-                {!isEditing ? (
-                  <div className="comment-body" style={{ marginBottom: 8 }}>{c.commentText ?? c.comment ?? c.body}</div>
-                ) : (
-                  <div style={{ marginBottom: 8 }}>
-                    <input
-                      value={editingText}
-                      onChange={(e) => setEditingText(e.target.value)}
-                      placeholder="Edit your comment..."
-                      disabled={editingSaving}
-                      style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #e6e9ef" }}
-                    />
-                  </div>
-                )}
-
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <div className="comment-actions" style={{ display: "flex", gap: 8 }}>
-                    {!isEditing && (
-                      <button className="icon-btn" title="Edit" onClick={() => requestEdit(c)} disabled={editingSaving || deletingId === cid}>
-                        <Edit2 size={14} />
-                      </button>
-                    )}
-                    {isEditing ? (
-                      <>
-                        <button
-                          className="icon-btn"
-                          title="Save"
-                          onClick={() => saveEdit(cid)}
-                          disabled={editingSaving}
-                          style={{ color: "#4caf50" }}
-                        >
-                          <Check size={14} />
-                        </button>
-                        <button
-                          className="icon-btn"
-                          title="Cancel"
-                          onClick={cancelEdit}
-                          disabled={editingSaving}
-                          style={{ color: "#f44336" }}
-                        >
-                          <X size={14} />
-                        </button>
-                      </>
+                    {!isEditing ? (
+                      <div className="comment-body" style={{ marginBottom: 6, color: "#111827" }}>{c.commentText ?? c.comment ?? c.body}</div>
                     ) : (
-                      <button
-                        className="icon-btn"
-                        title="Delete"
-                        onClick={() => requestDelete(cid)}
-                        disabled={deletingId === cid}
-                        aria-disabled={deletingId === cid}
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      <div style={{ marginBottom: 8 }}>
+                        <textarea
+                          ref={editingInputRef}
+                          value={editingText}
+                          onChange={(e) => setEditingText(e.target.value)}
+                          placeholder="Edit your comment..."
+                          disabled={editingSaving}
+                          rows={4}
+                          style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #e6e9ef", resize: "vertical", minHeight: 80 }}
+                        />
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, gap: 8 }}>
+                          <div style={{ color: "#6b7280", fontSize: 13 }} />
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <button
+                              onClick={() => saveEdit(cid)}
+                              disabled={editingSaving}
+                              style={{ padding: "8px 12px", borderRadius: 8, background: "#10b981", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer" }}
+                              title="Save (Ctrl+Enter)"
+                            >
+                              {editingSaving ? "Saving..." : "Save"}
+                            </button>
+                            <button
+                              onClick={cancelEdit}
+                              disabled={editingSaving}
+                              style={{ padding: "8px 12px", borderRadius: 8, background: "#ffffff", color: "#374151", border: "1px solid #e6e9ef", cursor: "pointer" }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     )}
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+                    <div style={{ fontSize: 12, color: "#9ca3af" }} />
+
+                    <div className="comment-actions" style={{ display: "flex", gap: 8 }}>
+                      {!isEditing && (
+                        <button
+                          className="icon-btn"
+                          title="Edit"
+                          onClick={() => requestEdit(c)}
+                          disabled={editingSaving || deletingId === cid}
+                          style={{ background: "#fff", border: "1px solid #eef2f7", padding: 8, borderRadius: 8, cursor: "pointer" }}
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                      )}
+                      {!isEditing && (
+                        <button
+                          className="icon-btn"
+                          title="Delete"
+                          onClick={(e) => {
+                            // pass the actual button element so portal can anchor to it
+                            openConfirmPortal(cid, e.currentTarget);
+                          }}
+                          disabled={deletingId === cid}
+                          aria-disabled={deletingId === cid}
+                          style={{ background: "#fff", border: "1px solid #ffe8ea", padding: 8, borderRadius: 8, cursor: "pointer", color: "#ef4444" }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                {/* Inline confirmation box near the comment */}
-                {showingConfirm && (
+                {/* inline success badge */}
+                {isSuccess && (
                   <div
-                    role="dialog"
-                    aria-modal="true"
                     style={{
                       position: "absolute",
-                      right: confirmSide === "right" ? 12 : "auto",
-                      left: confirmSide === "left" ? 12 : "auto",
-                      top: "calc(100% - 8px)",
-                      width: 300,
-                      background: "#fff",
-                      borderRadius: 8,
-                      boxShadow: "0 8px 30px rgba(2,6,23,0.12)",
-                      padding: 12,
-                      zIndex: 80,
-                      border: "1px solid #eef2f7",
+                      right: 12,
+                      top: 12,
+                      background: "#10B981",
+                      color: "#fff",
+                      padding: "6px 10px",
+                      borderRadius: 999,
+                      fontWeight: 700,
+                      fontSize: 12,
+                      boxShadow: "0 6px 16px rgba(16,185,129,0.16)",
                     }}
                   >
-                    <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 8 }}>
-                      <div style={{ width:32, height:32, borderRadius:6, background:"#fff6f7", display:"flex", alignItems:"center", justifyContent:"center", border:"1px solid #ffe3e6", color:"#ef4444" }}>
-                        <Trash2 size={14} />
-                      </div>
-                      <div style={{ fontWeight:700 }}>Delete comment</div>
-                    </div>
-                    <div style={{ color:"#374151", fontSize:13, marginBottom:12 }}>Are you sure you want to delete this comment?</div>
-                    <div style={{ display:"flex", justifyContent:"flex-end", gap:8 }}>
-                      <button onClick={cancelDelete} style={{ padding:"6px 10px", borderRadius:6, border:"1px solid #e6e9ef", background:"#fff", cursor:"pointer" }}>
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => doDelete(cid)}
-                        disabled={deletingId === cid}
-                        style={{ padding:"6px 10px", borderRadius:6, border:"none", background:"#ff5a67", color:"#fff", fontWeight:700, cursor:"pointer" }}
-                      >
-                        {deletingId === cid ? "Deleting..." : "Delete"}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Inline success badge shown near edited comment */}
-                {isSuccess && (
-                  <div style={{
-                    position: "absolute",
-                    right: 12,
-                    top: 8,
-                    background: "#10B981",
-                    color: "#fff",
-                    padding: "6px 10px",
-                    borderRadius: 999,
-                    fontWeight: 700,
-                    fontSize: 12,
-                    boxShadow: "0 6px 16px rgba(16,185,129,0.16)"
-                  }}>
                     {successMsg || "Updated"}
                   </div>
                 )}
@@ -504,16 +487,97 @@ export default function Comments({ orderId: propOrderId = null, currentUser = nu
         )}
       </div>
 
-      <div className="comment-input" style={{ marginTop: 16 }}>
+      {/* portal confirm dialog (rendered to document.body) */}
+      {confirmPortal &&
+        createPortal(
+          <div
+            id="comment-confirm-portal"
+            role="dialog"
+            aria-modal="true"
+            style={{
+              position: "fixed",
+              top: confirmPortal.top,
+              left: confirmPortal.left,
+              width: confirmPortal.width,
+              zIndex: 1200,
+              pointerEvents: "auto",
+              transition: "opacity .12s ease, transform .12s ease",
+            }}
+          >
+            {/* pointer */}
+            <div
+              style={{
+                position: "absolute",
+                left: confirmPortal.pointerLeft - 9,
+                top: confirmPortal.vertical === "below" ? -10 : confirmPortal.height,
+                width: 18,
+                height: 10,
+                overflow: "visible",
+                filter: "drop-shadow(0 6px 12px rgba(2,6,23,0.06))",
+              }}
+            >
+              <svg width="18" height="10" viewBox="0 0 18 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {confirmPortal.vertical === "below" ? (
+                  <path d="M0 10L9 0L18 10H0Z" fill="#fff" stroke="#eef2f7" />
+                ) : (
+                  <path d="M0 0L9 10L18 0H0Z" fill="#fff" stroke="#eef2f7" />
+                )}
+              </svg>
+            </div>
+
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 10,
+                boxShadow: "0 12px 40px rgba(2,6,23,0.12)",
+                padding: 12,
+                border: "1px solid #eef2f7",
+                height: confirmPortal.height,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <div style={{ width:36, height:36, borderRadius:8, background:"#fff6f7", display:"flex", alignItems:"center", justifyContent:"center", border:"1px solid #ffdde0", color:"#ef4444" }}>
+                  <Trash2 size={16} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 14, color: "#111827" }}>Delete comment</div>
+                  <div style={{ color: "#6b7280", fontSize: 13, marginTop: 4 }}>This action cannot be undone. Are you sure?</div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                <button onClick={() => setConfirmPortal(null)} style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #e6e9ef", background: "#fff", cursor: "pointer" }}>
+                  Cancel
+                </button>
+                <button onClick={() => doDelete(confirmPortal.commentId)} disabled={deletingId === confirmPortal.commentId} style={{ padding: "8px 12px", borderRadius: 8, border: "none", background: "#ef4444", color: "#fff", fontWeight: 800 }}>
+                  {deletingId === confirmPortal.commentId ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      <div className="comment-input" style={{ marginTop: 16, display: "flex", gap: 8 }}>
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Enter your comment..."
           disabled={saving}
-          onKeyDown={(e) => { if (e.key === "Enter") handleAdd(); }}
-          style={{ flex: 1 }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAdd();
+          }}
+          style={{ flex: 1, padding: 10, borderRadius: 8, border: "1px solid #e6e9ef" }}
         />
-        <button className="btn-primary" onClick={handleAdd} disabled={saving}>
+        <button
+          className="btn-primary"
+          onClick={handleAdd}
+          disabled={saving}
+          style={{ padding: "10px 14px", borderRadius: 8, background: "#ef4444", color: "#fff", border: "none", fontWeight: 700 }}
+        >
           {saving ? "Saving..." : "Add Comment"}
         </button>
       </div>
