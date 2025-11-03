@@ -13,6 +13,6 @@ public class GeneralUtils {
         //Took the last count and add 1
         long count = testOrderCount + 1;
         String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        return String.format("BCT-%s-%07d", datePart, count);
+        return String.format("BCT-%s-%05d", datePart, count);
     }
 }

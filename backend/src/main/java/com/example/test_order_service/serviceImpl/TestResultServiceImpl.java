@@ -42,7 +42,7 @@ public class TestResultServiceImpl implements TestResultService {
     }
 
     @Override
-    public RestResponse<?> receiveHl7(String rawHl7) {
+    public RestResponse<TestResultResponse> receiveHl7(String rawHl7) {
         if (rawHl7 == null || rawHl7.isBlank()) {
             throw new IllegalArgumentException("HL7 message is empty");
         }
@@ -116,9 +116,11 @@ public class TestResultServiceImpl implements TestResultService {
         order.setStatus(TestOrderStatus.COMPLETED);
         testOrderRepository.save(order);
 
-        return RestResponse.<TestResult>builder()
+        TestResultResponse testResultResponse = testResultMapper.toTestResultResponse(result);
+
+        return RestResponse.<TestResultResponse>builder()
                 .statusCode(200)
-                .result(result)
+                .result(testResultResponse)
                 .message("HL7 parsing successfully")
                 .timestamp(LocalDateTime.now())
                 .build();

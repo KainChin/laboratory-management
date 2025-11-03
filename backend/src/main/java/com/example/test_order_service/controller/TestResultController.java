@@ -1,6 +1,7 @@
 package com.example.test_order_service.controller;
 
 import com.example.test_order_service.dto.response.RestResponse;
+import com.example.test_order_service.dto.response.TestResultResponse;
 import com.example.test_order_service.service.TestResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -13,7 +14,7 @@ public class TestResultController {
     private final TestResultService testResultService;
 
     @PostMapping(value = "/hl7", consumes = MediaType.TEXT_PLAIN_VALUE)
-    public RestResponse<?> receiveHl7(@RequestBody String hl7RawData) {
+    public RestResponse<TestResultResponse> receiveHl7(@RequestBody String hl7RawData) {
         return testResultService.receiveHl7(hl7RawData);
     }
 

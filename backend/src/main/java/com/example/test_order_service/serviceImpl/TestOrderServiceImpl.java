@@ -22,7 +22,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,9 +34,7 @@ public class TestOrderServiceImpl implements TestOrderService {
 
     private final TestOrderRepository testOrderRepository;
     private final TestOrderMapper testOrderMapper;
-    private final TestResultMapper testResultMapper;
     private final CommentMapper commentMapper;
-    private final TestResultParameterMapper testResultParameterMapper;
 
     // Optional: Event publisher sẽ chỉ inject nếu có sẵn
     @Autowired(required = false)
@@ -49,7 +49,9 @@ public class TestOrderServiceImpl implements TestOrderService {
         TestOrder testOrder = testOrderMapper.toTestOrderEntity(request);
         testOrder.setCreatedBy("System");
 
-        testOrder.setBloodCollectionId(GeneralUtils.generateBloodCollectionId(testOrderRepository.count()));
+        testOrder.setBloodCollectionId(GeneralUtils.generateBloodCollectionId(testOrderRepository.countByDateCode(
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+        )));
 
         // Save trước - business logic quan trọng nhất!
         TestOrder savedOrder = testOrderRepository.save(testOrder);

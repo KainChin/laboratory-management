@@ -21,4 +21,7 @@ public interface TestOrderRepository extends JpaRepository<TestOrder, String> {
     List<Object[]> countByStatus();
 
     Optional<TestOrder> findByBloodCollectionId(String bloodCollectionId);
+
+    @Query("SELECT count(*) FROM TestOrder t WHERE t.bloodCollectionId LIKE CONCAT('%', :dateCode, '%')")
+    long countByDateCode(@Param("dateCode") String dateCode);
 }
