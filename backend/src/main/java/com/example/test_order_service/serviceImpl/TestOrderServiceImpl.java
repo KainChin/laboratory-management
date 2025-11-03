@@ -70,7 +70,7 @@ public class TestOrderServiceImpl implements TestOrderService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword) {
         Page<TestOrder> testOrderPage = testOrderRepository.findTestOrdersByParams(pageable, keyword);
 
@@ -136,7 +136,7 @@ public class TestOrderServiceImpl implements TestOrderService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public RestResponse<TestOrderDetailResponse> getTestOrderById(String orderId) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));

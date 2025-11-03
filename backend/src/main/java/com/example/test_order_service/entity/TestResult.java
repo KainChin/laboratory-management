@@ -34,8 +34,7 @@ public class TestResult extends BaseEntity {
     @Column(name = "instrument_name", length = 100)
     private String instrumentName;
 
-    @Lob
-    @Column(name = "hl7_raw_data", nullable = false)
+    @Column(name = "hl7_raw_data", columnDefinition = "TEXT", nullable = false)
     private String hl7RawData;
 
     @Column(name = "status", length = 30)
