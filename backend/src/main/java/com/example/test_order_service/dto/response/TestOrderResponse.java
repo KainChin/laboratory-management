@@ -1,4 +1,4 @@
-package com.example.test_order_service.dto.repsonse;
+package com.example.test_order_service.dto.response;
 
 import com.example.test_order_service.entity.enumForEntity.Gender;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
@@ -17,6 +17,7 @@ import java.time.LocalDate;
 public class TestOrderResponse {
     private String testOrderId;
     private String patientName;
+    private String patientId;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateOfBirth;
@@ -26,6 +27,7 @@ public class TestOrderResponse {
     private String address;
     private String email;
     private String phone;
+    private String bloodCollectionId;
     private String createdBy;
     private TestOrderStatus status;
 }

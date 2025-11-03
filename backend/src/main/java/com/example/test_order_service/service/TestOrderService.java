@@ -1,9 +1,9 @@
 package com.example.test_order_service.service;
 
-import com.example.test_order_service.dto.repsonse.PageResponse;
-import com.example.test_order_service.dto.repsonse.RestResponse;
-import com.example.test_order_service.dto.repsonse.TestOrderDetailResponse;
-import com.example.test_order_service.dto.repsonse.TestOrderResponse;
+import com.example.test_order_service.dto.response.PageResponse;
+import com.example.test_order_service.dto.response.RestResponse;
+import com.example.test_order_service.dto.response.TestOrderDetailResponse;
+import com.example.test_order_service.dto.response.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import org.springframework.data.domain.Pageable;

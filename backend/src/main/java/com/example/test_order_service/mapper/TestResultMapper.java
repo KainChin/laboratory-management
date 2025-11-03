@@ -1,6 +1,6 @@
 package com.example.test_order_service.mapper;
 
-import com.example.test_order_service.dto.repsonse.TestResultResponse;
+import com.example.test_order_service.dto.response.TestResultResponse;
 import com.example.test_order_service.entity.TestResult;
 import org.mapstruct.Mapper;
 

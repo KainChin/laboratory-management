@@ -1,6 +1,6 @@
 package com.example.test_order_service.unit.serviceImpl;
 
-import com.example.test_order_service.dto.repsonse.*;
+import com.example.test_order_service.dto.response.*;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.Comment;
@@ -8,7 +8,6 @@ import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.enumForEntity.Gender;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
-import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
 import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;

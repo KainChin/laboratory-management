@@ -1,27 +1,30 @@
 package com.example.test_order_service.serviceImpl;
 
-import com.example.test_order_service.dto.repsonse.*;
+import com.example.test_order_service.dto.response.*;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.Comment;
 import com.example.test_order_service.entity.TestOrder;
-import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.event.publisher.MonitoringEventPublisher;
 import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.mapper.TestResultMapper;
+import com.example.test_order_service.mapper.TestResultParameterMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
-import com.example.test_order_service.utils.DateUtils;
+import com.example.test_order_service.utils.GeneralUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 
@@ -31,7 +34,6 @@ public class TestOrderServiceImpl implements TestOrderService {
 
     private final TestOrderRepository testOrderRepository;
     private final TestOrderMapper testOrderMapper;
-    private final TestResultMapper testResultMapper;
     private final CommentMapper commentMapper;
     private final InstrumentSyncService instrumentSyncService;
     
@@ -48,9 +50,13 @@ public class TestOrderServiceImpl implements TestOrderService {
         TestOrder testOrder = testOrderMapper.toTestOrderEntity(request);
         testOrder.setCreatedBy("System");
 
+        testOrder.setBloodCollectionId(GeneralUtils.generateBloodCollectionId(testOrderRepository.countByDateCode(
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+        )));
+
         // Save trước - business logic quan trọng nhất!
         TestOrder savedOrder = testOrderRepository.save(testOrder);
-        
+
         // Publish event (nếu event publisher có sẵn)
         if (eventPublisher != null) {
             eventPublisher.publishTestOrderCreated(savedOrder);
@@ -72,6 +78,7 @@ public class TestOrderServiceImpl implements TestOrderService {
     }
 
     @Override
+//    @Transactional(readOnly = true)
     public PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword) {
         Page<TestOrder> testOrderPage = testOrderRepository.findTestOrdersByParams(pageable, keyword);
 
@@ -137,24 +144,19 @@ public class TestOrderServiceImpl implements TestOrderService {
     }
 
     @Override
+//    @Transactional(readOnly = true)
     public RestResponse<TestOrderDetailResponse> getTestOrderById(String orderId) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
         TestOrderDetailResponse testOrderDetailResponse = testOrderMapper.toTestOrderDetailResponse(testOrder);
+        testOrderDetailResponse.setAge(GeneralUtils.calculateAge(testOrder.getDateOfBirth()));
 
-        testOrderDetailResponse.setAge(DateUtils.calculateAge(testOrder.getDateOfBirth()));
-
-        List<TestResultResponse> sortedTestResults = testOrder.getTestResults().stream()
-                .sorted(Comparator.comparing(TestResult::getCreatedAt))
-                .map(testResultMapper::toTestResultResponse)
-                .toList();
         List<CommentResponse> sortedComments = testOrder.getComments().stream()
                 .sorted(Comparator.comparing(Comment::getCreatedAt))
                 .map(commentMapper::toCommentResponse)
                 .toList();
 
-        testOrderDetailResponse.setTestResults(sortedTestResults);
         testOrderDetailResponse.setComments(sortedComments);
 
         return RestResponse.<TestOrderDetailResponse>builder()
@@ -164,7 +166,6 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
-
 
     @Override
     public RestResponse<TestOrderStatisticResponse> getTestOrderStatistics() {
@@ -205,5 +206,4 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .timestamp(java.time.LocalDateTime.now())
                 .build();
     }
-
 }

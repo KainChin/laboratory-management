@@ -1,4 +1,4 @@
-package com.example.test_order_service.dto.repsonse;
+package com.example.test_order_service.dto.response;
 
 import com.example.test_order_service.entity.enumForEntity.Gender;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
@@ -37,6 +37,6 @@ public class TestOrderDetailResponse {
     private String reviewedBy;
     private LocalDateTime reviewedAt;
 
-    private List<TestResultResponse> testResults;
+    private TestResultResponse testResults;
     private List<CommentResponse> comments;
 }

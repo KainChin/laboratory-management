@@ -2,8 +2,7 @@ package com.example.test_order_service.dto.request;
 
 import com.example.test_order_service.entity.enumForEntity.Gender;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;

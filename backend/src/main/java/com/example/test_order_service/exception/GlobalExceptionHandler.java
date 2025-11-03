@@ -1,6 +1,6 @@
 package com.example.test_order_service.exception;
 
-import com.example.test_order_service.dto.repsonse.RestResponse;
+import com.example.test_order_service.dto.response.RestResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice

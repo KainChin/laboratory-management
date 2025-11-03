@@ -1,7 +1,7 @@
 package com.example.test_order_service.unit.serviceImpl;
 
-import com.example.test_order_service.dto.repsonse.RestResponse;
-import com.example.test_order_service.dto.repsonse.CommentResponse;
+import com.example.test_order_service.dto.response.RestResponse;
+import com.example.test_order_service.dto.response.CommentResponse;
 import com.example.test_order_service.dto.request.CreateCommentRequest;
 import com.example.test_order_service.dto.request.UpdateCommentRequest;
 import com.example.test_order_service.entity.Comment;
