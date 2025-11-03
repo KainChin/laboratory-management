@@ -1,0 +1,99 @@
+server:
+  port: 6868
+
+spring:
+  application:
+    name: test-order-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test-order-service
+    username: postgres
+    password: 12345
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  sql:
+    init:
+      mode: always
+
+  kafka:
+    bootstrap-servers: 34.199.182.98:9092
+    properties:
+      security.protocol: PLAINTEXT
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: test-result-full-ingest-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  cloud:
+    compatibility-verifier:
+      enabled: false   # tắt cảnh báo version không tương thích (Spring Boot vs Spring Cloud)
+    config:
+      fail-fast: true
+      retry:
+        max-attempts: 6
+        initial-interval: 2000
+        multiplier: 1.5
+        max-interval: 10000
+
+app:
+  events:
+    enabled: false
+    exchange-name: test-order-exchange
+
+logging:
+  level:
+    root: INFO
+    com.example.test_order_service: DEBUG
+  file:
+    name: logs/test-order-service.log
+
+instrument:
+  base-url: http://localhost:8081
+  timeout-ms: 3000
+  retry:
+    max-attempts: 3
+    backoff-ms: 500
+
+wait:
+  poll-interval-ms: 5000
+  max-wait-ms: 600000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://23.23.152.34:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true

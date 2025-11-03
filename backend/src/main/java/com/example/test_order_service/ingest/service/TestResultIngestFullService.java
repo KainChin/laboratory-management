@@ -2,7 +2,7 @@ package com.example.test_order_service.ingest.service;
 
 import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.TestResult;
-import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
+import com.example.test_order_service.entity.TestResultParameter; // <-- THÊM import này
 import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.ingest.dto.TestResultIngestFullPayload;
 import com.example.test_order_service.repository.TestOrderRepository;
@@ -12,22 +12,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TestResultIngestFullService {
-    private final TestResultRepository testResultRepository; // existing repo
-    private final TestOrderRepository testOrderRepository;   // existing repo
+    private final TestResultRepository testResultRepository;
+    private final TestOrderRepository testOrderRepository;
 
-    /**
-     * Ingest or upsert a full TestResult payload.
-     * - If payload.resultId provided and found -> update that record
-     * - Else create new TestResult (JPA will generate resultId)
-     */
     @Transactional
     public void ingest(TestResultIngestFullPayload p) {
         if (p == null) {
@@ -35,69 +29,65 @@ public class TestResultIngestFullService {
             return;
         }
 
+        // 1. Tìm TestOrder cha (bắt buộc phải có).
         String orderId = p.getTestOrderId();
         TestOrder order = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("TestOrder not found: " + orderId));
 
-        // Try to update by resultId if provided
-        Optional<TestResult> existingOpt = Optional.empty();
-        if (p.getResultId() != null && !p.getResultId().isBlank()) {
-            existingOpt = testResultRepository.findById(p.getResultId());
-        }
+        // 2. Tìm TestResult hiện có cho TestOrder này, hoặc tạo mới.
+        TestResult result = testResultRepository.findByTestOrder(order)
+                .orElseGet(() -> {
+                    log.info("Không tìm thấy TestResult cho orderId={}, đang tạo mới.", orderId);
+                    return TestResult.builder()
+                            .testOrder(order)
+                            .patientId(order.getPatientId())
+                            .bloodCollectionId("N/A") // Cần xác định nguồn cho trường này
+                            .instrumentName("N/A")    // Cần xác định nguồn cho trường này
+                            .hl7RawData("N/A")        // Cần xác định nguồn cho trường này
+                            .status("IN_PROGRESS")
+                            .testResultParameter(new ArrayList<>())
+                            .build();
+                });
 
-        if (existingOpt.isPresent()) {
-            TestResult tr = existingOpt.get();
-            log.debug("Updating existing TestResult id={} for orderId={}", tr.getResultId(), orderId);
-
-            // Update fields from payload if non-null
-            if (p.getParameter() != null) tr.setParameter(p.getParameter());
-            if (p.getValue() != null) tr.setValue(p.getValue());
-            if (p.getUnit() != null) tr.setUnit(p.getUnit());
-            tr.setMinValue(p.getMinValue());
-            tr.setMaxValue(p.getMaxValue());
-            if (p.getFlag() != null) tr.setFlag(p.getFlag());
-            if (p.getStatus() != null) {
-                try {
-                    tr.setStatus(TestResultStatus.valueOf(p.getStatus()));
-                } catch (IllegalArgumentException ex) {
-                    log.warn("Unknown status '{}', ignoring", p.getStatus());
-                }
-            }
-            if (p.getCreatedBy() != null) tr.setCreatedBy(p.getCreatedBy());
-            if (p.getCreatedAt() != null) tr.setCreatedAt(p.getCreatedAt());
-            tr.setUpdatedAt(p.getUpdatedAt() == null ? LocalDateTime.now() : p.getUpdatedAt());
-
-            testResultRepository.save(tr);
-            log.info("Updated TestResult id={} for orderId={}", tr.getResultId(), orderId);
-            return;
-        }
-
-        // No existing by resultId -> create new
-        TestResult trNew = TestResult.builder()
-                // do NOT set resultId if you want JPA to generate it; but if upstream provided one you may set it (we avoid to not conflict)
+        // 3. Tạo đối tượng TestResultParameter con từ payload.
+        TestResultParameter newParameter = TestResultParameter.builder()
+                // Ánh xạ dữ liệu từ payload (DTO) sang entity
                 .testOrder(order)
-                .parameter(p.getParameter())
-                .value(p.getValue())
+                .paramName(p.getParameter()) // payload.parameter -> entity.paramName
+                .value(p.getValue() != null ? String.valueOf(p.getValue()) : null) // Chuyển Double -> String
                 .unit(p.getUnit())
-                .minValue(p.getMinValue())
-                .maxValue(p.getMaxValue())
-                .flag(p.getFlag())
-                .status(p.getStatus() == null ? TestResultStatus.COMPLETED : parseStatus(p.getStatus()))
-                .createdBy(p.getCreatedBy() == null ? "external-system" : p.getCreatedBy())
-                .createdAt(p.getCreatedAt() == null ? LocalDateTime.now() : p.getCreatedAt())
-                .updatedAt(p.getUpdatedAt())
+                .refRange(formatRefRange(p.getMinValue(), p.getMaxValue())) // Ghép min/max thành chuỗi
+                .flag(p.getFlag() != null ? (p.getFlag() ? "H" : "N") : null) // Chuyển Boolean -> String
+                .paramCode(p.getParameter()) // Tạm thời dùng chung, có thể thay đổi sau
+                .sequence(1) // Tạm thời là 1, có thể thay đổi sau
                 .build();
 
-        testResultRepository.save(trNew);
-        log.info("Inserted new TestResult id={} for orderId={}", trNew.getResultId(), orderId);
+        // 4. Liên kết cha và con.
+        newParameter.setTestResult(result); // Gán cha cho con
+        result.getTestResultParameter().add(newParameter); // Thêm con vào danh sách của cha
+
+        // 5. Cập nhật trạng thái tổng thể của TestResult.
+        result.setStatus(p.getStatus() == null ? "COMPLETED" : p.getStatus());
+
+        // 6. Lưu TestResult (cha), TestResultParameter (con) sẽ được lưu tự động.
+        testResultRepository.save(result);
+
+        log.info("Đã lưu/cập nhật TestResult id={} với tham số mới '{}' cho orderId={}",
+                result.getResultId(),
+                newParameter.getParamName(),
+                orderId);
     }
 
-    private TestResultStatus parseStatus(String s) {
-        try {
-            return TestResultStatus.valueOf(s);
-        } catch (Exception ex) {
-            log.warn("Cannot parse status '{}', defaulting to COMPLETED", s);
-            return TestResultStatus.COMPLETED;
+    /**
+     * Hàm hỗ trợ để tạo chuỗi khoảng tham chiếu từ giá trị min và max.
+     */
+    private String formatRefRange(Double min, Double max) {
+        if (min == null && max == null) {
+            return null;
         }
+        if (min != null && max != null) {
+            return min + " - " + max;
+        }
+        return min != null ? ">= " + min : "<= " + max;
     }
 }
