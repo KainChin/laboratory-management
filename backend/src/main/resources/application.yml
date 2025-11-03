@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/test-order-service
     username: postgres
-    password: 12345
+    password: 123456
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -19,3 +19,15 @@ spring:
   sql:
     init:
       mode: always
+
+# Instrument Service and waiting configuration
+instrument:
+  base-url: http://localhost:8081
+  timeout-ms: 3000
+  retry:
+    max-attempts: 3
+    backoff-ms: 500
+
+wait:
+  poll-interval-ms: 5000
+  max-wait-ms: 600000

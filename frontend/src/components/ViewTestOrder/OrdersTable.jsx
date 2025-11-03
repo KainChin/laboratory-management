@@ -1,3 +1,4 @@
+
 import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
 import {
   useState,
@@ -574,7 +575,7 @@ export default function OrdersTable() {
       lastScaleRef.current = 1;
       setModalScale(1);
     };
-  }, [showModal, mode]);
+  }, [showModal, mode, modalScale]);
 
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative">
@@ -586,12 +587,14 @@ export default function OrdersTable() {
       )}
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-red-500 font-semibold">Test Order Lists</h2>
-        <button
-          onClick={openCreateModal}
-          className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600"
-        >
-          + New Test Order
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={openCreateModal}
+            className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600"
+          >
+            + New Test Order
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 mb-3">

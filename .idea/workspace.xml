@@ -72,6 +72,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.TestOrderServiceApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="295d65c3-5e3b-4b7d-a3be-3ca8b89aed8b" name="Changes" comment="" />
+      <created>1761882799758</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1761882799758</updated>
+    </task>
+    <servers />
   </component>
   <component name="SharedIndexes">
     <attachedChunks>

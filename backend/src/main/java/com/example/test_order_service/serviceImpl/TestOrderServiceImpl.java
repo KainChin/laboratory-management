@@ -35,7 +35,8 @@ public class TestOrderServiceImpl implements TestOrderService {
     private final TestOrderRepository testOrderRepository;
     private final TestOrderMapper testOrderMapper;
     private final CommentMapper commentMapper;
-
+    private final InstrumentSyncService instrumentSyncService;
+    
     // Optional: Event publisher sẽ chỉ inject nếu có sẵn
     @Autowired(required = false)
     private MonitoringEventPublisher eventPublisher;
@@ -62,6 +63,11 @@ public class TestOrderServiceImpl implements TestOrderService {
         }
 
         TestOrderResponse response = testOrderMapper.toTestOrderResponse(savedOrder);
+
+        try {
+            instrumentSyncService.requestOrWait(savedOrder.getTestOrderId());
+        } catch (Exception ex) {
+        }
 
         return RestResponse.<TestOrderResponse>builder()
                 .statusCode(200)

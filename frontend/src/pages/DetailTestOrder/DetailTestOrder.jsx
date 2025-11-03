@@ -112,6 +112,7 @@ export default function DetailTestOrder(props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [loadingBack, setLoadingBack] = useState(false);
+  const waitingStatuses = ["PENDING", "WAITING_FOR_INSTRUMENT"];
 
   // Fetch order data from the API and normalize
   useEffect(() => {
@@ -149,6 +150,30 @@ export default function DetailTestOrder(props) {
       mounted = false;
     };
   }, [props]);
+
+  // Auto-poll while waiting for instrument service
+  useEffect(() => {
+    if (!testOrder) return;
+    const status = (testOrder.status || "").toString().toUpperCase();
+    if (!waitingStatuses.includes(status)) return;
+    const orderId = id;
+    const timer = setInterval(async () => {
+      try {
+        const res = await fetch(`http://localhost:6868/api/test-orders/${orderId}`);
+        if (!res.ok) return;
+        const payload = await res.json();
+        const src = payload?.result ?? payload ?? {};
+        const normalized = {
+          ...src,
+          patientName: src.patientName ?? src.name ?? src.patient?.name ?? "",
+          dateOfBirth: src.dateOfBirth ?? src.dob ?? src.patient?.dateOfBirth ?? "",
+        };
+        setTestOrder(normalized);
+        setTestResults(Array.isArray(normalized.testResults) ? normalized.testResults : []);
+      } catch (_) {}
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [id, testOrder]);
 
   // Add fade-in effect when component mounts
   useEffect(() => {
@@ -207,6 +232,11 @@ export default function DetailTestOrder(props) {
         <div className="mt-6">
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <h1 className="text-xl font-semibold mb-2">Test Order Detail</h1>
+            {testOrder && waitingStatuses.includes((testOrder.status||"").toString().toUpperCase()) && (
+              <div className="mb-4 rounded border border-blue-200 bg-blue-50 text-blue-700 px-4 py-3">
+                Đang chờ Instrument Service phản hồi. Hệ thống sẽ tự động cập nhật khi có kết quả...
+              </div>
+            )}
             {loading ? (
               <div className="text-center py-8">Loading...</div>
             ) : error ? (
