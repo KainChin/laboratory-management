@@ -1,14 +1,10 @@
-package com.example.test_order_service.dto.repsonse;
+package com.example.test_order_service.dto.response;
 
-import com.example.test_order_service.entity.TestOrder;
-import com.example.test_order_service.entity.TestResultParameter;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor

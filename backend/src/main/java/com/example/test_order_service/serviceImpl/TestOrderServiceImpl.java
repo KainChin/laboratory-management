@@ -1,6 +1,6 @@
 package com.example.test_order_service.serviceImpl;
 
-import com.example.test_order_service.dto.repsonse.*;
+import com.example.test_order_service.dto.response.*;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.Comment;
@@ -48,6 +48,7 @@ public class TestOrderServiceImpl implements TestOrderService {
 
         TestOrder testOrder = testOrderMapper.toTestOrderEntity(request);
         testOrder.setCreatedBy("System");
+
         testOrder.setBloodCollectionId(GeneralUtils.generateBloodCollectionId(testOrderRepository.count()));
 
         // Save trước - business logic quan trọng nhất!
@@ -69,6 +70,7 @@ public class TestOrderServiceImpl implements TestOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword) {
         Page<TestOrder> testOrderPage = testOrderRepository.findTestOrdersByParams(pageable, keyword);
 
@@ -134,6 +136,7 @@ public class TestOrderServiceImpl implements TestOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public RestResponse<TestOrderDetailResponse> getTestOrderById(String orderId) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));

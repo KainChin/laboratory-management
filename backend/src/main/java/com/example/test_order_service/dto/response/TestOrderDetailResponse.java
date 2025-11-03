@@ -1,4 +1,4 @@
-package com.example.test_order_service.dto.repsonse;
+package com.example.test_order_service.dto.response;
 
 import com.example.test_order_service.entity.enumForEntity.Gender;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;

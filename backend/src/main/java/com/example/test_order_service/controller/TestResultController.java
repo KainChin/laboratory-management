@@ -1,15 +1,10 @@
 package com.example.test_order_service.controller;
 
-import com.example.test_order_service.dto.repsonse.RestResponse;
-import com.example.test_order_service.dto.request.TestResultRequest;
-import com.example.test_order_service.entity.TestResult;
+import com.example.test_order_service.dto.response.RestResponse;
 import com.example.test_order_service.service.TestResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/test-results")

@@ -11,7 +11,7 @@ public class GeneralUtils {
 
     public static String generateBloodCollectionId(long testOrderCount) {
         //Took the last count and add 1
-        long count =  + 1;
+        long count = testOrderCount + 1;
         String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         return String.format("BCT-%s-%07d", datePart, count);
     }

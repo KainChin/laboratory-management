@@ -1,19 +1,14 @@
-package com.example.test_order_service.dto.repsonse;
+package com.example.test_order_service.dto.response;
 
-import com.example.test_order_service.entity.Comment;
-import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.enumForEntity.Gender;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder

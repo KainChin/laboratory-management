@@ -1,7 +1,7 @@
 package com.example.test_order_service.serviceImpl;
 
-import com.example.test_order_service.dto.repsonse.RestResponse;
-import com.example.test_order_service.dto.repsonse.TestResultResponse;
+import com.example.test_order_service.dto.response.RestResponse;
+import com.example.test_order_service.dto.response.TestResultResponse;
 import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.TestResultParameter;
