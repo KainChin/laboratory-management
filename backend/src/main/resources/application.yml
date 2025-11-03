@@ -46,3 +46,14 @@ logging:
   level:
     root: INFO
     com.example.test_order_service: DEBUG
+
+instrument:
+  base-url: http://localhost:8081
+  timeout-ms: 3000
+  retry:
+    max-attempts: 3
+    backoff-ms: 500
+
+wait:
+  poll-interval-ms: 5000
+  max-wait-ms: 600000

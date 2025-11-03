@@ -5,17 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="db5e1f0e-5b5e-43fc-a206-ffac01e1b7df" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/test_order_service/configuration/StartupConfigLogger.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/test_order_service/ingest/config/KafkaIngestConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/test_order_service/ingest/dto/TestResultIngestFullPayload.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/test_order_service/ingest/listener/TestResultFullIngestListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/test_order_service/ingest/service/TestResultIngestFullService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/test_order_service/repository/TestResultRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/test_order_service/repository/TestResultRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,13 +25,13 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="34wgQqz6tWARNPUIibdfkG3qvJK" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -48,6 +40,9 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Docker.backend: Compose Deployment.executor": "Run",
+    "Maven.test_order_service [clean].executor": "Run",
+    "Maven.test_order_service [install].executor": "Run",
+    "Maven.test_order_service [package].executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
@@ -56,6 +51,8 @@
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.TestOrderServiceApplication.executor": "Run",
     "git-widget-placeholder": "feature/kafka",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/CNTT/FALL2025/OJT/Project_Lab/laboratory-management",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -67,18 +64,26 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\CNTT\FALL2025\OJT\Project_Lab\laboratory-management\backend\src\main\java\com\example\test_order_service\dto" />
+    </key>
+  </component>
   <component name="RunManager" selected="Spring Boot.TestOrderServiceApplication">
     <configuration name="TestOrderServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="test_order_service" />
       <option name="PROGRAM_PARAMETERS" value="SPRING_KAFKA_BOOTSTRAP_SERVERS=localhost:9093 " />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.test_order_service.TestOrderServiceApplication" />
       <option name="VM_PARAMETERS" value="-Dspring.kafka.bootstrap-servers=localhost:9093 -Dspring.kafka.consumer.auto-offset-reset=earliest" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/backend" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
-      <deployment type="docker-compose.yml" />
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
       <method v="2" />
     </configuration>
     <configuration name="backend: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
@@ -115,6 +120,10 @@
       <option name="presentableId" value="Default" />
       <updated>1762130037195</updated>
       <workItem from="1762130038702" duration="10739000" />
+      <workItem from="1762152913413" duration="164000" />
+      <workItem from="1762153086188" duration="162000" />
+      <workItem from="1762153259804" duration="74000" />
+      <workItem from="1762153343362" duration="1067000" />
     </task>
     <servers />
   </component>
