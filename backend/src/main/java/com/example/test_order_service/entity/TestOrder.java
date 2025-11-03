@@ -1,25 +1,25 @@
 package com.example.test_order_service.entity;
 
+import com.example.test_order_service.base.BaseEntity;
 import com.example.test_order_service.entity.enumForEntity.Gender;
-import com.example.test_order_service.entity.enumForEntity.ResultStatus;
+import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "test_orders")
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class TestOrder {
+public class TestOrder extends BaseEntity {
     @Id
     @Column(name = "test_order_id")
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -53,15 +53,13 @@ public class TestOrder {
     @Column(name = "email", length = 100)
     private String email;
 
+    //blood collection tube -> UUID
+    @Column(name = "blood_collection_id", nullable = false)
+    private String bloodCollectionId;
+
     @Column(name = "status", nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
-    private ResultStatus status;
-
-    @Column(name = "created_by", nullable = false, updatable = false)
-    private String createdBy;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private TestOrderStatus status;
 
     @Column(name = "run_by")
     private String runBy;
@@ -75,15 +73,16 @@ public class TestOrder {
     @Column(name = "reviewed_at")
     private LocalDateTime reviewedAt;
 
-    @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
-    private List<TestResult> testResults;
+    @OneToOne(mappedBy = "testOrder", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private TestResult testResults;
 
     @OneToMany(mappedBy = "testOrder", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @PrePersist
+    @Override
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.status = ResultStatus.PENDING;
+        super.onCreate();
+        this.status = TestOrderStatus.PENDING;
     }
 }

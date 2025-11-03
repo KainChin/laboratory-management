@@ -1,4 +1,4 @@
-package com.example.test_order_service.dto.repsonse;
+package com.example.test_order_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -19,6 +19,7 @@ public class RestResponse<T> {
     private T result;
     private String error;
     private LocalDateTime timestamp;
+    private String path;
 
     public RestResponse(int statusCode, String message, T result) {
         this.statusCode = statusCode;
