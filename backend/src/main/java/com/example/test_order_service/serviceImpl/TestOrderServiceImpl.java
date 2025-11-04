@@ -206,4 +206,38 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .timestamp(java.time.LocalDateTime.now())
                 .build();
     }
+
+    @Override
+    @Transactional
+    public RestResponse<TestOrderResponse> reviewTestOrder(String orderId) {
+        TestOrder testOrder = testOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        // Validate current status is COMPLETED
+        if (testOrder.getStatus() != TestOrderStatus.COMPLETED) {
+            throw new IllegalStateException("Only COMPLETED test orders can be reviewed. Current status: " + testOrder.getStatus());
+        }
+
+        // Update status to REVIEWED
+        TestOrderStatus oldStatus = testOrder.getStatus();
+        testOrder.setStatus(TestOrderStatus.REVIEWED);
+        testOrder.setReviewedAt(LocalDateTime.now());
+        testOrder.setReviewedBy("System"); // TODO: Replace with actual user from security context
+
+        TestOrder savedOrder = testOrderRepository.save(testOrder);
+
+        // Publish event if event publisher is available
+        if (eventPublisher != null) {
+            eventPublisher.publishStatusChanged(orderId, oldStatus, TestOrderStatus.REVIEWED);
+        }
+
+        TestOrderResponse response = testOrderMapper.toTestOrderResponse(savedOrder);
+
+        return RestResponse.<TestOrderResponse>builder()
+                .statusCode(200)
+                .result(response)
+                .message("Test order reviewed successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }
