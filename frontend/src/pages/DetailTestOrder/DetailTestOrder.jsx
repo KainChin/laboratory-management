@@ -112,7 +112,7 @@ export default function DetailTestOrder(props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [loadingBack, setLoadingBack] = useState(false);
-  const waitingStatuses = ["PENDING", "WAITING_FOR_INSTRUMENT"];
+  const waitingStatuses = ["PENDING"];
 
   // Fetch order data from the API and normalize
   useEffect(() => {

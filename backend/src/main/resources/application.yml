@@ -2,6 +2,9 @@ server:
   port: 6868
 
 spring:
+#  profiles:
+#    active: prod
+
   application:
     name: test-order-service
   datasource:
@@ -20,7 +23,33 @@ spring:
     init:
       mode: always
 
-# Instrument Service and waiting configuration
+  kafka:
+    bootstrap-servers: localhost:9093
+    consumer:
+      group-id: test-result-full-ingest-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # ---- ĐẢM BẢO ĐÃ XÓA value-deserializer và properties ở đây ----
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+app:
+  events:
+    enabled: false
+    exchange-name: test-order-exchange
+
+logging:
+  level:
+    root: INFO
+    com.example.test_order_service: DEBUG
+
 instrument:
   base-url: http://localhost:8081
   timeout-ms: 3000

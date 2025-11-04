@@ -50,7 +50,7 @@ public class InstrumentSyncService {
     }
 
     private void markWaiting(String orderId) {
-        updateStatusIfPresent(orderId, TestOrderStatus.WAITING_FOR_INSTRUMENT);
+        updateStatusIfPresent(orderId, TestOrderStatus.PENDING);
     }
 
     private void updateStatusIfPresent(String orderId, TestOrderStatus status) {
