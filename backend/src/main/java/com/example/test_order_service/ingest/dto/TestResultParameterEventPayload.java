@@ -1,17 +1,18 @@
-package com.example.test_order_service.dto.response;
+package com.example.test_order_service.ingest.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+/**
+ * DTO chứa thông tin của một parameter trong kết quả xét nghiệm, dùng cho Kafka event.
+ */
 @Data
-public class TestResultParameterResponse {
-    private String id;
-    private Integer sequence;
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TestResultParameterEventPayload {
     private String paramCode;
     private String paramName;
     private String value;
