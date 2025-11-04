@@ -38,7 +38,7 @@ public class TestResult extends BaseEntity {
     private String hl7RawData;
 
     @Column(name = "status", length = 30)
-    private String status; // COMPLETE / AI_REVIEW / REVIEWED / REJECTED
+    private String status; // COMPLETED / AI_REVIEW / REVIEWED / REJECTED
 
     @OneToMany(mappedBy = "testResult", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TestResultParameter> testResultParameter;

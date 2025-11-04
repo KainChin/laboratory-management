@@ -36,6 +36,7 @@ public class TestOrderDetailResponse {
     private LocalDateTime runAt;
     private String reviewedBy;
     private LocalDateTime reviewedAt;
+    private String bloodCollectionId;
 
     private TestResultResponse testResults;
     private List<CommentResponse> comments;
