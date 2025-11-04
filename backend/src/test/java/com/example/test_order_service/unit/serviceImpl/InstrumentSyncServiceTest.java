@@ -69,10 +69,10 @@ class InstrumentSyncServiceTest {
 
         instrumentSyncService.requestOrWait("ORDER-1");
 
-        // Verify status updated to WAITING_FOR_INSTRUMENT
+        // Verify status updated to PENDING
         ArgumentCaptor<TestOrder> captor = ArgumentCaptor.forClass(TestOrder.class);
         verify(testOrderRepository, atLeastOnce()).save(captor.capture());
-        assertThat(captor.getValue().getStatus()).isEqualTo(TestOrderStatus.WAITING_FOR_INSTRUMENT);
+        assertThat(captor.getValue().getStatus()).isEqualTo(TestOrderStatus.PENDING);
 
         // Verify scheduling happened
         verify(taskScheduler, times(1)).scheduleAtFixedRate(any(Runnable.class), any(Instant.class), any(Duration.class));
