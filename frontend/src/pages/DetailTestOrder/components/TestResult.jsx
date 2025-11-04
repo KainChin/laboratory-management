@@ -4,10 +4,15 @@ import "../DetailTestOrder.css";
 
 function mapStatus(status, flag) {
   const s = (status || "").toString().toUpperCase();
-  const f = (flag || "").toString().toUpperCase();
 
+  // flag can be boolean (new API) or a string like HIGH/LOW/ABNORMAL
+  if (flag === true || flag === "TRUE") return { label: "Abnormal", kind: "abnormal" };
+  const f = (flag || "").toString().toUpperCase();
   if (f.includes("HIGH") || f.includes("LOW") || f.includes("ABNORMAL")) return { label: "Critical", kind: "critical" };
+
   if (s === "PENDING") return { label: "Pending", kind: "pending" };
+  // treat completed with no flag as normal
+  if (s === "COMPLETED") return { label: "Normal", kind: "normal" };
   if (s === "VALIDATED") return { label: "Abnormal", kind: "abnormal" };
   if (s === "APPROVED") return { label: "Normal", kind: "normal" };
   return { label: s || "-", kind: "unknown" };
@@ -18,12 +23,40 @@ function StatusBadge({ kind, label }) {
 }
 
 function getFlagClass(flag) {
+  // API may provide boolean flags or string reasons
   if (!flag) return "dto-flag-default";
   const f = flag.toString().toUpperCase();
   if (f.includes("HIGH")) return "dto-flag-high";
   if (f.includes("LOW")) return "dto-flag-low";
   if (f === "NORMAL") return "dto-flag-normal";
+  if (f === "ABNORMAL") return "dto-flag-high";
   return "dto-flag-default";
+}
+
+// Infer flag from numeric value and reference range when API provides a boolean flag
+function inferFlagFromValue(r) {
+  if (!r) return null;
+  const v = r.value;
+  const min = r.minValue;
+  const max = r.maxValue;
+  if ((v === null || v === undefined) || (min === undefined && max === undefined)) return null;
+  const num = Number(v);
+  if (!Number.isFinite(num)) return null;
+  if (min !== undefined && max !== undefined) {
+    if (num > Number(max)) return "HIGH";
+    if (num < Number(min)) return "LOW";
+    return "NORMAL";
+  }
+  // if only one bound exists
+  if (min !== undefined) {
+    if (num < Number(min)) return "LOW";
+    return "NORMAL";
+  }
+  if (max !== undefined) {
+    if (num > Number(max)) return "HIGH";
+    return "NORMAL";
+  }
+  return null;
 }
 
 export default function TestResult({ tests = null, orderId = null }) {
@@ -87,8 +120,9 @@ export default function TestResult({ tests = null, orderId = null }) {
   };
 
   const fmtRef = (r) => {
-    if (r.referenceMin !== undefined && r.referenceMax !== undefined) return `${r.referenceMin} - ${r.referenceMax}`;
-    return r.referenceMin ?? r.referenceMax ?? "-";
+    // new API uses minValue / maxValue
+    if (r.minValue !== undefined && r.maxValue !== undefined) return `${r.minValue} - ${r.maxValue}`;
+    return r.minValue ?? r.maxValue ?? "-";
   };
 
   return (
@@ -119,8 +153,11 @@ export default function TestResult({ tests = null, orderId = null }) {
             <tr><td colSpan={6} className="dto-empty">No test results</td></tr>
           ) : (
             rows.map((t) => {
-              const mapped = mapStatus(t.status, t.flag);
-              const flagClass = getFlagClass(t.flag);
+              // if API gives boolean flag, try to infer HIGH/LOW/NORMAL from values
+              const inferred = t.flag === true ? inferFlagFromValue(t) : null;
+              const flagText = inferred ? inferred : (t.flag === false ? null : (t.flag ?? null));
+              const mapped = mapStatus(t.status, flagText);
+              const flagClass = getFlagClass(flagText);
               return (
                 <tr key={t.resultId} className="dto-row">
                   <td className="dto-td icon-col">{renderIcon(mapped.kind)}</td>
@@ -136,7 +173,12 @@ export default function TestResult({ tests = null, orderId = null }) {
 
                   <td className="dto-td status-col"><StatusBadge kind={mapped.kind} label={mapped.label} /></td>
 
-                  <td className="dto-td flag-col"><span className={`dto-flag ${flagClass}`}>{t.flag ? String(t.flag).toUpperCase() : "-"}</span></td>
+                  <td className="dto-td flag-col">
+                    <span className={`dto-flag ${flagClass}`}>{
+                      // show inferred text when boolean flag provided, otherwise show provided string
+                      t.flag === true ? (inferred === "NORMAL" ? "-" : (inferred ?? "ABNORMAL")) : (t.flag === false ? "-" : (t.flag ? String(t.flag).toUpperCase() : "-"))
+                    }</span>
+                  </td>
                 </tr>
               );
             })

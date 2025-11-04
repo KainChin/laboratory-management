@@ -1,77 +1,45 @@
 package com.example.test_order_service.entity;
 
-import com.example.test_order_service.entity.enumForEntity.TestResultStatus;
+import com.example.test_order_service.base.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "test_results")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestResult {
+public class TestResult extends BaseEntity {
     @Id
     @Column(name = "result_id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private String resultId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "test_order_id", nullable = false)
     private TestOrder testOrder;
 
-    @Column(name = "parameter", nullable = false, length = 50)
-    private String parameter;
+    @Column(name = "patient_id")
+    private String patientId;
 
-    @Column(name = "value", nullable = false, length = 50)
-    private Double value;
+    @Column(name = "blood_collection_id", nullable = false)
+    private String bloodCollectionId;
 
-    @Column(name = "unit", length = 20)
-    private String unit;
+    @Column(name = "instrument_name", length = 100)
+    private String instrumentName;
 
-    @Column(name = "min_value")
-    private Double minValue;
+    @Column(name = "hl7_raw_data", columnDefinition = "TEXT", nullable = false)
+    private String hl7RawData;
 
-    @Column(name = "max_value")
-    private Double maxValue;
-
-    // Reference ranges are commented out for future use
-//    @Column(name = "reference_min")
-//    private Double referenceMin;
-//
-//    @Column(name = "reference_max")
-//    private Double referenceMax;
-
-    @Column(name = "flag")
-    private Boolean flag;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 30)
-    private TestResultStatus status;
+    private String status; // COMPLETE / AI_REVIEW / REVIEWED / REJECTED
 
-    @Column(name = "created_by")
-    private String createdBy;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.status = TestResultStatus.COMPLETED;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    @OneToMany(mappedBy = "testResult", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TestResultParameter> testResultParameter;
 }

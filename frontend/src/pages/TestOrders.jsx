@@ -4,7 +4,9 @@ import ActivityCard from "../components/ViewTestOrder/ActivityCard";
 import OrdersTable from "../components/ViewTestOrder/OrdersTable";
 import DeleteConfirmationModal from "../components/ViewTestOrder/DeleteConfirmationModal";
 import { BarChart3, Clock3, CheckCircle2, XCircle } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 export default function TestOrders() {
   const [orderStats, setOrderStats] = useState({
@@ -14,6 +16,9 @@ export default function TestOrders() {
     cancelled: 0,
     weeklyData: [],
   });
+
+  // Ref để chụp biểu đồ
+  const chartRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -25,13 +30,11 @@ export default function TestOrders() {
         const json = await res.json();
         const stats = json.result || json.data || {};
 
-        // totals (tolerant với nhiều tên trường)
         const total = Number(stats.total ?? stats.count ?? 0);
         const pending = Number(stats.pending ?? 0);
         const completed = Number(stats.completed ?? 0);
         const cancelled = Number(stats.cancelled ?? 0);
 
-        // weeklyData: nếu API trả weeklyData dùng thẳng, nếu không => build từ orders
         let weeklyData = [];
         if (Array.isArray(stats.weeklyData) && stats.weeklyData.length) {
           weeklyData = stats.weeklyData.map((it) => ({
@@ -40,84 +43,20 @@ export default function TestOrders() {
             Cancelled: Number(it.Cancelled ?? it.cancelled ?? 0),
             Pending: Number(it.Pending ?? it.pending ?? 0),
           }));
-        } else {
-          // tìm mảng orders trong nhiều vị trí khả dĩ
-          const rawOrders =
-            Array.isArray(stats.orders) ? stats.orders :
-            Array.isArray(json.orders) ? json.orders :
-            Array.isArray(stats.data) ? stats.data :
-            [];
-          weeklyData = processWeeklyStats(rawOrders);
         }
 
         if (mounted) {
-          setOrderStats((prev) => ({
-            ...prev,
-            total,
-            pending,
-            completed,
-            cancelled,
-            weeklyData,
-          }));
+          setOrderStats({ total, pending, completed, cancelled, weeklyData });
         }
       } catch (err) {
         console.error("Error fetching statistics:", err);
       }
     }
 
-    function processWeeklyStats(orders) {
-      if (!Array.isArray(orders) || orders.length === 0) return [];
-
-      const weekMap = orders.reduce((acc, order) => {
-        // lấy ngày từ các tên trường thường gặp
-        const dateStr = order.date || order.orderDate || order.createdAt || order.created_at || order.dateOfBirth;
-        const d = parseDate(dateStr);
-        if (!d) return acc;
-
-        const weekNo = getWeekNumber(d);
-        const weekKey = `W${String(weekNo).padStart(2, "0")}`;
-
-        if (!acc[weekKey]) acc[weekKey] = { Completed: 0, Cancelled: 0, Pending: 0 };
-
-        const status = (order.status || order.state || "PENDING").toString().toUpperCase();
-        if (status.startsWith("COMP")) acc[weekKey].Completed += 1;
-        else if (status.startsWith("CANCEL")) acc[weekKey].Cancelled += 1;
-        else acc[weekKey].Pending += 1;
-
-        return acc;
-      }, {});
-
-      return Object.entries(weekMap)
-        .map(([week, stats]) => ({ week, ...stats }))
-        .sort((a, b) => a.week.localeCompare(b.week));
-    }
-
-    function parseDate(s) {
-      if (!s) return null;
-      // ISO first
-      const iso = new Date(s);
-      if (!isNaN(iso.getTime())) return iso;
-      // dd/MM/yyyy
-      const parts = s.split("/");
-      if (parts.length === 3) {
-        const [d, m, y] = parts;
-        const year = Number(y.length === 2 ? `20${y}` : y);
-        const date = new Date(year, Number(m) - 1, Number(d));
-        if (!isNaN(date.getTime())) return date;
-      }
-      return null;
-    }
-
-    function getWeekNumber(d) {
-      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-      const dayNum = date.getUTCDay() || 7;
-      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
-    }
-
     fetchStatistics();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const summary = [
@@ -151,9 +90,117 @@ export default function TestOrders() {
     },
   ];
 
+  // 🎯 Excel export with ExcelJS
+  const handleExportExcel = async () => {
+    try {
+      const queryParams = new URLSearchParams({
+        page: "0",
+        size: "1000",
+        sortDir: "desc",
+      });
+
+      const response = await fetch(`http://localhost:6868/api/test-orders?${queryParams}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const result = await response.json();
+      const orders = result.result?.items || [];
+
+      if (orders.length === 0) {
+        alert("No data available to export");
+        return;
+      }
+
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Test Orders");
+
+      // Columns setup
+      sheet.columns = [
+        { header: "Order ID", key: "testOrderId", width: 15 },
+        { header: "Patient Name", key: "patientName", width: 25 },
+        { header: "Date of Birth", key: "dob", width: 15 },
+        { header: "Phone", key: "phone", width: 15 },
+        { header: "Email", key: "email", width: 25 },
+        { header: "Gender", key: "gender", width: 10 },
+        { header: "Status", key: "status", width: 15 },
+        { header: "Address", key: "address", width: 25 },
+        { header: "Country", key: "country", width: 15 },
+        { header: "Citizen ID", key: "citizenId", width: 15 },
+        { header: "Created By", key: "createdBy", width: 20 },
+      ];
+
+      // Header styling
+      sheet.getRow(1).eachCell((cell) => {
+        cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+        cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF65F63" } };
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+        cell.border = {
+          top: { style: "thin", color: { argb: "FFAAAAAA" } },
+          left: { style: "thin", color: { argb: "FFAAAAAA" } },
+          bottom: { style: "thin", color: { argb: "FFAAAAAA" } },
+          right: { style: "thin", color: { argb: "FFAAAAAA" } },
+        };
+      });
+
+      // Add data with color by status
+      orders.forEach((o) => {
+        const row = sheet.addRow({
+          testOrderId: o.testOrderId,
+          patientName: o.patientName,
+          dob: o.dob || o.dateOfBirth,
+          phone: o.phone,
+          email: o.email,
+          gender: o.gender,
+          status: o.status,
+          address: o.address,
+          country: o.country,
+          citizenId: o.citizenId,
+          createdBy: o.createdBy || o.creator,
+        });
+
+        const statusCell = row.getCell("status");
+        const status = (o.status || "").toLowerCase();
+        let color = "FFDDEBF7"; // pending-blue
+
+        if (status.includes("comp")) color = "FFD4EDDA"; // green
+        else if (status.includes("cancel")) color = "FFF8D7DA"; // red
+
+        statusCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: color } };
+        row.alignment = { vertical: "middle" };
+        row.border = {
+          bottom: { style: "hair", color: { argb: "FFD9D9D9" } },
+        };
+      });
+
+      // Optional: Add chart sheet (image)
+      const chartSheet = workbook.addWorksheet("Statistics");
+      try {
+        const chartCanvas = chartRef.current?.querySelector("canvas");
+        if (chartCanvas) {
+          const dataUrl = chartCanvas.toDataURL("image/png");
+          const imageId = workbook.addImage({
+            base64: dataUrl,
+            extension: "png",
+          });
+          chartSheet.addImage(imageId, {
+            tl: { col: 1, row: 1 },
+            ext: { width: 600, height: 350 },
+          });
+        }
+      } catch (err) {
+        console.warn("Chart image not available:", err);
+      }
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      saveAs(new Blob([buffer]), `TestOrders_${new Date().toISOString().split("T")[0]}.xlsx`);
+    } catch (error) {
+      console.error("Export failed:", error);
+      alert(`Export failed: ${error.message}`);
+    }
+  };
+
   return (
     <div className="space-y-12 max-w-[1920px] mx-auto px-6">
-      {/* HEADER: Title center + buttons right */}
+      {/* HEADER */}
       <div className="space-y-4">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center">
           <div />
@@ -161,11 +208,11 @@ export default function TestOrders() {
             TEST ORDERS
           </h1>
           <div className="justify-self-end flex gap-4">
-            <button className="bg-[#f65f63]/90 hover:bg-[#f65f63] text-white font-semibold px-5 py-2 rounded-lg transition-shadow shadow-sm hover:shadow">
+            <button
+              onClick={handleExportExcel}
+              className="bg-[#f65f63]/90 hover:bg-[#f65f63] text-white font-semibold px-5 py-2 rounded-lg transition-shadow shadow-sm hover:shadow"
+            >
               Export Excel
-            </button>
-            <button className="bg-[#f65f63] hover:bg-[#e74f53] text-white font-semibold px-5 py-2 rounded-lg transition-shadow shadow-sm hover:shadow">
-              Print Report
             </button>
           </div>
         </div>
@@ -182,7 +229,16 @@ export default function TestOrders() {
       </div>
 
       {/* CHART */}
-      <ChartSection data={orderStats.weeklyData} activityTotals={{ Completed: orderStats.completed, Cancelled: orderStats.cancelled, Pending: orderStats.pending }} />
+      <div ref={chartRef}>
+        <ChartSection
+          data={orderStats.weeklyData}
+          activityTotals={{
+            Completed: orderStats.completed,
+            Cancelled: orderStats.cancelled,
+            Pending: orderStats.pending,
+          }}
+        />
+      </div>
 
       {/* ACTIVITY */}
       <ActivityCard />

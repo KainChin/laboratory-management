@@ -1,7 +1,7 @@
 package com.example.test_order_service.controller;
 
-import com.example.test_order_service.dto.repsonse.FlaggingConfigResponse;
-import com.example.test_order_service.dto.repsonse.RestResponse;
+import com.example.test_order_service.dto.response.FlaggingConfigResponse;
+import com.example.test_order_service.dto.response.RestResponse;
 import com.example.test_order_service.service.FlaggingConfigService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

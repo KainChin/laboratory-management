@@ -1,8 +1,8 @@
 package com.example.test_order_service.integration.controller;
 
-import com.example.test_order_service.dto.repsonse.PageResponse;
-import com.example.test_order_service.dto.repsonse.RestResponse;
-import com.example.test_order_service.dto.repsonse.TestOrderResponse;
+import com.example.test_order_service.dto.response.PageResponse;
+import com.example.test_order_service.dto.response.RestResponse;
+import com.example.test_order_service.dto.response.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.enumForEntity.Gender;
