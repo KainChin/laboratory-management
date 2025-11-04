@@ -13,6 +13,7 @@ import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
 import com.example.test_order_service.utils.GeneralUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
