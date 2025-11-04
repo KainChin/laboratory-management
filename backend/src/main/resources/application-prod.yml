@@ -79,13 +79,10 @@ wait:
 eureka:
   client:
     service-url:
-      defaultZone: http://23.23.152.34:8761/eureka/
-    register-with-eureka: true
-    fetch-registry: true
+      defaultZone: https://discovery-server-zsph.onrender.com/eureka/  # trỏ về Eureka local
   instance:
     prefer-ip-address: true
-    lease-renewal-interval-in-seconds: 10
-    lease-expiration-duration-in-seconds: 30
+    instance-id: ${spring.application.name}:${server.port}
 
 management:
   endpoints:
