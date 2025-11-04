@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class TestResultParameterResponse {
+    private String id;
     private Integer sequence;
     private String paramCode;
     private String paramName;
