@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
 <<<<<<< HEAD
+<<<<<<< HEAD
     <list default="true" id="e9c64236-d12a-4fc7-8cd1-95cb4c3d8d73" name="Changes" comment="" />
 =======
     <list default="true" id="ee5d1bb9-b28c-4656-a5fe-8317971c74a8" name="Changes" comment="">
@@ -13,6 +14,31 @@
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/example/test_order_service/configuration/StartupConfigLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/example/test_order_service/config/StartupConfigLogger.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-prod.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
+=======
+    <list default="true" id="c09f232e-356f-4ca7-b3a5-2dd3f602de4f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/copilot.data.migration.agent.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/copilot.data.migration.ask.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/copilot.data.migration.ask2agent.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/copilot.data.migration.edit.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/aa9ddfa7-617a-4208-be89-f565294ecb6f.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/aa9ddfa7-617a-4208-be89-f565294ecb6f/storage_v2/_src_/database/postgres.edMnLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/aa9ddfa7-617a-4208-be89-f565294ecb6f/storage_v2/_src_/database/postgres.edMnLQ/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/aa9ddfa7-617a-4208-be89-f565294ecb6f/storage_v2/_src_/database/postgres.edMnLQ/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/aa9ddfa7-617a-4208-be89-f565294ecb6f/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/laboratory-management.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DetailTestOrder/components/PatientInfo.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DetailTestOrder/components/PatientInfo.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DetailTestOrder/components/TestResult.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DetailTestOrder/components/TestResult.jsx" afterDir="false" />
+>>>>>>> d2bac258033696681ab0584384c3a36a6a4b17e1
     </list>
 >>>>>>> 2eb1a696a7a148c58435f91a02196a34cf29136d
     <option name="SHOW_DIALOG" value="false" />
@@ -20,6 +46,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+<<<<<<< HEAD
 <<<<<<< HEAD
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -39,55 +66,40 @@
       </list>
     </option>
   </component>
+=======
+>>>>>>> d2bac258033696681ab0584384c3a36a6a4b17e1
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="develop" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="KubernetesApiPersistence">{}</component>
-  <component name="KubernetesApiProvider">{
-  &quot;isMigrated&quot;: true
-}</component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 0
-}</component>
-  <component name="ProjectId" id="34pweuCcbW7HbynIxIKuai88oPS" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="350taUx5bmcbNEpCrovCJAAspud" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.TestOrderServiceApplication.executor": "Run",
-    "Maven.test_order_service [clean].executor": "Run",
-    "Maven.test_order_service [install].executor": "Run",
-    "Maven.test_order_service [package].executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.TestOrderServiceApplication.executor": "Run",
-    "git-widget-placeholder": "feature/gan-api-test-result",
+    "git-widget-placeholder": "develop",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/OJT/laboratory-management",
+    "last_opened_file_path": "D:/03.SoftwareEngineerFPT/Semester06/laboratory-management",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+<<<<<<< HEAD
   <component name="RunManager" selected="Application.TestOrderServiceApplication">
     <configuration name="TestOrderServiceApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.example.test_order_service.TestOrderServiceApplication" />
@@ -103,6 +115,9 @@
       </method>
     </configuration>
 >>>>>>> 2eb1a696a7a148c58435f91a02196a34cf29136d
+=======
+  <component name="RunManager">
+>>>>>>> d2bac258033696681ab0584384c3a36a6a4b17e1
     <configuration name="TestOrderServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="test_order_service" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.test_order_service.TestOrderServiceApplication" />
@@ -110,26 +125,23 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Application.TestOrderServiceApplication" />
-      </list>
-    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169" />
+        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-IU-252.26199.169" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="ee5d1bb9-b28c-4656-a5fe-8317971c74a8" name="Changes" comment="" />
-      <created>1761923921778</created>
+      <changelist id="c09f232e-356f-4ca7-b3a5-2dd3f602de4f" name="Changes" comment="" />
+      <created>1762258881801</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1761923921778</updated>
-      <workItem from="1761923923470" duration="260000" />
-      <workItem from="1762007839553" duration="12062000" />
-      <workItem from="1762128454035" duration="2032000" />
-      <workItem from="1762138996546" duration="596000" />
-      <workItem from="1762140055168" duration="2515000" />
-      <workItem from="1762157188326" duration="979000" />
-      <workItem from="1762158185143" duration="5775000" />
+      <updated>1762258881801</updated>
+      <workItem from="1762258882739" duration="1096000" />
     </task>
     <servers />
   </component>
