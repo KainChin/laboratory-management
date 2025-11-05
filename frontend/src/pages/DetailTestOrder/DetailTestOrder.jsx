@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams, Routes, Route } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileDown } from "lucide-react";
+import html2pdf from 'html2pdf.js';
 import Loading from "../../components/Loading";
 import TestOrders from "../TestOrders"; // Import TestOrders component
 import PatientInfo from "./PatientInfo"; // Import PatientInfo component
@@ -106,7 +107,49 @@ function TestResults({ results = [] }) {
 export default function DetailTestOrder(props) {
   const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const { id } = useParams();
+  const contentRef = useRef(null);
+
+  const handleExportPDF = async () => {
+    try {
+      setIsExporting(true);
+      
+      // Get the content element
+      const element = contentRef.current;
+      if (!element) return;
+
+      // Configure pdf options
+      const options = {
+        margin: 10,
+        filename: `test-order-${id}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          logging: false
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait' 
+        }
+      };
+
+      // Before export: Add print class
+      element.classList.add('printing');
+      
+      // Generate PDF
+      await html2pdf().set(options).from(element).save();
+      
+      // After export: Remove print class
+      element.classList.remove('printing');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
   const [testOrder, setTestOrder] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -226,11 +269,26 @@ export default function DetailTestOrder(props) {
               <div className="text-gray-500 mt-1">ORDER ID: {id}</div>
             </div>
           </div>
-          <div className="text-sm text-gray-600">Welcome, [Lab User]</div>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-600 mr-4">Welcome, [Lab User]</div>
+            {!loading && !error && testOrder && (
+              <>
+                <button className="btn-outline">Edit Order</button>
+                <button
+                  onClick={handleExportPDF}
+                  disabled={isExporting}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  <FileDown size={18} />
+                  {isExporting ? 'Generating PDF...' : 'Print Result'}
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="mt-6">
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-6 shadow-sm" ref={contentRef}>
             <h1 className="text-xl font-semibold mb-2">Test Order Detail</h1>
             {testOrder && waitingStatuses.includes((testOrder.status||"").toString().toUpperCase()) && (
               <div className="mb-4 rounded border border-blue-200 bg-blue-50 text-blue-700 px-4 py-3">
@@ -261,9 +319,7 @@ export default function DetailTestOrder(props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
-          {/* left columns ... */}
-
+        <div className="grid grid-cols-3 gap-6" ref={contentRef}>
           {/* Test Results full width row */}
           <div className="col-span-3 mt-6">
             <TestResults results={testResults} />
