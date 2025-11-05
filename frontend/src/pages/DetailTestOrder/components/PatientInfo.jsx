@@ -98,6 +98,11 @@ export default function PatientInfo({ patient = {} }) {
             <div style={styles.pairLabel}>Address</div>
             <div style={styles.pairValue}>{patient.address}</div>
           </div>
+
+          <div>
+            <div style={styles.pairLabel}>Blood Collection ID</div>
+            <div style={styles.pairValue}>{patient.bloodCollectionId}</div>
+          </div>
         </div>
 
         <div style={styles.col} className="patient-col">

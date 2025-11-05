@@ -156,6 +156,40 @@ input, textarea {
 .status-card .donut-wrap { display:flex; justify-content:center; align-items:center; padding:16px 0; }
 .donut { transform:rotate(-90deg); overflow:visible; }
 
+/* Print styles */
+.printing .no-print,
+.printing button:not(.print-show) {
+  display: none !important;
+}
+
+.printing {
+  background: white !important;
+}
+
+.printing .card {
+  break-inside: avoid;
+  box-shadow: none !important;
+  border: 1px solid #eee !important;
+}
+
+.printing table {
+  break-inside: auto;
+}
+
+.printing tr {
+  break-inside: avoid;
+  break-after: auto;
+}
+
+.printing .dto-page {
+  padding: 0 !important;
+  background: white !important;
+}
+
+.printing .actions-list button {
+  display: none !important;
+}
+
 /* Card & header */
 .dto-card {
   background: #ffffff;

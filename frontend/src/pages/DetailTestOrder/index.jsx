@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import html2pdf from 'html2pdf.js';
 import PatientInfo from "./components/PatientInfo";
 import OrderMeta from "./components/OrderMeta";
 import TestResult from "./components/TestResult";
@@ -106,7 +107,39 @@ export default function DetailTestOrder() {
 
         <div className="dto-header-actions">
           <button className="btn-outline">Edit Order</button>
-          <button className="btn-outline">Print Result</button>
+          <button 
+            onClick={async () => {
+              try {
+                const element = document.querySelector('.dto-page');
+                if (!element) return;
+
+                const options = {
+                  margin: 10,
+                  filename: `test-order-${order.testOrderId}.pdf`,
+                  image: { type: 'jpeg', quality: 0.98 },
+                  html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                  },
+                  jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait' 
+                  }
+                };
+                
+                element.classList.add('printing');
+                await html2pdf().set(options).from(element).save();
+                element.classList.remove('printing');
+              } catch (error) {
+                console.error('Error exporting PDF:', error);
+              }
+            }}
+            className="btn-outline"
+          >
+            Export PDF
+          </button>
         </div>
       </div>
 
@@ -119,7 +152,12 @@ export default function DetailTestOrder() {
 
         <div className="dto-right-col">
           <OrderMeta order={order} />
-          <QuickActions />
+          <QuickActions 
+            status={order.status}
+            onStatusChange={(newStatus) => {
+              setOrder({...order, status: newStatus});
+            }}
+          />
           <StatusChart status={order.status} />
         </div>
       </div>
