@@ -861,3 +861,357 @@ Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionExcep
  Note: further occurrences of this error will be logged at DEBUG level.
 2025-11-04T20:52:11.130+07:00  INFO 17476 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
 2025-11-04T20:52:12.498+07:00  INFO 17476 --- [test-order-service] [http-nio-6868-exec-7] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 864 ms
+2025-11-05T07:40:30.999+07:00  INFO 21636 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Fetching config from server at : http://localhost:8888
+2025-11-05T07:40:31.096+07:00  INFO 21636 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Exception on Url - http://localhost:8888:org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8888/test-order-service/default": Connection refused: getsockopt. Will be trying the next url if available
+2025-11-05T07:40:31.096+07:00  WARN 21636 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/test-order-service/default": Connection refused: getsockopt
+2025-11-05T07:40:31.100+07:00  INFO 21636 --- [test-order-service] [main] c.e.t.TestOrderServiceApplication        : The following 1 profile is active: "prod"
+2025-11-05T07:40:31.932+07:00  INFO 21636 --- [test-order-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-05T07:40:32.112+07:00  INFO 21636 --- [test-order-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 170 ms. Found 5 JPA repository interfaces.
+2025-11-05T07:40:32.445+07:00  INFO 21636 --- [test-order-service] [main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=45023586-fa46-30b5-9817-11b440167dc4
+2025-11-05T07:40:32.618+07:00  WARN 21636 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-05T07:40:32.621+07:00  WARN 21636 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-05T07:40:32.622+07:00  WARN 21636 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-05T07:40:32.623+07:00  WARN 21636 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-05T07:40:32.628+07:00  WARN 21636 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'reactorDeferringLoadBalancerExchangeFilterFunction' of type [org.springframework.cloud.client.loadbalancer.reactive.DeferringLoadBalancerExchangeFilterFunction] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-05T07:40:32.971+07:00  INFO 21636 --- [test-order-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 6868 (http)
+2025-11-05T07:40:32.989+07:00  INFO 21636 --- [test-order-service] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-05T07:40:32.989+07:00  INFO 21636 --- [test-order-service] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-05T07:40:33.065+07:00  INFO 21636 --- [test-order-service] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-11-05T07:40:33.065+07:00  INFO 21636 --- [test-order-service] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1954 ms
+2025-11-05T07:40:33.307+07:00  INFO 21636 --- [test-order-service] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-05T07:40:33.385+07:00  INFO 21636 --- [test-order-service] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-11-05T07:40:33.424+07:00  INFO 21636 --- [test-order-service] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-05T07:40:33.679+07:00  INFO 21636 --- [test-order-service] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-05T07:40:33.707+07:00  INFO 21636 --- [test-order-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-05T07:40:33.915+07:00  INFO 21636 --- [test-order-service] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2c224096
+2025-11-05T07:40:33.917+07:00  INFO 21636 --- [test-order-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-05T07:40:35.398+07:00  INFO 21636 --- [test-order-service] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-05T07:40:35.544+07:00  INFO 21636 --- [test-order-service] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-05T07:40:35.882+07:00  INFO 21636 --- [test-order-service] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-05T07:40:37.148+07:00  INFO 21636 --- [test-order-service] [main] c.e.t.ingest.config.KafkaIngestConfig    : Effective bootstrap servers: [34.199.182.98:9092]
+2025-11-05T07:40:37.148+07:00  INFO 21636 --- [test-order-service] [main] c.e.t.ingest.config.KafkaIngestConfig    : Effective consumer.auto-offset-reset: earliest
+2025-11-05T07:40:37.397+07:00  WARN 21636 --- [test-order-service] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-05T07:40:38.006+07:00  INFO 21636 --- [test-order-service] [main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2025-11-05T07:40:38.037+07:00  WARN 21636 --- [test-order-service] [main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2025-11-05T07:40:38.132+07:00  INFO 21636 --- [test-order-service] [main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2025-11-05T07:40:38.162+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2025-11-05T07:40:38.166+07:00  INFO 21636 --- [test-order-service] [main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-05T07:40:38.176+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2025-11-05T07:40:38.177+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2025-11-05T07:40:38.177+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2025-11-05T07:40:38.177+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2025-11-05T07:40:38.177+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2025-11-05T07:40:38.177+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2025-11-05T07:40:38.177+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2025-11-05T07:40:44.873+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2025-11-05T07:40:44.875+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2025-11-05T07:40:44.876+07:00  INFO 21636 --- [test-order-service] [main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2025-11-05T07:40:44.878+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1762303244877 with initial instances count: 1
+2025-11-05T07:40:44.881+07:00  INFO 21636 --- [test-order-service] [main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application TEST-ORDER-SERVICE with eureka with status UP
+2025-11-05T07:40:44.881+07:00  INFO 21636 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1762303244881, current=UP, previous=STARTING]
+2025-11-05T07:40:44.882+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-05T07:40:45.094+07:00  INFO 21636 --- [test-order-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 6868 (http) with context path '/'
+2025-11-05T07:40:45.095+07:00  INFO 21636 --- [test-order-service] [main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 6868
+2025-11-05T07:40:45.153+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-05T07:40:45.181+07:00  INFO 21636 --- [test-order-service] [main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = earliest
+	bootstrap.servers = [34.199.182.98:9092]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-test-result-full-ingest-group-1
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	enable.metrics.push = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = test-result-full-ingest-group
+	group.instance.id = null
+	group.protocol = classic
+	group.remote.assignor = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.JsonDeserializer
+
+2025-11-05T07:40:45.238+07:00  INFO 21636 --- [test-order-service] [main] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2025-11-05T07:40:45.443+07:00  INFO 21636 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.7.1
+2025-11-05T07:40:45.444+07:00  INFO 21636 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: e2494e6ffb89f828
+2025-11-05T07:40:45.444+07:00  INFO 21636 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1762303245442
+2025-11-05T07:40:45.448+07:00  INFO 21636 --- [test-order-service] [main] o.a.k.c.c.internals.LegacyKafkaConsumer  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Subscribed to topic(s): test-results-full
+2025-11-05T07:40:45.458+07:00  INFO 21636 --- [test-order-service] [main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = earliest
+	bootstrap.servers = [34.199.182.98:9092]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-test-result-full-ingest-group-2
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	enable.metrics.push = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = test-result-full-ingest-group
+	group.instance.id = null
+	group.protocol = classic
+	group.remote.assignor = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.JsonDeserializer
+
+2025-11-05T07:40:45.458+07:00  INFO 21636 --- [test-order-service] [main] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2025-11-05T07:40:45.465+07:00  INFO 21636 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.7.1
+2025-11-05T07:40:45.465+07:00  INFO 21636 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: e2494e6ffb89f828
+2025-11-05T07:40:45.465+07:00  INFO 21636 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1762303245465
+2025-11-05T07:40:45.466+07:00  INFO 21636 --- [test-order-service] [main] o.a.k.c.c.internals.LegacyKafkaConsumer  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Subscribed to topic(s): test-results-full
+2025-11-05T07:40:45.482+07:00  INFO 21636 --- [test-order-service] [main] c.e.t.TestOrderServiceApplication        : Started TestOrderServiceApplication in 15.747 seconds (process running for 16.433)
+2025-11-05T07:40:45.484+07:00  INFO 21636 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : ENV spring.kafka.bootstrap-servers = 34.199.182.98:9092
+2025-11-05T07:40:45.485+07:00  INFO 21636 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : KafkaProperties bootstrapServers = [34.199.182.98:9092]
+2025-11-05T07:40:45.485+07:00  INFO 21636 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : KafkaProperties consumer.auto-offset-reset = earliest
+2025-11-05T07:40:47.004+07:00  WARN 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Error while fetching metadata with correlation id 2 : {test-results-full=UNKNOWN_TOPIC_OR_PARTITION}
+2025-11-05T07:40:47.004+07:00  WARN 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Error while fetching metadata with correlation id 2 : {test-results-full=LEADER_NOT_AVAILABLE}
+2025-11-05T07:40:47.005+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Cluster ID: XD-8Ivv9QbyUMtsgjx0TYA
+2025-11-05T07:40:47.005+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Cluster ID: XD-8Ivv9QbyUMtsgjx0TYA
+2025-11-05T07:40:47.006+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-05T07:40:47.006+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-05T07:40:47.008+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] (Re-)joining group
+2025-11-05T07:40:47.009+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] (Re-)joining group
+2025-11-05T07:40:47.153+07:00  INFO 21636 --- [test-order-service] [http-nio-6868-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-05T07:40:47.153+07:00  INFO 21636 --- [test-order-service] [http-nio-6868-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-05T07:40:47.154+07:00  INFO 21636 --- [test-order-service] [http-nio-6868-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-11-05T07:40:47.858+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-result-full-ingest-group-2-79d23e6c-c16a-4d29-8fc6-a30a83b7c016
+2025-11-05T07:40:47.858+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] (Re-)joining group
+2025-11-05T07:40:47.875+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-result-full-ingest-group-1-a1eb4175-363a-436f-8bc3-c38e3986c8ff
+2025-11-05T07:40:47.876+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] (Re-)joining group
+2025-11-05T07:40:48.447+07:00  INFO 21636 --- [test-order-service] [http-nio-6868-exec-9] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 940 ms
+2025-11-05T07:40:54.111+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Successfully joined group with generation Generation{generationId=1, memberId='consumer-test-result-full-ingest-group-2-79d23e6c-c16a-4d29-8fc6-a30a83b7c016', protocol='range'}
+2025-11-05T07:40:54.112+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Successfully joined group with generation Generation{generationId=1, memberId='consumer-test-result-full-ingest-group-1-a1eb4175-363a-436f-8bc3-c38e3986c8ff', protocol='range'}
+2025-11-05T07:40:54.116+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Finished assignment for group at generation 1: {consumer-test-result-full-ingest-group-1-a1eb4175-363a-436f-8bc3-c38e3986c8ff=Assignment(partitions=[test-results-full-0]), consumer-test-result-full-ingest-group-2-79d23e6c-c16a-4d29-8fc6-a30a83b7c016=Assignment(partitions=[])}
+2025-11-05T07:40:54.373+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Successfully synced group in generation Generation{generationId=1, memberId='consumer-test-result-full-ingest-group-2-79d23e6c-c16a-4d29-8fc6-a30a83b7c016', protocol='range'}
+2025-11-05T07:40:54.373+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Successfully synced group in generation Generation{generationId=1, memberId='consumer-test-result-full-ingest-group-1-a1eb4175-363a-436f-8bc3-c38e3986c8ff', protocol='range'}
+2025-11-05T07:40:54.374+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Notifying assignor about the new Assignment(partitions=[])
+2025-11-05T07:40:54.375+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Notifying assignor about the new Assignment(partitions=[test-results-full-0])
+2025-11-05T07:40:54.375+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Adding newly assigned partitions: 
+2025-11-05T07:40:54.378+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-result-full-ingest-group: partitions assigned: []
+2025-11-05T07:40:54.382+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Adding newly assigned partitions: test-results-full-0
+2025-11-05T07:40:54.642+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Found no committed offset for partition test-results-full-0
+2025-11-05T07:40:54.907+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Resetting offset for partition test-results-full-0 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[34.199.182.98:9092 (id: 1 rack: null)], epoch=0}}.
+2025-11-05T07:40:54.909+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-result-full-ingest-group: partitions assigned: [test-results-full-0]
+2025-11-05T07:45:15.929+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - Re-registering apps/TEST-ORDER-SERVICE
+2025-11-05T07:45:15.929+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-05T07:45:16.020+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-05T07:45:38.183+07:00  INFO 21636 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-05T07:45:46.093+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2025-11-05T07:45:46.094+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2025-11-05T07:45:46.094+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2025-11-05T07:45:46.094+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2025-11-05T07:45:46.094+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2025-11-05T07:45:46.094+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Application version is -1: false
+2025-11-05T07:45:46.094+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2025-11-05T07:45:46.233+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2025-11-05T07:49:47.073+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Node -1 disconnected.
+2025-11-05T07:49:47.479+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Node -1 disconnected.
+2025-11-05T07:50:38.185+07:00  INFO 21636 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-05T07:51:17.699+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - Re-registering apps/TEST-ORDER-SERVICE
+2025-11-05T07:51:17.700+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-05T07:51:17.785+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-05T07:51:47.601+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2025-11-05T07:51:47.601+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2025-11-05T07:51:47.601+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2025-11-05T07:51:47.601+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2025-11-05T07:51:47.601+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2025-11-05T07:51:47.601+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Application version is -1: false
+2025-11-05T07:51:47.601+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2025-11-05T07:51:47.705+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-CacheRefreshExecutor-%d] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2025-11-05T07:55:02.883+07:00  INFO 21636 --- [test-order-service] [SpringApplicationShutdownHook] o.s.c.n.e.s.EurekaServiceRegistry        : Unregistering application TEST-ORDER-SERVICE with eureka with status DOWN
+2025-11-05T07:55:02.883+07:00  INFO 21636 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1762304102883, current=DOWN, previous=UP]
+2025-11-05T07:55:02.883+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-05T07:55:02.886+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Member consumer-test-result-full-ingest-group-2-79d23e6c-c16a-4d29-8fc6-a30a83b7c016 sending LeaveGroup request to coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) due to the consumer unsubscribed from all topics
+2025-11-05T07:55:02.886+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Revoke previously assigned partitions test-results-full-0
+2025-11-05T07:55:02.887+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-result-full-ingest-group: partitions revoked: [test-results-full-0]
+2025-11-05T07:55:02.887+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Resetting generation and member id due to: consumer pro-actively leaving the group
+2025-11-05T07:55:02.887+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Request joining group due to: consumer pro-actively leaving the group
+2025-11-05T07:55:02.887+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.LegacyKafkaConsumer  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Unsubscribed all topics or patterns and assigned partitions
+2025-11-05T07:55:02.887+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Member consumer-test-result-full-ingest-group-1-a1eb4175-363a-436f-8bc3-c38e3986c8ff sending LeaveGroup request to coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) due to the consumer unsubscribed from all topics
+2025-11-05T07:55:02.887+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Resetting generation and member id due to: consumer pro-actively leaving the group
+2025-11-05T07:55:02.887+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Request joining group due to: consumer pro-actively leaving the group
+2025-11-05T07:55:02.887+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.LegacyKafkaConsumer  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Unsubscribed all topics or patterns and assigned partitions
+2025-11-05T07:55:02.889+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Resetting generation and member id due to: consumer pro-actively leaving the group
+2025-11-05T07:55:02.889+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Resetting generation and member id due to: consumer pro-actively leaving the group
+2025-11-05T07:55:02.890+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-1, groupId=test-result-full-ingest-group] Request joining group due to: consumer pro-actively leaving the group
+2025-11-05T07:55:02.890+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-result-full-ingest-group-2, groupId=test-result-full-ingest-group] Request joining group due to: consumer pro-actively leaving the group
+2025-11-05T07:55:02.975+07:00  INFO 21636 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-05T07:55:03.143+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2025-11-05T07:55:03.143+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2025-11-05T07:55:03.143+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+2025-11-05T07:55:03.143+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2025-11-05T07:55:03.147+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.a.kafka.common.utils.AppInfoParser     : App info kafka.consumer for consumer-test-result-full-ingest-group-2 unregistered
+2025-11-05T07:55:03.147+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-1-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-result-full-ingest-group: Consumer stopped
+2025-11-05T07:55:03.502+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2025-11-05T07:55:03.503+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2025-11-05T07:55:03.503+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+2025-11-05T07:55:03.503+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2025-11-05T07:55:03.508+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.kafka.common.utils.AppInfoParser     : App info kafka.consumer for consumer-test-result-full-ingest-group-1 unregistered
+2025-11-05T07:55:03.508+07:00  INFO 21636 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-result-full-ingest-group: Consumer stopped
+2025-11-05T07:55:05.605+07:00  INFO 21636 --- [test-order-service] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-05T07:55:05.606+07:00  INFO 21636 --- [test-order-service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-05T07:55:05.608+07:00  INFO 21636 --- [test-order-service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-11-05T07:55:05.608+07:00  INFO 21636 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Shutting down DiscoveryClient ...
+2025-11-05T07:55:08.625+07:00  INFO 21636 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Unregistering ...
+2025-11-05T07:55:08.725+07:00  INFO 21636 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - deregister  status: 200
+2025-11-05T07:55:08.725+07:00  INFO 21636 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Completed shut down of DiscoveryClient
