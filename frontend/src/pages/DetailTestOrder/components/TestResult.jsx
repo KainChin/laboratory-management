@@ -18,10 +18,6 @@ function mapStatus(status, flag) {
   return { label: s || "-", kind: "unknown" };
 }
 
-function StatusBadge({ kind, label }) {
-  return <span className={`dto-badge dto-badge-${kind}`}>{label}</span>;
-}
-
 function getFlagClass(flag) {
   // API may provide boolean flags or string reasons
   if (!flag) return "dto-flag-default";
@@ -86,11 +82,11 @@ export default function TestResult({ tests = null, orderId = null }) {
         const res = await fetch(`http://localhost:6868/api/test-orders/${id}`);
         if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
         const payload = await res.json();
-        const src = payload?.result ?? payload ?? {};
-        const rr = Array.isArray(src.testResults) ? src.testResults : [];
+        const src = payload?.result?.testResults ?? {};
+        const testParams = src?.testResultParameter ?? [];
         if (!mounted) return;
-        setRows(rr);
-        console.log("TestResult fetched rows:", rr);
+        setRows(testParams);
+        console.log("TestResult fetched rows:", testParams);
       } catch (err) {
         if (!mounted) return;
         setError(err.message || "Failed to load test results");
@@ -137,10 +133,9 @@ export default function TestResult({ tests = null, orderId = null }) {
         <thead>
           <tr>
             <th className="dto-th icon-col"></th>
-            <th className="dto-th name-col">Test Name</th>
+            <th className="dto-th name-col">Test Parameter</th>
             <th className="dto-th result-col">Result</th>
             <th className="dto-th ref-col">Reference Range</th>
-            <th className="dto-th status-col">Status</th>
             <th className="dto-th flag-col">Flag</th>
           </tr>
         </thead>
@@ -153,31 +148,27 @@ export default function TestResult({ tests = null, orderId = null }) {
             <tr><td colSpan={6} className="dto-empty">No test results</td></tr>
           ) : (
             rows.map((t) => {
-              // if API gives boolean flag, try to infer HIGH/LOW/NORMAL from values
-              const inferred = t.flag === true ? inferFlagFromValue(t) : null;
-              const flagText = inferred ? inferred : (t.flag === false ? null : (t.flag ?? null));
+              const flagText = t.flag ?? null;
               const mapped = mapStatus(t.status, flagText);
               const flagClass = getFlagClass(flagText);
               return (
-                <tr key={t.resultId} className="dto-row">
+                <tr key={t.id} className="dto-row">
                   <td className="dto-td icon-col">{renderIcon(mapped.kind)}</td>
 
-                  {/* removed createdBy / createdAt meta from Test Name cell */}
                   <td className="dto-td name-col">
-                    <div className="dto-param">{t.parameter ?? "-"}</div>
+                    <div className="dto-param">{t.paramName ?? "-"}</div>
                   </td>
 
-                  <td className="dto-td result-col">{fmtValue(t)}</td>
+                  <td className="dto-td result-col">
+                    {t.value ? `${t.value}${t.unit ? ` ${t.unit}` : ''}` : '-'}
+                  </td>
 
-                  <td className="dto-td ref-col">{fmtRef(t)}</td>
-
-                  <td className="dto-td status-col"><StatusBadge kind={mapped.kind} label={mapped.label} /></td>
+                  <td className="dto-td ref-col">{t.refRange ?? "-"}</td>
 
                   <td className="dto-td flag-col">
-                    <span className={`dto-flag ${flagClass}`}>{
-                      // show inferred text when boolean flag provided, otherwise show provided string
-                      t.flag === true ? (inferred === "NORMAL" ? "-" : (inferred ?? "ABNORMAL")) : (t.flag === false ? "-" : (t.flag ? String(t.flag).toUpperCase() : "-"))
-                    }</span>
+                    <span className={`dto-flag ${flagClass}`}>
+                      {t.flag ? String(t.flag).toUpperCase() : "-"}
+                    </span>
                   </td>
                 </tr>
               );
