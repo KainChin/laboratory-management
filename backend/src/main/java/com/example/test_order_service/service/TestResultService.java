@@ -9,4 +9,5 @@ public interface TestResultService {
 //    RestResponse<Void> createTestResult(String orderId, List<TestResultRequest> request);
     RestResponse<TestResultResponse> receiveHl7(String hl7RawData);
     RestResponse<?> getResultByBloodCollectionId(String bloodCollectionId);
+    RestResponse<Void> republishTestResultEvent(String testOrderId);
 }

@@ -221,4 +221,16 @@ public class TestResultServiceImpl implements TestResultService {
             return 0;
         }
     }
+
+    @Override
+    public RestResponse<Void> republishTestResultEvent(String testOrderId) {
+        // Vì class này không xử lý Kafka, chúng ta sẽ throw lỗi hoặc trả về thông báo không hỗ trợ.
+        // Trả về thông báo lỗi sẽ thân thiện với người dùng hơn.
+        return RestResponse.<Void>builder()
+                .statusCode(501) // 501 Not Implemented
+                .message("Republishing events is not supported in this service implementation.")
+                .error("Not Implemented")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }

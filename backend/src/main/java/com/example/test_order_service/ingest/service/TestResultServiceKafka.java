@@ -6,7 +6,8 @@ import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.TestResultParameter;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
-import com.example.test_order_service.ingest.publisher.TestResultEventPublisher; // <-- THÊM IMPORT NÀY
+import com.example.test_order_service.exception.ResourceNotFoundException;
+import com.example.test_order_service.ingest.publisher.TestResultEventPublisher; // <-- DÙNG LẠI PUBLISHER
 import com.example.test_order_service.mapper.TestResultMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.repository.TestResultRepository;
@@ -14,6 +15,7 @@ import com.example.test_order_service.service.TestResultService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +26,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Primary
+@Slf4j
 public class TestResultServiceKafka implements TestResultService {
     private final TestResultRepository testResultRepository;
     private final TestOrderRepository testOrderRepository;
     private final TestResultMapper testResultMapper;
-    private final TestResultEventPublisher eventPublisher;
+    private final TestResultEventPublisher eventPublisher; // <-- ĐƯA PUBLISHER TRỞ LẠI
 
     @Transactional
     public RestResponse<?> getResultByBloodCollectionId(String bloodCollectionId) {
@@ -47,6 +50,7 @@ public class TestResultServiceKafka implements TestResultService {
 
     @Override
     public RestResponse<TestResultResponse> receiveHl7(String rawHl7) {
+        // ... (phần code parsing HL7 giữ nguyên, không thay đổi)
         if (rawHl7 == null || rawHl7.isBlank()) {
             throw new IllegalArgumentException("HL7 message is empty");
         }
@@ -59,34 +63,25 @@ public class TestResultServiceKafka implements TestResultService {
         for (String line : lines) {
             if (line == null || line.isBlank()) continue;
             String[] parts = line.split("\\|");
-
             if (parts.length == 0) continue;
-
             if (parts[0].equals("MSH")) {
                 instrument = parts.length > 2 ? parts[2] : "";
             }
-
             if (parts[0].equals("OBR")) {
-                bloodCollectionId = parts.length > 2 && !parts[2].isBlank() ? parts[2] :
-                        (parts.length > 3 ? parts[3] : null);
+                bloodCollectionId = parts.length > 2 && !parts[2].isBlank() ? parts[2] : (parts.length > 3 ? parts[3] : null);
             } else if (parts[0].equals("OBX")) {
                 if (parts.length < 6) continue;
-
                 TestResultParameter testResultParameter = new TestResultParameter();
                 testResultParameter.setSequence(safeInt(parts, 1));
                 testResultParameter.setObxIdentifier(parts.length > 3 ? parts[3] : "UNKNOWN");
-
-                // OBX-3 = "WBC^White Blood Cell"
                 String[] idSplit = parts[3].split("\\^");
                 testResultParameter.setParamCode(idSplit[0]);
                 testResultParameter.setParamName(idSplit.length > 1 ? idSplit[1] : idSplit[0]);
-
                 testResultParameter.setValue(parts.length > 5 ? parts[5] : null);
                 testResultParameter.setUnit(parts.length > 6 ? parts[6] : null);
                 testResultParameter.setRefRange(parts.length > 7 ? parts[7] : null);
                 testResultParameter.setFlag(parts.length > 8 ? parts[8] : "N");
                 testResultParameter.setComputedBy("HL7 Parser v2.0");
-
                 testResultParameterList.add(testResultParameter);
             }
         }
@@ -96,39 +91,53 @@ public class TestResultServiceKafka implements TestResultService {
         }
 
         final String finalBloodCollectionId = bloodCollectionId.trim();
-
         TestOrder order = testOrderRepository.findByBloodCollectionId(finalBloodCollectionId).orElseThrow(() -> new IllegalArgumentException("TestOrder not found for blood collection Id: " + finalBloodCollectionId));
-
         TestResult result = TestResult.builder()
                 .testOrder(order)
-//                .patientId(order.getPatientId())
                 .bloodCollectionId(order.getBloodCollectionId())
                 .instrumentName(instrument)
                 .hl7RawData(rawHl7)
                 .status("COMPLETE")
                 .build();
-
         for (TestResultParameter p : testResultParameterList) {
             p.setTestResult(result);
             p.setTestOrder(order);
         }
-
         result.setTestResultParameter(testResultParameterList);
-
-        TestResult savedResult = testResultRepository.save(result); // <-- Lưu vào biến savedResult
-
+        TestResult savedResult = testResultRepository.save(result);
         order.setStatus(TestOrderStatus.COMPLETED);
         testOrderRepository.save(order);
+        // ... (kết thúc phần code parsing)
 
-        // <-- GỌI PUBLISHER SAU KHI LƯU DB THÀNH CÔNG
+        // GỌI PUBLISHER SAU KHI LƯU DB THÀNH CÔNG
         eventPublisher.publishTestResultCreated(savedResult);
 
-        TestResultResponse testResultResponse = testResultMapper.toTestResultResponse(savedResult); // <-- Dùng biến savedResult
+        TestResultResponse testResultResponse = testResultMapper.toTestResultResponse(savedResult);
 
         return RestResponse.<TestResultResponse>builder()
                 .statusCode(200)
                 .result(testResultResponse)
-                .message("HL7 parsing successfully")
+                .message("HL7 parsing successfully and event sent")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public RestResponse<Void> republishTestResultEvent(String testOrderId) {
+        log.info("Attempting to republish event for testOrderId: {}", testOrderId);
+        TestOrder order = testOrderRepository.findById(testOrderId)
+                .orElseThrow(() -> new ResourceNotFoundException("TestOrder not found with id: " + testOrderId));
+        TestResult testResult = order.getTestResults();
+        if (testResult == null) {
+            log.warn("No TestResult found for orderId: {}. Cannot republish event.", testOrderId);
+            throw new ResourceNotFoundException("No test result found for this order to republish.");
+        }
+        eventPublisher.publishTestResultCreated(testResult);
+        log.info("Successfully triggered republishing of event for orderId: {}", testOrderId);
+        return RestResponse.<Void>builder()
+                .statusCode(200)
+                .message("Successfully triggered event republishing for test order " + testOrderId)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
