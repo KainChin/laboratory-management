@@ -399,3 +399,29 @@ input, textarea {
   /* đảm bảo padding không làm textarea nhỏ lại quá */
   padding: 12px;
 }
+
+.comment-body {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+}
+
+.comment-item {
+  display: block;
+  width: 100%;
+  overflow: hidden; /* chặn text tràn */
+}
+
+.comment-body {
+  word-break: break-word;
+  white-space: pre-wrap;
+  line-height: 1.6;            /* tăng nhẹ chiều cao dòng */
+  display: inline-block;       /* giúp emoji nằm cùng dòng ổn định */
+  vertical-align: middle;      /* căn giữa emoji và text */
+  font-feature-settings: "liga"; /* giữ nguyên hiển thị ký tự kết hợp */
+  text-rendering: optimizeLegibility;
+}
+
+
+
