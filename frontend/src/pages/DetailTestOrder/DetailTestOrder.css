@@ -367,3 +367,35 @@ input, textarea {
   transition: transform 160ms ease, opacity 160ms ease;
 }
 .page-loader-overlay { opacity: 1; transition: opacity 200ms ease; }
+
+/* chỉnh textarea khi edit comment: chiếm hết chiều ngang khung comment, không còn khung đen vuông */
+.comment-edit-textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e6e9ef; /* thay viền đen */
+  resize: vertical;          /* cho phép thay đổi chiều cao, không chiều ngang */
+  min-height: 120px;         /* cao hơn một chút để trông chữ nhật */
+  max-height: 360px;
+  font-size: 14px;
+  line-height: 1.5;
+  background: #fff;
+  box-shadow: inset 0 1px 0 rgba(16,24,40,0.02), 0 8px 30px rgba(2,6,23,0.04);
+  outline: none;             /* tắt outline trình duyệt (loại viền đen) */
+  transition: box-shadow .12s ease, border-color .12s ease;
+  overflow: auto;
+}
+
+/* trạng thái focus đẹp hơn */
+.comment-edit-textarea:focus {
+  border-color: #10b981;
+  box-shadow: 0 12px 40px rgba(16,185,129,0.08);
+}
+
+/* Nếu cần cụ thể cho khung comment parent để textarea rộng sát lề */
+.comment {
+  /* đảm bảo padding không làm textarea nhỏ lại quá */
+  padding: 12px;
+}
