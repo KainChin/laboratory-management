@@ -1,174 +1,188 @@
 import React, { useEffect, useState } from "react";
-import { ClipboardList, CheckCircle, AlertTriangle, AlertCircle } from "lucide-react";
+import { createPortal } from "react-dom";
+import { ClipboardList } from "lucide-react";
 import "../DetailTestOrder.css";
 
-function mapStatus(status, flag) {
-  const s = (status || "").toString().toUpperCase();
-
-  // flag can be boolean (new API) or a string like HIGH/LOW/ABNORMAL
-  if (flag === true || flag === "TRUE") return { label: "Abnormal", kind: "abnormal" };
-  const f = (flag || "").toString().toUpperCase();
-  if (f.includes("HIGH") || f.includes("LOW") || f.includes("ABNORMAL")) return { label: "Critical", kind: "critical" };
-
-  if (s === "PENDING") return { label: "Pending", kind: "pending" };
-  // treat completed with no flag as normal
-  if (s === "COMPLETED") return { label: "Normal", kind: "normal" };
-  if (s === "VALIDATED") return { label: "Abnormal", kind: "abnormal" };
-  if (s === "APPROVED") return { label: "Normal", kind: "normal" };
-  return { label: s || "-", kind: "unknown" };
-}
-
 function getFlagClass(flag) {
-  // API may provide boolean flags or string reasons
   if (!flag) return "dto-flag-default";
-  const f = flag.toString().toUpperCase();
-  if (f.includes("HIGH")) return "dto-flag-high";
-  if (f.includes("LOW")) return "dto-flag-low";
-  if (f === "NORMAL") return "dto-flag-normal";
-  if (f === "ABNORMAL") return "dto-flag-high";
+  const f = String(flag).toUpperCase();
+  if (f === "H") return "dto-flag-high";
+  if (f === "L") return "dto-flag-low";
+  if (f === "N") return "dto-flag-normal";
   return "dto-flag-default";
 }
 
-// Infer flag from numeric value and reference range when API provides a boolean flag
-function inferFlagFromValue(r) {
-  if (!r) return null;
-  const v = r.value;
-  const min = r.minValue;
-  const max = r.maxValue;
-  if ((v === null || v === undefined) || (min === undefined && max === undefined)) return null;
-  const num = Number(v);
-  if (!Number.isFinite(num)) return null;
-  if (min !== undefined && max !== undefined) {
-    if (num > Number(max)) return "HIGH";
-    if (num < Number(min)) return "LOW";
-    return "NORMAL";
-  }
-  // if only one bound exists
-  if (min !== undefined) {
-    if (num < Number(min)) return "LOW";
-    return "NORMAL";
-  }
-  if (max !== undefined) {
-    if (num > Number(max)) return "HIGH";
-    return "NORMAL";
-  }
-  return null;
-}
-
-export default function TestResult({ tests = null, orderId = null }) {
-  const [rows, setRows] = useState(Array.isArray(tests) ? tests : []);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function fetchIfNeeded() {
-      if (Array.isArray(tests) && tests.length) {
-        setRows(tests);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
+export default function TestResult({ tests, onUpdate }) {
+  // helper to robustly extract parameter array from different possible server shapes
+  function extractParameters(src) {
+    if (!src) return [];
+    // try common locations for testResults
+    let tr = src.testResults ?? src.result?.testResults ?? src;
+    // if tr is a string, maybe server stored JSON string
+    if (typeof tr === "string") {
       try {
-        const id =
-          orderId ??
-          (() => {
-            const parts = window.location.pathname.split("/").filter(Boolean);
-            return parts[parts.length - 1];
-          })();
-
-        const res = await fetch(`http://localhost:6868/api/test-orders/${id}`);
-        if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
-        const payload = await res.json();
-        const src = payload?.result?.testResults ?? {};
-        const testParams = src?.testResultParameter ?? [];
-        if (!mounted) return;
-        setRows(testParams);
-        console.log("TestResult fetched rows:", testParams);
-      } catch (err) {
-        if (!mounted) return;
-        setError(err.message || "Failed to load test results");
-        console.error("TestResult fetch error:", err);
-      } finally {
-        if (!mounted) return;
-        setLoading(false);
+        tr = JSON.parse(tr);
+      } catch {
+        // leave as-is
       }
     }
 
-    fetchIfNeeded();
+    // tr might already be the array of parameters
+    if (Array.isArray(tr)) return tr;
+
+    // common keys for parameter list
+    let params = tr?.testResultParameter ?? tr?.testResultParameters ?? tr?.parameters ?? tr;
+
+    if (!params) return [];
+
+    // if params is a string, try parse
+    if (typeof params === "string") {
+      try {
+        params = JSON.parse(params);
+      } catch {
+        // fallback: return empty
+        return [];
+      }
+    }
+
+    // if it's an object (single param), wrap into array
+    if (!Array.isArray(params) && typeof params === "object") return [params];
+    if (Array.isArray(params)) return params;
+    return [];
+  }
+
+  // local copy of parameters so we can update after POST without needing parent update
+  const [parameters, setParameters] = useState(() => extractParameters(tests));
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hl7Text, setHl7Text] = useState("");
+  const [posting, setPosting] = useState(false);
+  const [postError, setPostError] = useState(null);
+
+  // keep local parameters in sync when parent tests prop changes
+  useEffect(() => {
+    setParameters(extractParameters(tests));
+  }, [tests]);
+
+  // determine whether server already has test results (use normalized extraction)
+  const serverParams = extractParameters(tests);
+  const hasServerResults = Array.isArray(serverParams) && serverParams.length > 0;
+  const hasLocalParams = Array.isArray(parameters) && parameters.length > 0;
+  const disableNew = hasServerResults || hasLocalParams;
+
+  // handlers for modal
+  const openModal = () => {
+    setHl7Text("");
+    setPostError(null);
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setHl7Text("");
+    setPostError(null);
+  };
+
+  // prevent background scroll when modal open and ensure overlay covers viewport
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.document && window.document.body) {
+      if (isModalOpen) document.body.style.overflow = "hidden";
+      else document.body.style.overflow = "";
+    }
     return () => {
-      mounted = false;
+      if (typeof window !== "undefined" && window.document && window.document.body) {
+        document.body.style.overflow = "";
+      }
     };
-  }, [tests, orderId]);
+  }, [isModalOpen]);
 
-  const renderIcon = (kind) => {
-    if (kind === "normal") return <CheckCircle size={16} className="icon-normal" />;
-    if (kind === "abnormal") return <AlertTriangle size={16} className="icon-abnormal" />;
-    if (kind === "critical") return <AlertCircle size={16} className="icon-critical" />;
-    return <ClipboardList size={16} />;
-  };
-
-  const fmtValue = (r) => {
-    if (r == null || (r.value === null || r.value === undefined)) return "-";
-    return r.unit ? `${r.value} ${r.unit}` : String(r.value);
-  };
-
-  const fmtRef = (r) => {
-    // new API uses minValue / maxValue
-    if (r.minValue !== undefined && r.maxValue !== undefined) return `${r.minValue} - ${r.maxValue}`;
-    return r.minValue ?? r.maxValue ?? "-";
-  };
+  async function submitHl7() {
+    if (posting) return; // guard double-submit
+    if (!hl7Text || !hl7Text.trim()) {
+      setPostError("HL7 message is empty");
+      return;
+    }
+    setPosting(true);
+    setPostError(null);
+    try {
+      const res = await fetch("http://localhost:6868/api/test-results/hl7", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: hl7Text,
+      });
+      if (!res.ok) throw new Error(`Server responded ${res.status}`);
+      const data = await res.json();
+      const newParams = data?.result?.testResultParameter || [];
+      setParameters(newParams);
+      // inform parent page that test results changed so a reload reflects the persisted state
+      try {
+        if (typeof onUpdate === "function") {
+          // pass the whole testResults object from response if available
+          onUpdate({ testResults: data?.result || { testResultParameter: newParams } });
+        }
+      } catch (e) {
+        console.warn("onUpdate callback failed:", e);
+      }
+      // optionally close modal on success
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("HL7 submit error:", err);
+      setPostError(err.message || "Failed to submit HL7");
+    } finally {
+      setPosting(false);
+    }
+  }
 
   return (
     <section className="dto-card">
-      <div className="dto-card-header">
-        <div className="dto-icon"><ClipboardList size={16} /></div>
-        <h3 className="dto-title">Test Result</h3>
+      <div className="dto-card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="dto-icon"><ClipboardList size={16} /></div>
+          <h3 className="dto-title">Test Result</h3>
+        </div>
+
+        <div>
+          <button
+            onClick={openModal}
+            className="inline-flex items-center px-4 py-2 rounded-lg shadow"
+            style={{
+              backgroundColor: "#ef4444",
+              color: "#fff",
+              fontWeight: 600,
+              opacity: disableNew ? 0.6 : 1,
+              cursor: disableNew ? "not-allowed" : "pointer",
+            }}
+            aria-label="New Test Result"
+            disabled={disableNew}
+            title={disableNew ? "Test results already exist" : "Create new test result"}
+          >
+            New Test Result
+          </button>
+        </div>
       </div>
 
-      {/* Removed scroll wrappers so no scrollbar appears */}
       <table className="dto-table">
         <thead>
           <tr>
-            <th className="dto-th icon-col"></th>
-            <th className="dto-th name-col">Test Parameter</th>
-            <th className="dto-th result-col">Result</th>
-            <th className="dto-th ref-col">Reference Range</th>
-            <th className="dto-th flag-col">Flag</th>
+            <th className="dto-th">Sequence</th>
+            <th className="dto-th">Parameter Name</th>
+            <th className="dto-th">Value</th>
+            <th className="dto-th">Reference Range</th>
+            <th className="dto-th">Flag</th>
           </tr>
         </thead>
         <tbody>
-          {loading ? (
-            <tr><td colSpan={6} className="dto-empty">Loading...</td></tr>
-          ) : error ? (
-            <tr><td colSpan={6} className="dto-empty dto-error">Error: {error}</td></tr>
-          ) : rows.length === 0 ? (
-            <tr><td colSpan={6} className="dto-empty">No test results</td></tr>
+          {parameters.length === 0 ? (
+            <tr><td colSpan={5} className="dto-empty">No test results</td></tr>
           ) : (
-            rows.map((t) => {
-              const flagText = t.flag ?? null;
-              const mapped = mapStatus(t.status, flagText);
-              const flagClass = getFlagClass(flagText);
+            parameters.map((param) => {
+              const flagClass = getFlagClass(param.flag);
               return (
-                <tr key={t.id} className="dto-row">
-                  <td className="dto-td icon-col">{renderIcon(mapped.kind)}</td>
-
-                  <td className="dto-td name-col">
-                    <div className="dto-param">{t.paramName ?? "-"}</div>
-                  </td>
-
-                  <td className="dto-td result-col">
-                    {t.value ? `${t.value}${t.unit ? ` ${t.unit}` : ''}` : '-'}
-                  </td>
-
-                  <td className="dto-td ref-col">{t.refRange ?? "-"}</td>
-
+                <tr key={param.id} className="dto-row">
+                  <td className="dto-td">{param.sequence}</td>
+                  <td className="dto-td">{param.paramName}</td>
+                  <td className="dto-td">{param.value}{param.unit ? ` ${param.unit}` : ""}</td>
+                  <td className="dto-td">{param.refRange}</td>
                   <td className="dto-td flag-col">
-                    <span className={`dto-flag ${flagClass}`}>
-                      {t.flag ? String(t.flag).toUpperCase() : "-"}
-                    </span>
+                    <span className={`dto-flag ${flagClass}`}>{param.flag}</span>
                   </td>
                 </tr>
               );
@@ -176,6 +190,43 @@ export default function TestResult({ tests = null, orderId = null }) {
           )}
         </tbody>
       </table>
+
+      {/* Modal rendered into document.body to avoid stacking/transform issues */}
+      {isModalOpen && createPortal(
+        <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}>
+          <div className="modal" style={{ width: "min(900px, 96%)", background: "#fff", borderRadius: 12, padding: 20, boxShadow: "0 12px 40px rgba(0,0,0,0.25)", maxHeight: '90vh', overflow: 'auto' }} role="dialog" aria-modal>
+            <h3 style={{ margin: 0, marginBottom: 12, color: "#f65f63" }}>Send HL7 (raw)</h3>
+            <textarea
+              value={hl7Text}
+              onChange={(e) => setHl7Text(e.target.value)}
+              placeholder="Paste HL7 message here"
+              style={{ width: "100%", minHeight: 220, padding: 10, borderRadius: 6, border: "1px solid #e5e7eb", fontFamily: "monospace" }}
+            />
+
+            {postError && <div style={{ color: "#e11d48", marginTop: 8 }}>{postError}</div>}
+
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
+              <button onClick={closeModal} className="px-4 py-2 rounded-lg" style={{ background: "#f3f4f6" }}>Cancel</button>
+              <button
+                onClick={submitHl7}
+                className="px-4 py-2 rounded-lg"
+                style={{ background: "#ef4444", color: "#fff", fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                disabled={posting}
+                title={posting ? "Sending HL7..." : "Send HL7"}
+              >
+                {posting ? (
+                  <>
+                    <span aria-hidden>⏳</span>
+                    <span>Sending...</span>
+                  </>
+                ) : (
+                  <span>Send HL7</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>, document.body
+      )}
     </section>
   );
 }
