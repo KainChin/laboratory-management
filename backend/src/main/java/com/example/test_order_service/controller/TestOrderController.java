@@ -6,6 +6,7 @@ import com.example.test_order_service.dto.response.TestOrderDetailResponse;
 import com.example.test_order_service.dto.response.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
+import com.example.test_order_service.ingest.publisher.ResyncRequestPublisher;
 import com.example.test_order_service.service.TestOrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class TestOrderController {
     private final TestOrderService testOrderService;
+    private final ResyncRequestPublisher resyncRequestPublisher;
 
     @PostMapping
     public RestResponse<TestOrderResponse> createTestOrder(@RequestBody @Valid TestOrderRequest request) {
@@ -94,5 +96,17 @@ public class TestOrderController {
     @PatchMapping("/{orderId}/review")
     public RestResponse<TestOrderResponse> reviewTestOrder(@PathVariable String orderId) {
         return testOrderService.reviewTestOrder(orderId);
+    }
+    //Gửi yêu cầu đồng bộ kết quả xét nghiệm cho một đơn hàng cụ thể
+    @PostMapping("/{orderId}/resync")
+    public RestResponse<Void> resyncTestOrderResults(@PathVariable String orderId) {
+        // Gọi publisher để gửi yêu cầu
+        resyncRequestPublisher.requestResync(orderId, "ManualTriggerByUser");
+
+        return RestResponse.<Void>builder()
+                .statusCode(202) // 202 Accepted: Yêu cầu đã được chấp nhận và đang được xử lý bất đồng bộ.
+                .message("Resync request for order " + orderId + " has been sent successfully.")
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 }

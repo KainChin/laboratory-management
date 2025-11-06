@@ -29,6 +29,7 @@ spring:
       group-id: test-result-full-ingest-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       # ---- ĐẢM BẢO ĐÃ XÓA value-deserializer và properties ở đây ----
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
