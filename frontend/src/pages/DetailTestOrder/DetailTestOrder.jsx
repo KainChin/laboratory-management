@@ -193,7 +193,7 @@ export default function DetailTestOrder(props) {
             <h1 className="text-xl font-semibold mb-2">Test Order Detail</h1>
             {testOrder && waitingStatuses.includes((testOrder.status||"").toString().toUpperCase()) && (
               <div className="mb-4 rounded border border-blue-200 bg-blue-50 text-blue-700 px-4 py-3">
-                Đang chờ Instrument Service phản hồi. Hệ thống sẽ tự động cập nhật khi có kết quả...
+                Waiting for Instrument Service response. System will automatically update when results are available...
               </div>
             )}
             {loading ? (

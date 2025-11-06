@@ -150,11 +150,11 @@ export default function TestResult({ tests, onUpdate }) {
               opacity: disableNew ? 0.6 : 1,
               cursor: disableNew ? "not-allowed" : "pointer",
             }}
-            aria-label="New Test Result"
+            aria-label="Add Test Result"
             disabled={disableNew}
-            title={disableNew ? "Test results already exist" : "Create new test result"}
+            title={disableNew ? "Test results already exist" : "Add new test result"}
           >
-            New Test Result
+            Add Test Result
           </button>
         </div>
       </div>
@@ -194,8 +194,9 @@ export default function TestResult({ tests, onUpdate }) {
       {/* Modal rendered into document.body to avoid stacking/transform issues */}
       {isModalOpen && createPortal(
         <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}>
-          <div className="modal" style={{ width: "min(900px, 96%)", background: "#fff", borderRadius: 12, padding: 20, boxShadow: "0 12px 40px rgba(0,0,0,0.25)", maxHeight: '90vh', overflow: 'auto' }} role="dialog" aria-modal>
-            <h3 style={{ margin: 0, marginBottom: 12, color: "#f65f63" }}>Send HL7 (raw)</h3>
+          <div className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto" style={{ maxHeight: '90vh', overflow: 'auto' }} role="dialog" aria-modal>
+            <h3 className="text-2xl text-red-500 font-bold text-center" style={{ marginBottom: 8 }}>Send HL7 (raw)</h3>
+            <p className="text-center text-sm text-gray-500 mb-6">Paste HL7 message here to create test result parameters</p>
             <textarea
               value={hl7Text}
               onChange={(e) => setHl7Text(e.target.value)}
