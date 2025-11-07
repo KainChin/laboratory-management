@@ -6,9 +6,10 @@ import "../DetailTestOrder.css";
 function getFlagClass(flag) {
   if (!flag) return "dto-flag-default";
   const f = String(flag).toUpperCase();
-  if (f === "H") return "dto-flag-high";
-  if (f === "L") return "dto-flag-low";
-  if (f === "N") return "dto-flag-normal";
+  // Return class based on exact flag value to match Status Chart colors
+  if (f === "H") return "dto-flag-H";
+  if (f === "L") return "dto-flag-L";
+  if (f === "N") return "dto-flag-N";
   return "dto-flag-default";
 }
 
@@ -112,16 +113,19 @@ export default function TestResult({ tests, onUpdate }) {
       const data = await res.json();
       const newParams = data?.result?.testResultParameter || [];
       setParameters(newParams);
-      // inform parent page that test results changed so a reload reflects the persisted state
+      
+      // inform parent page that test results changed
       try {
         if (typeof onUpdate === "function") {
           // pass the whole testResults object from response if available
-          onUpdate({ testResults: data?.result || { testResultParameter: newParams } });
+          const testResults = data?.result || { testResultParameter: newParams };
+          onUpdate({ testResults });
         }
       } catch (e) {
         console.warn("onUpdate callback failed:", e);
       }
-      // optionally close modal on success
+      
+      // close modal on success
       setIsModalOpen(false);
     } catch (err) {
       console.error("HL7 submit error:", err);

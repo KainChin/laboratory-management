@@ -1,89 +1,85 @@
 import React, { useEffect, useState } from "react";
 import { calculateTestResultStats, getFlagMeaning } from "../../../utils/flagUtils";
 
-export default function StatusChart({ orderId: propOrderId = null }) {
+export default function FlagChart({ orderId: propOrderId = null, testResults = null }) {
   const [stats, setStats] = useState({
     normal: 0,
-    abnormal: 0,
-    critical: 0,
+    high: 0,
+    low: 0,
     other: 0,
     hasResults: false
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    let mounted = true;
-
-    async function fetchData() {
-      if (!propOrderId) {
-        const parts = window.location.pathname.split("/").filter(Boolean);
-        propOrderId = parts[parts.length - 1];
-      }
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await fetch(`http://localhost:6868/api/test-orders/${propOrderId}`);
-        if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
-        
-        const data = await res.json();
-        const testResults = data?.result?.testResults;
-        const resultStats = calculateTestResultStats(testResults);
-
-        if (!mounted) return;
-
-        if (!resultStats.hasResults) {
-          setStats({
-            normal: 0,
-            abnormal: 0,
-            critical: 0,
-            other: 0,
-            hasResults: false
-          });
-          return;
-        }
-
-        // Calculate counts based on flags
-        const counts = {
-          normal: 0,
-          high: 0,
-          low: 0,
-          other: 0,
-          hasResults: true
-        };
-
-        Object.entries(resultStats.flagCounts).forEach(([flag, count]) => {
-          const upperFlag = flag.toUpperCase();
-          if (upperFlag === 'N') {
-            counts.normal += count;
-          } else if (upperFlag === 'H' || upperFlag === 'HH' || upperFlag === '>') {
-            counts.high += count;
-          } else if (upperFlag === 'L' || upperFlag === 'LL' || upperFlag === '<') {
-            counts.low += count;
-          } else {
-            counts.other += count;
-          }
-        });
-
-        setStats(counts);
-      } catch (err) {
-        if (!mounted) return;
-        setError(err.message || 'Failed to load test results');
-        console.error('StatusChart fetch error:', err);
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
+  const processTestResults = (results) => {
+    if (!results) {
+      setStats({
+        normal: 0,
+        high: 0,
+        low: 0,
+        other: 0,
+        hasResults: false
+      });
+      return;
     }
 
-    fetchData();
-    return () => {
-      mounted = false;
+    // Get test result parameters
+    let parameters = [];
+    if (Array.isArray(results.testResultParameter)) {
+      parameters = results.testResultParameter;
+    } else if (Array.isArray(results)) {
+      parameters = results;
+    }
+
+    // Calculate counts based on flags
+    const counts = {
+      normal: 0,
+      high: 0,
+      low: 0,
+      other: 0,
+      hasResults: parameters.length > 0
     };
-  }, [propOrderId]);
+
+    parameters.forEach(param => {
+      const flag = (param.flag || '').toUpperCase();
+      if (flag === 'N') {
+        counts.normal++;
+      } else if (flag === 'H' || flag === 'HH' || flag === '>') {
+        counts.high++;
+      } else if (flag === 'L' || flag === 'LL' || flag === '<') {
+        counts.low++;
+      } else {
+        counts.other++;
+      }
+    });
+
+    setStats(counts);
+  };
+
+  useEffect(() => {
+    if (testResults) {
+      processTestResults(testResults);
+    } else if (propOrderId) {
+      // Nếu không có testResults trực tiếp, fetch từ server
+      const fetchData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const res = await fetch(`http://localhost:6868/api/test-orders/${propOrderId}`);
+          if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
+          const data = await res.json();
+          processTestResults(data?.result?.testResults);
+        } catch (err) {
+          setError(err.message || 'Failed to load test results');
+          console.error('FlagChart fetch error:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }
+  }, [propOrderId, testResults]);
 
   const total = stats.normal + stats.high + stats.low + stats.other;
   const pct = (n) => (total === 0 ? "NaN" : Math.round((n / total) * 100)); // Remove decimals, show NaN if no data
@@ -117,7 +113,7 @@ export default function StatusChart({ orderId: propOrderId = null }) {
               <path d="M3 12h18M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h4>Status Chart</h4>
+          <h4>Flag Chart</h4>
         </div>
       </div>
 

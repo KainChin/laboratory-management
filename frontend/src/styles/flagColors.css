@@ -1,0 +1,27 @@
+.flag-normal {
+  background-color: #fff7e6 !important; /* Light yellow for Normal */
+  color: #d48806;
+}
+
+.flag-high {
+  background-color: #fff1f0 !important; /* Light red for High */
+  color: #cf1322;
+}
+
+.flag-low {
+  background-color: #fff2e8 !important; /* Light orange for Low */
+  color: #d4380d;
+}
+
+/* Chart colors */
+.chart-normal {
+  color: #10b981;
+}
+
+.chart-high {
+  color: #ef4444;
+}
+
+.chart-low {
+  color: #f59e0b;
+}

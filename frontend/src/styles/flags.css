@@ -1,0 +1,44 @@
+/* Flag styles */
+.dto-flag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dto-flag-default {
+  background-color: #9ca3af;
+  color: white;
+}
+
+.dto-flag-N {
+  background-color: #10b981;
+  color: white;
+}
+
+.dto-flag-H {
+  background-color: #ef4444;
+  color: white;
+}
+
+.dto-flag-L {
+  background-color: #f59e0b;
+  color: white;
+}
+
+/* Status Chart colors */
+.status-N {
+  color: #10b981;
+  background-color: #fff7e6;
+}
+
+.status-H {
+  color: #ef4444;
+  background-color: #fff1f0;
+}
+
+.status-L {
+  color: #f59e0b;
+  background-color: #fff2e8;
+}
