@@ -38,7 +38,6 @@ export default function OrdersTable() {
   const PAGE_SIZE = 5;
   const [page, setPage] = useState(1);
   const [jumpInput, setJumpInput] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   // Đổi mảng data sang orders (state), để bảng tự động cập nhật khi thao tác
   const [orders, setOrders] = useState([]);
   const [deleteId, setDeleteId] = useState(null);
@@ -425,9 +424,7 @@ export default function OrdersTable() {
         },
       ]);
       setShowModal(false);
-      setSuccessMsg("Create test order successfully!");
       showToast({ type: "success", title: "Success", message: "Create test order successfully" });
-      setTimeout(() => setSuccessMsg(""), 3000);
       resetForm();
       setLocalForm({
         patientName: "",
@@ -513,8 +510,7 @@ export default function OrdersTable() {
 
         setShowModal(false);
         setEditingId(null);
-        setSuccessMsg("Update successfully!");
-        setTimeout(() => setSuccessMsg(""), 3000);
+        showToast({ type: "success", title: "Success", message: "Test order updated successfully" });
         resetForm();
         setLocalForm({
           patientName: "",
@@ -617,11 +613,6 @@ export default function OrdersTable() {
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative">
       {isNavigating && <Loading />}
-      {successMsg && (
-        <div className="absolute left-1/2 -translate-x-1/2 top-2 bg-green-100 text-green-700 px-6 py-2 rounded-lg shadow font-semibold z-50">
-          {successMsg}
-        </div>
-      )}
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-red-500 font-semibold">Test Order Lists</h2>
         <div className="flex gap-2">
@@ -1225,15 +1216,16 @@ export default function OrdersTable() {
                   // Nếu đang ở trang 1 và không có test order nào thì không cần gọi lại API
                 }
               }
-              setSuccessMsg("Delete test order successfully!");
+              showToast({ type: "success", title: "Success", message: "Test order deleted successfully" });
               setDeleteError("");
               setShowDeleteModal(false);
               setDeleteId(null);
-              setTimeout(() => setSuccessMsg(""), 3000);
             }
           } catch (err) {
             console.warn("Delete failed", err);
-            setDeleteError("Network error or server error!");
+            const errorMsg = err.message || "Network error or server error!";
+            setDeleteError(errorMsg);
+            showToast({ type: "error", title: "Delete Failed", message: errorMsg });
             setDeleteMsg("");
             setTimeout(() => {
               setDeleteError("");

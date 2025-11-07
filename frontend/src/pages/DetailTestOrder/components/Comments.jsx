@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { MessageSquare, Edit2, Trash2 } from "lucide-react";
+import { showToast } from "../../../components/Toast";
 import "../DetailTestOrder.css";
 
 export default function Comments({
@@ -17,10 +18,6 @@ export default function Comments({
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
   const [editingSaving, setEditingSaving] = useState(false);
-
-  const [successId, setSuccessId] = useState(null);
-  const [successMsg, setSuccessMsg] = useState("");
-  const successTimerRef = useRef(null);
 
   const commentsListRef = useRef(null);
   const editingInputRef = useRef(null);
@@ -158,12 +155,6 @@ export default function Comments({
     };
   }, [propOrderId]);
 
-  useEffect(() => {
-    return () => {
-      if (successTimerRef.current) clearTimeout(successTimerRef.current);
-    };
-  }, []);
-
   async function handleAdd() {
     const trimmed = (text || "").trim();
     if (!trimmed) return;
@@ -218,8 +209,11 @@ export default function Comments({
       requestAnimationFrame(() => {
         if (commentsListRef.current) commentsListRef.current.scrollTop = 0;
       });
+      showToast({ type: "success", title: "Success", message: "Comment added successfully" });
     } catch (err) {
-      setError(err.message || "Failed to add comment");
+      const errorMsg = err.message || "Failed to add comment";
+      setError(errorMsg);
+      showToast({ type: "error", title: "Error", message: errorMsg });
       console.error("Add comment error:", err);
     } finally {
       setSaving(false);
@@ -254,8 +248,11 @@ export default function Comments({
           .filter((c) => (c.commentId ?? c.id ?? "") !== commentId)
           .slice(0, 100)
       );
+      showToast({ type: "success", title: "Success", message: "Comment deleted successfully" });
     } catch (err) {
-      setError(err.message || "Failed to delete comment");
+      const errorMsg = err.message || "Failed to delete comment";
+      setError(errorMsg);
+      showToast({ type: "error", title: "Error", message: errorMsg });
       console.error("Delete comment error:", err);
     } finally {
       setDeletingId(null);
@@ -319,18 +316,13 @@ export default function Comments({
           .slice(0, 100)
       );
 
-      setSuccessId(commentId);
-      setSuccessMsg("Updated");
-      if (successTimerRef.current) clearTimeout(successTimerRef.current);
-      successTimerRef.current = setTimeout(() => {
-        setSuccessId(null);
-        setSuccessMsg("");
-      }, 3000);
-
       setEditingText("");
       setEditingId(null);
+      showToast({ type: "success", title: "Success", message: "Comment updated successfully" });
     } catch (err) {
-      setError(err.message || "Failed to update comment");
+      const errorMsg = err.message || "Failed to update comment";
+      setError(errorMsg);
+      showToast({ type: "error", title: "Error", message: errorMsg });
       console.error("Update comment error:", err);
     } finally {
       setEditingSaving(false);
@@ -456,7 +448,6 @@ export default function Comments({
           comments.map((c, i) => {
             const cid = c.commentId ?? c.id ?? String(i);
             const isEditing = editingId === cid;
-            const isSuccess = successId === cid;
             return (
               <div
                 className="comment"
@@ -608,25 +599,6 @@ export default function Comments({
                     </div>
                   </div>
                 </div>
-
-                {isSuccess && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      right: 12,
-                      top: 12,
-                      background: "#10B981",
-                      color: "#fff",
-                      padding: "6px 10px",
-                      borderRadius: 999,
-                      fontWeight: 700,
-                      fontSize: 12,
-                      boxShadow: "0 6px 16px rgba(16,185,129,0.16)",
-                    }}
-                  >
-                    {successMsg || "Updated"}
-                  </div>
-                )}
               </div>
             );
           })
