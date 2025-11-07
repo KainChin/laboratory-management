@@ -1,4 +1,4 @@
-            export const FLAG_MEANINGS = {
+export const FLAG_MEANINGS = {
   'N': 'Normal',
   'L': 'Low',
   'H': 'High',
