@@ -52389,3 +52389,559 @@ Caused by: java.lang.IllegalArgumentException: TestResult already exists for blo
 2025-11-07T11:00:02.797+07:00  INFO 33532 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Unregistering ...
 2025-11-07T11:00:02.927+07:00  INFO 33532 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - deregister  status: 200
 2025-11-07T11:00:02.928+07:00  INFO 33532 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Completed shut down of DiscoveryClient
+2025-11-07T11:23:23.105+07:00  INFO 44612 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Fetching config from server at : http://localhost:8888
+2025-11-07T11:23:23.172+07:00  INFO 44612 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Exception on Url - http://localhost:8888:org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8888/test-order-service/default": Connection refused: getsockopt. Will be trying the next url if available
+2025-11-07T11:23:23.173+07:00  WARN 44612 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/test-order-service/default": Connection refused: getsockopt
+2025-11-07T11:23:23.175+07:00  INFO 44612 --- [test-order-service] [main] c.e.t.TestOrderServiceApplication        : The following 1 profile is active: "prod"
+2025-11-07T11:23:23.856+07:00  INFO 44612 --- [test-order-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-07T11:23:24.053+07:00  INFO 44612 --- [test-order-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 186 ms. Found 5 JPA repository interfaces.
+2025-11-07T11:23:24.279+07:00  INFO 44612 --- [test-order-service] [main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=29551f1f-cb3b-37a4-819a-b7a0372c5dd5
+2025-11-07T11:23:24.381+07:00  WARN 44612 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-07T11:23:24.383+07:00  WARN 44612 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-07T11:23:24.385+07:00  WARN 44612 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-07T11:23:24.386+07:00  WARN 44612 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-07T11:23:24.387+07:00  WARN 44612 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'reactorDeferringLoadBalancerExchangeFilterFunction' of type [org.springframework.cloud.client.loadbalancer.reactive.DeferringLoadBalancerExchangeFilterFunction] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-07T11:23:24.539+07:00  INFO 44612 --- [test-order-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 6868 (http)
+2025-11-07T11:23:24.550+07:00  INFO 44612 --- [test-order-service] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-07T11:23:24.551+07:00  INFO 44612 --- [test-order-service] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-07T11:23:24.606+07:00  INFO 44612 --- [test-order-service] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-11-07T11:23:24.606+07:00  INFO 44612 --- [test-order-service] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1422 ms
+2025-11-07T11:23:24.728+07:00  INFO 44612 --- [test-order-service] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-07T11:23:24.799+07:00  INFO 44612 --- [test-order-service] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-11-07T11:23:24.828+07:00  INFO 44612 --- [test-order-service] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-07T11:23:25.130+07:00  INFO 44612 --- [test-order-service] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-07T11:23:25.157+07:00  INFO 44612 --- [test-order-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-07T11:23:25.308+07:00  INFO 44612 --- [test-order-service] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@49338f3
+2025-11-07T11:23:25.309+07:00  INFO 44612 --- [test-order-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-07T11:23:26.297+07:00  INFO 44612 --- [test-order-service] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-07T11:23:26.423+07:00  INFO 44612 --- [test-order-service] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-07T11:23:26.717+07:00  INFO 44612 --- [test-order-service] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-07T11:23:27.716+07:00  WARN 44612 --- [test-order-service] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-07T11:23:28.113+07:00  INFO 44612 --- [test-order-service] [main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2025-11-07T11:23:28.149+07:00  WARN 44612 --- [test-order-service] [main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2025-11-07T11:23:28.255+07:00  INFO 44612 --- [test-order-service] [main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2025-11-07T11:23:28.274+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2025-11-07T11:23:28.280+07:00  INFO 44612 --- [test-order-service] [main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-07T11:23:28.288+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2025-11-07T11:23:28.288+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2025-11-07T11:23:28.288+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2025-11-07T11:23:28.288+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2025-11-07T11:23:28.288+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2025-11-07T11:23:28.288+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2025-11-07T11:23:28.288+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2025-11-07T11:23:29.174+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2025-11-07T11:23:29.176+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2025-11-07T11:23:29.177+07:00  INFO 44612 --- [test-order-service] [main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2025-11-07T11:23:29.179+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1762489409178 with initial instances count: 5
+2025-11-07T11:23:29.181+07:00  INFO 44612 --- [test-order-service] [main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application TEST-ORDER-SERVICE with eureka with status UP
+2025-11-07T11:23:29.182+07:00  INFO 44612 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1762489409182, current=UP, previous=STARTING]
+2025-11-07T11:23:29.185+07:00  INFO 44612 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-07T11:23:29.352+07:00  INFO 44612 --- [test-order-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 6868 (http) with context path '/'
+2025-11-07T11:23:29.353+07:00  INFO 44612 --- [test-order-service] [main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 6868
+2025-11-07T11:23:29.413+07:00  INFO 44612 --- [test-order-service] [main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = earliest
+	bootstrap.servers = [34.199.182.98:9092]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-test-order-ingest-group-1
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	enable.metrics.push = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = test-order-ingest-group
+	group.instance.id = null
+	group.protocol = classic
+	group.remote.assignor = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+
+2025-11-07T11:23:29.433+07:00  INFO 44612 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-07T11:23:29.473+07:00  INFO 44612 --- [test-order-service] [main] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2025-11-07T11:23:29.546+07:00  INFO 44612 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.7.1
+2025-11-07T11:23:29.546+07:00  INFO 44612 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: e2494e6ffb89f828
+2025-11-07T11:23:29.546+07:00  INFO 44612 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1762489409546
+2025-11-07T11:23:29.549+07:00  INFO 44612 --- [test-order-service] [main] o.a.k.c.c.internals.LegacyKafkaConsumer  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Subscribed to topic(s): instrument-results-topic
+2025-11-07T11:23:29.561+07:00  INFO 44612 --- [test-order-service] [main] c.e.t.TestOrderServiceApplication        : Started TestOrderServiceApplication in 7.308 seconds (process running for 7.888)
+2025-11-07T11:23:29.562+07:00  INFO 44612 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : ENV spring.kafka.bootstrap-servers = 34.199.182.98:9092
+2025-11-07T11:23:29.562+07:00  INFO 44612 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : KafkaProperties bootstrapServers = [34.199.182.98:9092]
+2025-11-07T11:23:29.562+07:00  INFO 44612 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : KafkaProperties consumer.auto-offset-reset = earliest
+2025-11-07T11:23:30.905+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cluster ID: XD-8Ivv9QbyUMtsgjx0TYA
+2025-11-07T11:23:31.109+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-07T11:23:31.115+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T11:23:31.929+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-order-ingest-group-1-5191e45e-4ad8-457e-b619-e875f4ae2b63
+2025-11-07T11:23:31.934+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T11:23:35.204+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully joined group with generation Generation{generationId=56, memberId='consumer-test-order-ingest-group-1-5191e45e-4ad8-457e-b619-e875f4ae2b63', protocol='range'}
+2025-11-07T11:23:35.233+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Finished assignment for group at generation 56: {consumer-test-order-ingest-group-1-5191e45e-4ad8-457e-b619-e875f4ae2b63=Assignment(partitions=[instrument-results-topic-0])}
+2025-11-07T11:23:35.520+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully synced group in generation Generation{generationId=56, memberId='consumer-test-order-ingest-group-1-5191e45e-4ad8-457e-b619-e875f4ae2b63', protocol='range'}
+2025-11-07T11:23:35.522+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Notifying assignor about the new Assignment(partitions=[instrument-results-topic-0])
+2025-11-07T11:23:35.534+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Adding newly assigned partitions: instrument-results-topic-0
+2025-11-07T11:23:35.816+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerUtils        : Setting offset for partition instrument-results-topic-0 to the committed offset FetchPosition{offset=16, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[34.199.182.98:9092 (id: 1 rack: null)], epoch=0}}
+2025-11-07T11:23:35.817+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions assigned: [instrument-results-topic-0]
+2025-11-07T11:23:50.718+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-07T11:23:50.719+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-07T11:23:50.733+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 13 ms
+2025-11-07T11:23:51.862+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-7] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 727 ms
+2025-11-07T11:24:24.884+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-5] c.e.t.i.service.TestResultServiceKafka   : Creating new TestResult for 'TUBE-010'.
+2025-11-07T11:24:24.910+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-5] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = -1
+	auto.include.jmx.reporter = true
+	batch.size = 16384
+	bootstrap.servers = [34.199.182.98:9092]
+	buffer.memory = 33554432
+	client.dns.lookup = use_all_dns_ips
+	client.id = test-order-service-producer-1
+	compression.type = none
+	connections.max.idle.ms = 540000
+	delivery.timeout.ms = 120000
+	enable.idempotence = true
+	enable.metrics.push = true
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metadata.max.idle.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.adaptive.partitioning.enable = true
+	partitioner.availability.timeout.ms = 0
+	partitioner.class = null
+	partitioner.ignore.keys = false
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 2147483647
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.springframework.kafka.support.serializer.JsonSerializer
+
+2025-11-07T11:24:24.910+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-5] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2025-11-07T11:24:24.917+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-5] o.a.k.clients.producer.KafkaProducer     : [Producer clientId=test-order-service-producer-1] Instantiated an idempotent producer.
+2025-11-07T11:24:24.926+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-5] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.7.1
+2025-11-07T11:24:24.926+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-5] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: e2494e6ffb89f828
+2025-11-07T11:24:24.926+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-5] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1762489464926
+2025-11-07T11:24:25.739+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.Metadata        : [Producer clientId=test-order-service-producer-1] Cluster ID: XD-8Ivv9QbyUMtsgjx0TYA
+2025-11-07T11:24:25.843+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] o.a.k.c.p.internals.TransactionManager   : [Producer clientId=test-order-service-producer-1] ProducerId set to 4088 with epoch 0
+2025-11-07T11:24:26.939+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.p.TestResultEventPublisher       : Successfully sent MonitoringEventPayload for bloodCollectionId='TUBE-010'. Topic: test-results-events, Partition: 0
+2025-11-07T11:26:17.716+07:00 DEBUG 44612 --- [test-order-service] [http-nio-6868-exec-1] c.e.t.e.p.MonitoringEventPublisher       : 📵 Event publishing is disabled
+2025-11-07T11:26:17.717+07:00  INFO 44612 --- [test-order-service] [http-nio-6868-exec-1] c.e.t.serviceImpl.InstrumentSyncService  : Requesting instrument results for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08
+2025-11-07T11:26:20.188+07:00  WARN 44612 --- [test-order-service] [http-nio-6868-exec-1] c.e.t.serviceImpl.InstrumentSyncService  : Instrument request failed/timeout for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:26:26.596+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:26:32.096+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:26:36.479+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:26:42.342+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:26:47.147+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:26:51.741+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:26:56.754+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:01.717+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:06.845+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:11.603+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:17.057+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:21.730+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:23.638+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.p.ResyncRequestPublisher         : Successfully sent resync request for testOrderId='f90a06b6-3fd6-444a-bcf7-35f5b10d9e08', bloodCollectionId='BCT-20251107-00002'. Topic: test-result-resync-request-topic, Partition: 0
+2025-11-07T11:27:26.669+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:32.122+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:37.107+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:41.897+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:46.780+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:51.350+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:27:56.922+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:01.110+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node -1 disconnected.
+2025-11-07T11:28:02.084+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:07.467+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:11.621+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:16.856+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:22.165+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:26.845+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:28.290+07:00  INFO 44612 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-07T11:28:32.065+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:37.046+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:42.175+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:46.673+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:52.278+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:28:55.740+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node -1 disconnected.
+2025-11-07T11:28:57.129+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:01.481+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:06.686+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:12.495+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:17.036+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:22.233+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:27.309+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:32.127+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:36.466+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:41.323+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:46.724+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:52.242+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:29:57.499+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:02.000+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:07.491+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:12.214+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:17.432+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:21.957+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:27.212+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:32.316+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:37.249+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:41.713+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:46.668+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:52.097+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:30:56.701+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:01.520+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:06.491+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:11.606+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:16.693+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:21.900+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:27.273+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:31.877+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:36.930+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:41.568+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:47.203+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:51.527+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:31:56.796+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:01.684+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:06.710+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:11.363+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:17.188+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:21.777+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:26.511+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:31.731+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:37.293+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:42.065+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:47.367+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:51.694+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:32:57.212+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:01.160+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node -1 disconnected.
+2025-11-07T11:33:01.765+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:07.353+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:11.690+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:17.407+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:21.745+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:26.007+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T11:33:26.839+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:28.297+07:00  INFO 44612 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-07T11:33:31.691+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:36.566+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:42.127+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:47.450+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:51.596+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:33:56.007+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node -1 disconnected.
+2025-11-07T11:33:56.560+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:02.251+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:07.147+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:12.016+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:16.824+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:21.893+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:27.320+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:31.525+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:36.565+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:41.729+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:46.872+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:51.577+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-1] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:34:56.655+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:02.189+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:07.139+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:12.510+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:16.837+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:21.472+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:26.852+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:32.435+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:37.232+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:42.041+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:46.585+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:52.041+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:35:56.957+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:36:01.614+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:36:07.006+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:36:11.817+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:36:16.610+07:00 DEBUG 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Polling attempt failed for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08: Retries exhausted: 2/2
+2025-11-07T11:36:20.257+07:00  WARN 44612 --- [test-order-service] [instrument-poll-2] c.e.t.serviceImpl.InstrumentSyncService  : Stop polling instrument for order f90a06b6-3fd6-444a-bcf7-35f5b10d9e08 due to timeout window exceeded
+2025-11-07T11:38:26.279+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T11:38:28.308+07:00  INFO 44612 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-07T11:54:10.844+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T11:54:10.844+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight FETCH request with correlation id 1527 due to node 1 being disconnected (elapsed time since creation: 897375ms, elapsed time since send: 897375ms, request timeout: 30000ms)
+2025-11-07T11:54:10.844+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T11:54:10.845+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 2147483646 disconnected.
+2025-11-07T11:54:10.845+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight HEARTBEAT request with correlation id 1528 due to node 2147483646 being disconnected (elapsed time since creation: 897004ms, elapsed time since send: 897004ms, request timeout: 30000ms)
+2025-11-07T11:54:10.845+07:00  INFO 44612 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) is unavailable or invalid due to cause: null. isDisconnected: true. Rediscovery will be attempted.
+2025-11-07T11:54:10.845+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.kafka.clients.FetchSessionHandler    : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Error sending fetch request (sessionId=1482505871, epoch=1199) to node 1:
+
+org.apache.kafka.common.errors.DisconnectException: null
+
+2025-11-07T11:54:12.033+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-07T11:54:12.824+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Attempt to heartbeat with Generation{generationId=56, memberId='consumer-test-order-ingest-group-1-5191e45e-4ad8-457e-b619-e875f4ae2b63', protocol='range'} and group instance id Optional.empty failed due to UNKNOWN_MEMBER_ID, resetting generation
+2025-11-07T11:54:12.824+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting generation and member id due to: encountered UNKNOWN_MEMBER_ID from HEARTBEAT response
+2025-11-07T11:54:12.824+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: encountered UNKNOWN_MEMBER_ID from HEARTBEAT response
+2025-11-07T11:54:12.824+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Giving away all assigned partitions as lost since generation/memberID has been reset,indicating that consumer is in old state or no longer part of the group
+2025-11-07T11:54:12.824+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Lost previously assigned partitions instrument-results-topic-0
+2025-11-07T11:54:12.825+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions lost: [instrument-results-topic-0]
+2025-11-07T11:54:12.825+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions revoked: [instrument-results-topic-0]
+2025-11-07T11:54:12.825+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T11:54:13.088+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-order-ingest-group-1-5a7a3f15-9959-48b5-aa57-665a98399e72
+2025-11-07T11:54:13.088+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T12:31:07.566+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 2147483646 disconnected.
+2025-11-07T12:31:07.567+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight JOIN_GROUP request with correlation id 1538 due to node 2147483646 being disconnected (elapsed time since creation: 2214478ms, elapsed time since send: 2214478ms, request timeout: 305000ms)
+2025-11-07T12:31:07.567+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) is unavailable or invalid due to cause: null. isDisconnected: true. Rediscovery will be attempted.
+2025-11-07T12:31:07.568+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:07.568+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight FIND_COORDINATOR request with correlation id 1539 due to node 1 being disconnected (elapsed time since creation: 0ms, elapsed time since send: 0ms, request timeout: 30000ms)
+2025-11-07T12:31:07.669+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:07.669+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:07.784+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:07.784+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:08.033+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:08.033+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:08.403+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:08.403+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:09.157+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:09.157+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:09.456+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:09.546+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:09.547+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:09.685+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:09.685+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:09.870+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:09.871+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:10.209+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:10.210+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:10.379+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:10.379+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:11.119+07:00  WARN 44612 --- [test-order-service] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=52m22s789ms822µs101ns).
+2025-11-07T12:31:11.210+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:11.210+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:11.241+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:11.241+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:12.101+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:12.101+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:12.226+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:12.226+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:13.150+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:13.150+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:13.227+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:13.227+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:13.957+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:13.957+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:14.235+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:14.235+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:14.825+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:31:14.825+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:15.244+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:31:15.244+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:31:17.377+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-07T12:31:17.379+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: rebalance failed due to 'null' (DisconnectException)
+2025-11-07T12:31:17.493+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T12:31:18.196+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] JoinGroup failed: The coordinator is not aware of this member. Need to re-join the group. Sent generation was Generation{generationId=-1, memberId='consumer-test-order-ingest-group-1-5a7a3f15-9959-48b5-aa57-665a98399e72', protocol='null'}
+2025-11-07T12:31:18.196+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting generation and member id due to: encountered UNKNOWN_MEMBER_ID from JOIN_GROUP response
+2025-11-07T12:31:18.196+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: encountered UNKNOWN_MEMBER_ID from JOIN_GROUP response
+2025-11-07T12:31:18.196+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: rebalance failed due to 'The coordinator is not aware of this member.' (UnknownMemberIdException)
+2025-11-07T12:31:18.196+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T12:31:18.465+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-order-ingest-group-1-d2549136-9565-4f82-8c0d-f5d93743be25
+2025-11-07T12:31:18.465+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T12:31:21.738+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully joined group with generation Generation{generationId=60, memberId='consumer-test-order-ingest-group-1-d2549136-9565-4f82-8c0d-f5d93743be25', protocol='range'}
+2025-11-07T12:31:21.738+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Finished assignment for group at generation 60: {consumer-test-order-ingest-group-1-d2549136-9565-4f82-8c0d-f5d93743be25=Assignment(partitions=[instrument-results-topic-0])}
+2025-11-07T12:31:22.009+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully synced group in generation Generation{generationId=60, memberId='consumer-test-order-ingest-group-1-d2549136-9565-4f82-8c0d-f5d93743be25', protocol='range'}
+2025-11-07T12:31:22.009+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Notifying assignor about the new Assignment(partitions=[instrument-results-topic-0])
+2025-11-07T12:31:22.009+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Adding newly assigned partitions: instrument-results-topic-0
+2025-11-07T12:31:22.279+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerUtils        : Setting offset for partition instrument-results-topic-0 to the committed offset FetchPosition{offset=16, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[34.199.182.98:9092 (id: 1 rack: null)], epoch=0}}
+2025-11-07T12:31:22.380+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions assigned: [instrument-results-topic-0]
+2025-11-07T12:31:23.175+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.l.TestResultFullIngestListener   : Kafka listener received a raw message. Delegating to service for processing...
+2025-11-07T12:31:23.183+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.service.TestResultServiceKafka   : Creating new TestResult for 'BCT-20251107-00002'.
+2025-11-07T12:31:23.493+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.l.TestResultFullIngestListener   : Successfully processed message from Kafka.
+2025-11-07T12:31:23.742+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.p.TestResultEventPublisher       : Successfully sent MonitoringEventPayload for bloodCollectionId='BCT-20251107-00002'. Topic: test-results-events, Partition: 0
+2025-11-07T12:35:13.766+07:00  INFO 44612 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-07T12:35:53.741+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:40:13.773+07:00  INFO 44612 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-07T12:40:24.619+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:51:34.297+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:51:34.298+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:51:34.298+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight FETCH request with correlation id 2518 due to node 1 being disconnected (elapsed time since creation: 609506ms, elapsed time since send: 609506ms, request timeout: 30000ms)
+2025-11-07T12:51:34.298+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 2147483646 disconnected.
+2025-11-07T12:51:34.299+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.kafka.clients.FetchSessionHandler    : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Error sending fetch request (sessionId=1767440583, epoch=765) to node 1:
+
+org.apache.kafka.common.errors.DisconnectException: null
+
+2025-11-07T12:51:34.300+07:00  INFO 44612 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) is unavailable or invalid due to cause: coordinator unavailable. isDisconnected: true. Rediscovery will be attempted.
+2025-11-07T12:51:34.412+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:51:34.412+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:34.421+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:51:34.421+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:34.520+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:51:34.520+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:34.536+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:51:34.536+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:34.720+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:51:34.720+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:34.782+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:51:34.782+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:35.094+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:51:35.094+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:35.266+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:51:35.266+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:35.805+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:51:35.805+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:36.098+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:51:36.098+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:36.856+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:51:36.856+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:37.146+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:51:37.146+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:37.839+07:00  INFO 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-07T12:51:37.839+07:00  WARN 44612 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:38.073+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T12:51:38.073+07:00  WARN 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-07T12:51:40.102+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-07T12:51:40.977+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Attempt to heartbeat with Generation{generationId=60, memberId='consumer-test-order-ingest-group-1-d2549136-9565-4f82-8c0d-f5d93743be25', protocol='range'} and group instance id Optional.empty failed due to UNKNOWN_MEMBER_ID, resetting generation
+2025-11-07T12:51:40.977+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting generation and member id due to: encountered UNKNOWN_MEMBER_ID from HEARTBEAT response
+2025-11-07T12:51:40.977+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: encountered UNKNOWN_MEMBER_ID from HEARTBEAT response
+2025-11-07T12:51:40.977+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Giving away all assigned partitions as lost since generation/memberID has been reset,indicating that consumer is in old state or no longer part of the group
+2025-11-07T12:51:40.977+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Lost previously assigned partitions instrument-results-topic-0
+2025-11-07T12:51:40.977+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions lost: [instrument-results-topic-0]
+2025-11-07T12:51:40.977+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions revoked: [instrument-results-topic-0]
+2025-11-07T12:51:40.977+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T12:51:41.248+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-order-ingest-group-1-3b4119e1-e1ef-4dac-aceb-4b8bb8f4435e
+2025-11-07T12:51:41.248+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T12:51:44.508+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully joined group with generation Generation{generationId=62, memberId='consumer-test-order-ingest-group-1-3b4119e1-e1ef-4dac-aceb-4b8bb8f4435e', protocol='range'}
+2025-11-07T12:51:44.508+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Finished assignment for group at generation 62: {consumer-test-order-ingest-group-1-3b4119e1-e1ef-4dac-aceb-4b8bb8f4435e=Assignment(partitions=[instrument-results-topic-0])}
+2025-11-07T12:51:44.770+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully synced group in generation Generation{generationId=62, memberId='consumer-test-order-ingest-group-1-3b4119e1-e1ef-4dac-aceb-4b8bb8f4435e', protocol='range'}
+2025-11-07T12:51:44.770+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Notifying assignor about the new Assignment(partitions=[instrument-results-topic-0])
+2025-11-07T12:51:44.770+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Adding newly assigned partitions: instrument-results-topic-0
+2025-11-07T12:51:45.040+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerUtils        : Setting offset for partition instrument-results-topic-0 to the committed offset FetchPosition{offset=17, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[34.199.182.98:9092 (id: 1 rack: null)], epoch=0}}
+2025-11-07T12:51:45.143+07:00  INFO 44612 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions assigned: [instrument-results-topic-0]
+2025-11-07T12:51:50.087+07:00  WARN 44612 --- [test-order-service] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=10m38s840ms924µs600ns).
