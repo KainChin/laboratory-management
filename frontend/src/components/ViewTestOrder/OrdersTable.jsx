@@ -33,9 +33,11 @@ export default function OrdersTable() {
   const [totalPages, setTotalPages] = useState(1);
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
   const [sortDir, setSortDir] = useState("asc");
   const PAGE_SIZE = 5;
   const [page, setPage] = useState(1);
+  const [jumpInput, setJumpInput] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   // Đổi mảng data sang orders (state), để bảng tự động cập nhật khi thao tác
   const [orders, setOrders] = useState([]);
@@ -134,6 +136,22 @@ export default function OrdersTable() {
       }, 100);
     }
   }, [fetchOrdersWrapper]);
+
+  // Debounce search input: update keyword after user stops typing
+  useEffect(() => {
+    const h = setTimeout(() => {
+      setDebouncedKeyword(searchInput.trim());
+    }, 500);
+    return () => clearTimeout(h);
+  }, [searchInput]);
+
+  // When debounced keyword changes, apply it and reset to page 1
+  useEffect(() => {
+    if (debouncedKeyword !== keyword) {
+      setKeyword(debouncedKeyword);
+      setPage(1);
+    }
+  }, [debouncedKeyword]);
 
   const statusColor = {
     Completed: "bg-green-100 text-green-700",
@@ -625,8 +643,7 @@ export default function OrdersTable() {
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                setKeyword(searchInput);
-                setPage(1);
+                setDebouncedKeyword(searchInput.trim());
               }
             }}
             placeholder="Search patient name..."
@@ -636,8 +653,7 @@ export default function OrdersTable() {
         <button
           className="bg-red-100 text-red-500 px-3 py-1.5 rounded-lg flex items-center gap-1"
           onClick={() => {
-            setKeyword(searchInput);
-            setPage(1);
+            setDebouncedKeyword(searchInput.trim());
           }}
         >
           <Filter size={14} /> Search
@@ -766,33 +782,92 @@ export default function OrdersTable() {
       {/* Pagination controls */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center mt-4 gap-2">
-          <button
-            className="px-3 py-1 rounded border bg-gray-100 text-gray-700 disabled:opacity-50"
-            onClick={() => setPage(page - 1)}
-            disabled={page === 1}
-          >
-            Prev
-          </button>
-          {[...Array(totalPages)].map((_, i) => (
+          {page > 1 && (
             <button
-              key={i}
-              className={`px-3 py-1 rounded border ${
-                page === i + 1
-                  ? "bg-red-500 text-white"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-              onClick={() => setPage(i + 1)}
+              className="px-3 py-1 rounded border bg-gray-100 text-gray-700"
+              onClick={() => setPage(page - 1)}
             >
-              {i + 1}
+              Prev
             </button>
-          ))}
-          <button
-            className="px-3 py-1 rounded border bg-gray-100 text-gray-700 disabled:opacity-50"
-            onClick={() => setPage(page + 1)}
-            disabled={page === totalPages}
-          >
-            Next
-          </button>
+          )}
+          {(() => {
+            function getItems(current, total) {
+              const WINDOW = 6;
+              if (total <= WINDOW) {
+                return Array.from({ length: total }, (_, i) => i + 1);
+              }
+              let start = Math.max(1, current - 1);
+              let end = start + WINDOW - 1;
+              if (end > total) {
+                end = total;
+                start = Math.max(1, end - WINDOW + 1);
+              }
+              const items = [];
+              for (let i = start; i <= end; i++) items.push(i);
+              if (end < total) {
+                if (end < total - 2) items.push("...");
+                if (total - 1 > end) items.push(total - 1);
+                items.push(total);
+              }
+              return items;
+            }
+            const items = getItems(page, totalPages);
+            return items.map((it, idx) =>
+              it === "..." ? (
+                <span key={`el-${idx}`} className="px-2 text-gray-500">…</span>
+              ) : (
+                <button
+                  key={it}
+                  className={`px-3 py-1 rounded border ${
+                    page === it ? "bg-red-500 text-white" : "bg-gray-100 text-gray-700"
+                  }`}
+                  onClick={() => setPage(it)}
+                >
+                  {it}
+                </button>
+              )
+            );
+          })()}
+          {page < totalPages && (
+            <button
+              className="px-3 py-1 rounded border bg-gray-100 text-gray-700"
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </button>
+          )}
+          <div className="flex items-center gap-1 ml-2">
+            <input
+              type="number"
+              min={1}
+              max={totalPages}
+              value={jumpInput}
+              onChange={(e) => setJumpInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const num = parseInt(jumpInput || "", 10);
+                  if (!isNaN(num)) {
+                    const nextVal = Math.min(Math.max(1, num), totalPages);
+                    setPage(nextVal);
+                  }
+                }
+              }}
+              placeholder="Page"
+              className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
+            />
+            <button
+              className="px-2 py-1.5 rounded-lg border bg-gray-100 text-gray-700"
+              onClick={() => {
+                const num = parseInt(jumpInput || "", 10);
+                if (!isNaN(num)) {
+                  const nextVal = Math.min(Math.max(1, num), totalPages);
+                  setPage(nextVal);
+                }
+              }}
+            >
+              Go
+            </button>
+          </div>
         </div>
       )}
 
