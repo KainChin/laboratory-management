@@ -6,9 +6,13 @@ import com.example.test_order_service.dto.response.TestOrderDetailResponse;
 import com.example.test_order_service.dto.response.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
+import com.example.test_order_service.entity.TestOrder;
+import com.example.test_order_service.ingest.publisher.ResyncRequestPublisher;
+import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +25,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class TestOrderController {
     private final TestOrderService testOrderService;
+    private final ResyncRequestPublisher resyncRequestPublisher;
+    private final TestOrderRepository testOrderRepository;
 
     @PostMapping
     public RestResponse<TestOrderResponse> createTestOrder(@RequestBody @Valid TestOrderRequest request) {
@@ -94,5 +100,22 @@ public class TestOrderController {
     @PatchMapping("/{orderId}/review")
     public RestResponse<TestOrderResponse> reviewTestOrder(@PathVariable String orderId) {
         return testOrderService.reviewTestOrder(orderId);
+    }
+    //Gửi yêu cầu đồng bộ kết quả xét nghiệm cho một đơn hàng cụ thể
+    @PostMapping("/{orderId}/resync")
+    public RestResponse<Void> resyncTestOrderResults(@PathVariable String orderId) {
+
+        TestOrder order = testOrderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("TestOrder not found with id: " + orderId));
+
+        String bloodCollectionId = order.getBloodCollectionId();
+
+        resyncRequestPublisher.requestResync(orderId, bloodCollectionId, "ManualTriggerByUser");
+
+        return RestResponse.<Void>builder()
+                .statusCode(202) // 202 Accepted
+                .message("Resync request for orderId '" + orderId + "' and bloodCollectionId '" + bloodCollectionId + "' has been sent successfully.")
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 }
