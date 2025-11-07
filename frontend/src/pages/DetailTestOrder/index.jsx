@@ -222,9 +222,35 @@ export default function DetailTestOrder() {
           <PatientInfo patient={order} />
           <TestResult 
             tests={order.testResults} 
-            onUpdate={(newResults) => {
-              setTestResults(newResults.testResults);
-              setOrder({ ...order, testResults: newResults.testResults });
+            onUpdate={(updates = {}) => {
+              if (updates.testResults) {
+                setTestResults(updates.testResults);
+              }
+
+              setOrder((prev) => {
+                if (!prev) return prev;
+
+                const next = { ...prev };
+
+                if (updates.testResults) {
+                  next.testResults = updates.testResults;
+                }
+
+                const receivedStatus = updates.status
+                  ? String(updates.status).toUpperCase()
+                  : null;
+
+                if (receivedStatus) {
+                  next.status = receivedStatus;
+                } else if (updates.testResults) {
+                  const currentStatus = String(prev.status || "").toUpperCase();
+                  if (!currentStatus || currentStatus === "PENDING") {
+                    next.status = "COMPLETED";
+                  }
+                }
+
+                return next;
+              });
             }}
           />
 
@@ -242,7 +268,9 @@ export default function DetailTestOrder() {
             <QuickActions
               status={order.status}
               onStatusChange={(newStatus) => {
-                setOrder({ ...order, status: newStatus });
+                setOrder((prev) => (
+                  prev ? { ...prev, status: newStatus } : prev
+                ));
               }}
             />
           </div>

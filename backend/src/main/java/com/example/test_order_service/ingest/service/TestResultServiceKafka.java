@@ -157,20 +157,21 @@ public class TestResultServiceKafka implements TestResultService {
 
         TestResult result;
         if (existingResultOpt.isPresent()) {
-            log.warn("TestResult for '{}' already exists. Updating it.", finalBloodCollectionId);
-            result = existingResultOpt.get();
-
-            result.getTestResultParameter().clear();
-
-            result.setInstrumentName(instrument);
-            result.setHl7RawData(rawHl7);
-            result.setStatus("UPDATED");
-
-            for (TestResultParameter p : testResultParameterList) {
-                p.setTestResult(result);
-                p.setTestOrder(order);
-                result.getTestResultParameter().add(p);
-            }
+            log.warn("TestResult already exists for bloodCollectionId: {}", finalBloodCollectionId);
+//            result = existingResultOpt.get();
+//
+//            result.getTestResultParameter().clear();
+//
+//            result.setInstrumentName(instrument);
+//            result.setHl7RawData(rawHl7);
+//            result.setStatus("UPDATED");
+//
+//            for (TestResultParameter p : testResultParameterList) {
+//                p.setTestResult(result);
+//                p.setTestOrder(order);
+//                result.getTestResultParameter().add(p);
+//            }
+            throw new IllegalArgumentException("TestResult already exists for bloodCollectionId: " + finalBloodCollectionId);
         } else {
             log.info("Creating new TestResult for '{}'.", finalBloodCollectionId);
             result = TestResult.builder()

@@ -111,15 +111,37 @@ export default function TestResult({ tests, onUpdate }) {
       });
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       const data = await res.json();
-      const newParams = data?.result?.testResultParameter || [];
+      const resultPayload = data?.result ?? {};
+      const extractedParams = extractParameters(resultPayload);
+      const newParams = extractedParams.length ? extractedParams : [];
+
+      // keep local parameters in sync
       setParameters(newParams);
-      
-      // inform parent page that test results changed
+
+      // inform parent page that test results / status changed
       try {
         if (typeof onUpdate === "function") {
-          // pass the whole testResults object from response if available
-          const testResults = data?.result || { testResultParameter: newParams };
-          onUpdate({ testResults });
+          let nextTestResults =
+            resultPayload?.testResults ??
+            (Array.isArray(resultPayload)
+              ? { testResultParameter: resultPayload }
+              : resultPayload);
+
+          if (
+            !nextTestResults ||
+            typeof nextTestResults !== "object" ||
+            !nextTestResults.testResultParameter
+          ) {
+            nextTestResults = { testResultParameter: newParams };
+          }
+
+          const nextStatus =
+            resultPayload?.status ?? resultPayload?.testOrderStatus ?? resultPayload?.testStatus;
+
+          onUpdate({
+            testResults: nextTestResults,
+            status: nextStatus,
+          });
         }
       } catch (e) {
         console.warn("onUpdate callback failed:", e);
