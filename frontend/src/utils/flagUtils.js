@@ -19,7 +19,8 @@ export const FLAG_MEANINGS = {
   'R': 'Resistant',
   'P': 'Positive',
   'neg': 'Negative', // Using 'neg' since 'N' is already used for Normal
-  '<>': 'Significantly different'
+  '<>': 'Significantly different',
+  'OTHER': 'Other'
 };
 
 export function getFlagMeaning(flag) {
@@ -50,4 +51,39 @@ export function calculateTestResultStats(testResults) {
     flagCounts,
     hasResults: true
   };
+}
+
+// Color mapping for flags in charts
+export function getFlagColor(flag) {
+  if (!flag) return '#9ca3af'; // grey for no flag
+  
+  const upperFlag = flag.toString().toUpperCase();
+  
+  // Known flag colors matching the CSS
+  const colorMap = {
+    'N': '#10b981',  // green for Normal
+    'H': '#ef4444',  // red for High
+    'HH': '#dc2626', // darker red
+    'L': '#f59e0b',  // orange for Low
+    'LL': '#d97706', // darker orange
+    '>': '#ef4444',  // red (high)
+    '<': '#f59e0b',  // orange (low)
+    'A': '#f97316',  // orange for Abnormal
+    'AA': '#dc2626', // dark red
+    'VS': '#8b5cf6', // purple
+    'MS': '#a855f7', // lighter purple
+    'I': '#3b82f6',  // blue for Intermediate
+    'B': '#10b981',  // green for Better
+    'W': '#ef4444',  // red for Worse
+    'D': '#f59e0b',  // orange for down
+    'U': '#ef4444',  // red for up
+    'S': '#06b6d4',  // cyan for Susceptible
+    'R': '#f59e0b',  // orange for Resistant
+    'P': '#10b981',  // green for Positive
+    'NEG': '#9ca3af', // grey for Negative
+    '<>': '#6366f1',  // indigo
+    'OTHER': '#9ca3af', // grey for Other
+  };
+  
+  return colorMap[upperFlag] || '#9ca3af'; // default grey for unknown flags
 }

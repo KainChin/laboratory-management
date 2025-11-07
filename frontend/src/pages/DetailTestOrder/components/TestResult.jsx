@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { ClipboardList } from "lucide-react";
 import "../DetailTestOrder.css";
 import { showToast } from "../../../components/Toast";
+import { getFlagColor } from "../../../utils/flagUtils";
 
 function getFlagClass(flag) {
   if (!flag) return "dto-flag-default";
@@ -215,6 +216,7 @@ export default function TestResult({ tests, onUpdate }) {
           ) : (
             parameters.map((param) => {
               const flagClass = getFlagClass(param.flag);
+              const flagColor = getFlagColor(param.flag);
               return (
                 <tr key={param.id} className="dto-row">
                   <td className="dto-td">{param.sequence}</td>
@@ -222,7 +224,12 @@ export default function TestResult({ tests, onUpdate }) {
                   <td className="dto-td">{param.value}{param.unit ? ` ${param.unit}` : ""}</td>
                   <td className="dto-td">{param.refRange}</td>
                   <td className="dto-td flag-col">
-                    <span className={`dto-flag ${flagClass}`}>{param.flag}</span>
+                    <span 
+                      className={`dto-flag ${flagClass}`}
+                      style={{ color: flagColor }}
+                    >
+                      {param.flag}
+                    </span>
                   </td>
                 </tr>
               );
