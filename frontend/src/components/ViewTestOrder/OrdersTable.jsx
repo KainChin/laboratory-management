@@ -145,6 +145,7 @@ export default function OrdersTable() {
   };
 
   const [showModal, setShowModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const modalRef = useRef(null);
   const lastScaleRef = useRef(1);
   const [modalScale, setModalScale] = useState(1);
@@ -338,6 +339,8 @@ export default function OrdersTable() {
 
   // handleCreate accepts optional form object (use localForm when provided)
   async function handleCreate(currentForm) {
+    if (isSubmitting) return;
+
     const f = currentForm || localForm;
     // validate
     const validation = validateForm(f);
@@ -358,6 +361,8 @@ export default function OrdersTable() {
       email: f.email,
       phone: f.phone,
     };
+
+    setIsSubmitting(true);
 
     try {
       const res = await fetch("http://localhost:6868/api/test-orders", {
@@ -411,6 +416,8 @@ export default function OrdersTable() {
       setPage(1);
     } catch (err) {
       alert("Create failed: " + err.message);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -1028,6 +1035,7 @@ export default function OrdersTable() {
                   setShowModal(false);
                   setMode("create");
                   setErrors({});
+                  setIsSubmitting(false);
                 }}
                 className="px-4 py-2 border border-gray-200 rounded-lg bg-white"
               >
@@ -1043,9 +1051,10 @@ export default function OrdersTable() {
               ) : mode === "view" ? null : (
                 <button
                   onClick={() => handleCreate(localForm)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={isSubmitting}
                 >
-                  Create
+                  {isSubmitting ? "Creating..." : "Create"}
                 </button>
               )}
             </div>
