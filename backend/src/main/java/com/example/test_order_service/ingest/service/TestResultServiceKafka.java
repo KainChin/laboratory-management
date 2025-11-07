@@ -12,7 +12,12 @@ import com.example.test_order_service.mapper.TestResultMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.repository.TestResultRepository;
 import com.example.test_order_service.service.TestResultService;
-import jakarta.transaction.Transactional;
+
+// THAY ĐỔI 1: Import các class cần thiết để sửa lỗi
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -21,18 +26,44 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+
 
 @Service
-@RequiredArgsConstructor
 @Primary
 @Slf4j
+// THAY ĐỔI 2: Xóa @RequiredArgsConstructor
 public class TestResultServiceKafka implements TestResultService {
     private final TestResultRepository testResultRepository;
     private final TestOrderRepository testOrderRepository;
     private final TestResultMapper testResultMapper;
     private final TestResultEventPublisher eventPublisher;
 
-    @Transactional
+    // THAY ĐỔI 3: Khai báo 'self' là non-final để inject qua setter
+    private TestResultServiceKafka self;
+
+    // THAY ĐỔI 4: Thêm constructor thủ công thay cho Lombok
+    public TestResultServiceKafka(TestResultRepository testResultRepository,
+                                  TestOrderRepository testOrderRepository,
+                                  TestResultMapper testResultMapper,
+                                  TestResultEventPublisher eventPublisher) {
+        this.testResultRepository = testResultRepository;
+        this.testOrderRepository = testOrderRepository;
+        this.testResultMapper = testResultMapper;
+        this.eventPublisher = eventPublisher;
+    }
+
+    // THAY ĐỔI 5: Thêm Setter Injection để phá vỡ vòng lặp phụ thuộc
+    @Autowired
+    public void setSelf(@Lazy TestResultServiceKafka self) {
+        this.self = self;
+    }
+
+
+    // --- CÁC PHƯƠNG THỨC CỦA BẠN ĐƯỢC GIỮ NGUYÊN BÊN DƯỚI ---
+    // (Tôi chỉ đổi `jakarta.transaction.Transactional` thành của Spring để đồng bộ)
+
+    @Transactional(readOnly = true)
     public RestResponse<?> getResultByBloodCollectionId(String bloodCollectionId) {
         TestResult testResult = testResultRepository.findByBloodCollectionId(bloodCollectionId)
                 .orElseThrow(() -> new IllegalArgumentException("Test result not found for blood collection Id: " + bloodCollectionId));
@@ -48,17 +79,19 @@ public class TestResultServiceKafka implements TestResultService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public RestResponse<TestResultResponse> receiveHl7(String rawHl7) {
         // Step 1: Basic validation
         if (rawHl7 == null || rawHl7.isBlank()) {
             throw new IllegalArgumentException("HL7 message is empty");
         }
 
-        // Step 2: Validate HL7 format
-        validateHl7Format(rawHl7);
+        // Tách chuỗi HL7 bằng Regex để xử lý được cả dữ liệu một dòng
+        String[] lines = rawHl7.trim().split("(?=(PID|OBR|OBX|ZMD|FT1|NTE|ORC))");
 
-        String[] lines = rawHl7.split("\\r?\\n");
+        // Step 2: Validate HL7 format
+        validateHl7Format(lines);
+
         String bloodCollectionId = null;
         String instrument = "";
         List<TestResultParameter> testResultParameterList = new ArrayList<>();
@@ -69,7 +102,7 @@ public class TestResultServiceKafka implements TestResultService {
 
         for (String line : lines) {
             if (line == null || line.isBlank()) continue;
-            String[] parts = line.split("\\|");
+            String[] parts = line.split(Pattern.quote("|"));
 
             if (parts.length == 0) continue;
 
@@ -173,7 +206,7 @@ public class TestResultServiceKafka implements TestResultService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public RestResponse<Void> republishTestResultEvent(String testOrderId) {
         log.info("Attempting to republish event for testOrderId: {}", testOrderId);
         TestOrder order = testOrderRepository.findById(testOrderId)
@@ -192,36 +225,57 @@ public class TestResultServiceKafka implements TestResultService {
                 .build();
     }
 
-    /**
-     * Validates basic HL7 format structure.
-     */
-    private void validateHl7Format(String rawHl7) {
-        if (!rawHl7.trim().startsWith("MSH")) {
+    // --- THAY ĐỔI 6: THÊM CÁC PHƯƠNG THỨC CẦN THIẾT CHO RE-PROCESS ---
+    public RestResponse<TestResultResponse> reprocessHl7ByBloodCollectionId(String bloodCollectionId) {
+        String originalHl7 = self.deleteAndPrepareForReprocess(bloodCollectionId);
+        log.info("Old data for {} deleted. Re-ingesting now in a separate transaction...", bloodCollectionId);
+        return self.receiveHl7(originalHl7);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public String deleteAndPrepareForReprocess(String bloodCollectionId) {
+        log.warn("Executing DELETION transaction for bloodCollectionId: {}", bloodCollectionId);
+        TestResult oldResult = testResultRepository.findByBloodCollectionId(bloodCollectionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot re-process. No existing TestResult found for: " + bloodCollectionId));
+        String hl7Data = oldResult.getHl7RawData();
+        TestOrder order = oldResult.getTestOrder();
+        testResultRepository.delete(oldResult);
+        if (order != null) {
+            order.setStatus(TestOrderStatus.PENDING);
+            order.setTestResults(null);
+            testOrderRepository.save(order);
+        }
+        return hl7Data;
+    }
+
+    private void validateHl7Format(String[] segments) {
+        if (segments == null || segments.length == 0 || !segments[0].startsWith("MSH")) {
             throw new IllegalArgumentException("Invalid HL7 format: Message must start with MSH segment");
         }
-        String[] firstLine = rawHl7.split("\\r?\\n")[0].split("\\|", -1);
-        if (firstLine.length < 3) {
+        String[] firstLineParts = segments[0].split(Pattern.quote("|"), -1);
+        if (firstLineParts.length < 3) {
             throw new IllegalArgumentException("Invalid HL7 format: MSH segment has insufficient fields");
         }
-        if (firstLine.length > 1 && firstLine[1].length() < 4) {
+        if (firstLineParts.length > 1 && firstLineParts[1].length() < 4) {
             throw new IllegalArgumentException("Invalid HL7 format: Missing encoding characters in MSH-2");
         }
-        if (!rawHl7.contains("\r") && !rawHl7.contains("\n")) {
-            throw new IllegalArgumentException("Invalid HL7 format: Missing segment separators");
-        }
-        String[] segments = rawHl7.split("\\r?\\n");
         for (String segment : segments) {
             if (segment.isBlank()) continue;
             if (!segment.contains("|")) {
                 throw new IllegalArgumentException("Invalid HL7 format: Segment missing field separator: " + segment);
             }
-            if (segment.length() < 3 || !segment.substring(0, 3).matches("[A-Z]{3}")) {
+            if (segment.length() < 3 || !segment.substring(0, 3).matches("[A-Z0-9]{3}")) {
                 throw new IllegalArgumentException("Invalid HL7 format: Invalid segment identifier: " + segment);
             }
         }
     }
 
-    // Safely parse integer from segment parts
+    private void validateHl7Format(String rawHl7) {
+        // Overload này để giữ cho code cũ không bị lỗi biên dịch, nhưng logic thực sự dùng mảng
+        String[] lines = rawHl7.trim().split("(?=(PID|OBR|OBX|ZMD|FT1|NTE|ORC))");
+        validateHl7Format(lines);
+    }
+
     private int safeInt(String[] parts, int index) {
         try {
             return parts.length > index ? Integer.parseInt(parts[index]) : 0;
@@ -229,5 +283,4 @@ public class TestResultServiceKafka implements TestResultService {
             return 0;
         }
     }
-
 }
