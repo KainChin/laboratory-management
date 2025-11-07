@@ -56,16 +56,16 @@ public class TestOrderServiceImpl implements TestOrderService {
         TestOrder savedOrder = testOrderRepository.save(testOrder);
 
         // Publish event (nếu event publisher có sẵn)
-        if (eventPublisher != null) {
-            eventPublisher.publishTestOrderCreated(savedOrder);
-        }
+//        if (eventPublisher != null) {
+//            eventPublisher.publishTestOrderCreated(savedOrder);
+//        }
 
         TestOrderResponse response = testOrderMapper.toTestOrderResponse(savedOrder);
 
-        try {
-            instrumentSyncService.requestOrWait(savedOrder.getTestOrderId());
-        } catch (Exception ex) {
-        }
+//        try {
+//            instrumentSyncService.requestOrWait(savedOrder.getTestOrderId());
+//        } catch (Exception ex) {
+//        }
 
         return RestResponse.<TestOrderResponse>builder()
                 .statusCode(200)
