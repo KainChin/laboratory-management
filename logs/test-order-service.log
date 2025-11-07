@@ -172,3 +172,149 @@
 2025-11-07T13:40:26.151+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Adding newly assigned partitions: instrument-results-topic-0
 2025-11-07T13:40:26.460+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerUtils        : Setting offset for partition instrument-results-topic-0 to the committed offset FetchPosition{offset=18, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[34.199.182.98:9092 (id: 1 rack: null)], epoch=0}}
 2025-11-07T13:40:26.461+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions assigned: [instrument-results-topic-0]
+2025-11-07T13:40:56.723+07:00  INFO 29892 --- [test-order-service] [http-nio-6868-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-07T13:40:56.723+07:00  INFO 29892 --- [test-order-service] [http-nio-6868-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-07T13:40:56.725+07:00  INFO 29892 --- [test-order-service] [http-nio-6868-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-11-07T13:41:28.785+07:00  INFO 29892 --- [test-order-service] [http-nio-6868-exec-3] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = -1
+	auto.include.jmx.reporter = true
+	batch.size = 16384
+	bootstrap.servers = [34.199.182.98:9092]
+	buffer.memory = 33554432
+	client.dns.lookup = use_all_dns_ips
+	client.id = test-order-service-producer-1
+	compression.type = none
+	connections.max.idle.ms = 540000
+	delivery.timeout.ms = 120000
+	enable.idempotence = true
+	enable.metrics.push = true
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metadata.max.idle.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.adaptive.partitioning.enable = true
+	partitioner.availability.timeout.ms = 0
+	partitioner.class = null
+	partitioner.ignore.keys = false
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 2147483647
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.springframework.kafka.support.serializer.JsonSerializer
+
+2025-11-07T13:41:28.785+07:00  INFO 29892 --- [test-order-service] [http-nio-6868-exec-3] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2025-11-07T13:41:28.793+07:00  INFO 29892 --- [test-order-service] [http-nio-6868-exec-3] o.a.k.clients.producer.KafkaProducer     : [Producer clientId=test-order-service-producer-1] Instantiated an idempotent producer.
+2025-11-07T13:41:28.807+07:00  INFO 29892 --- [test-order-service] [http-nio-6868-exec-3] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.7.1
+2025-11-07T13:41:28.807+07:00  INFO 29892 --- [test-order-service] [http-nio-6868-exec-3] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: e2494e6ffb89f828
+2025-11-07T13:41:28.807+07:00  INFO 29892 --- [test-order-service] [http-nio-6868-exec-3] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1762497688807
+2025-11-07T13:41:29.668+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.Metadata        : [Producer clientId=test-order-service-producer-1] Cluster ID: XD-8Ivv9QbyUMtsgjx0TYA
+2025-11-07T13:41:29.894+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] o.a.k.c.p.internals.TransactionManager   : [Producer clientId=test-order-service-producer-1] ProducerId set to 4095 with epoch 0
+2025-11-07T13:41:30.768+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.p.ResyncRequestPublisher         : Successfully sent resync request for testOrderId='208c3588-2927-47ef-b85a-57f0d702fdce', bloodCollectionId='BCT-20251107-00003'. Topic: test-result-resync-request-topic, Partition: 0
+2025-11-07T13:41:50.370+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: group is already rebalancing
+2025-11-07T13:41:50.373+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Revoke previously assigned partitions instrument-results-topic-0
+2025-11-07T13:41:50.374+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions revoked: [instrument-results-topic-0]
+2025-11-07T13:41:50.374+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T13:41:50.641+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully joined group with generation Generation{generationId=69, memberId='consumer-test-order-ingest-group-1-fe303fb1-fcc9-417e-8346-e0851530a401', protocol='range'}
+2025-11-07T13:41:50.641+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Finished assignment for group at generation 69: {consumer-test-order-ingest-group-2-bc858889-cca0-4873-9521-2995c96c5107=Assignment(partitions=[]), consumer-test-order-ingest-group-1-98610e00-3528-461b-9641-8f4fd1be8544=Assignment(partitions=[instrument-results-topic-0]), consumer-test-order-ingest-group-1-fe303fb1-fcc9-417e-8346-e0851530a401=Assignment(partitions=[])}
+2025-11-07T13:41:50.932+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully synced group in generation Generation{generationId=69, memberId='consumer-test-order-ingest-group-1-fe303fb1-fcc9-417e-8346-e0851530a401', protocol='range'}
+2025-11-07T13:41:50.932+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Notifying assignor about the new Assignment(partitions=[])
+2025-11-07T13:41:50.932+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Adding newly assigned partitions: 
+2025-11-07T13:41:50.932+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions assigned: []
+2025-11-07T13:42:56.000+07:00  WARN 29892 --- [test-order-service] [http-nio-6868-exec-9] c.e.t.i.service.TestResultServiceKafka   : TestResult for 'TUBE-010' already exists. Updating it.
+2025-11-07T13:42:56.932+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.p.TestResultEventPublisher       : Successfully sent MonitoringEventPayload for bloodCollectionId='TUBE-010'. Topic: test-results-events, Partition: 0
+2025-11-07T13:44:51.059+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node -1 disconnected.
+2025-11-07T13:45:16.344+07:00  INFO 29892 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-07T13:45:59.896+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node -1 disconnected.
+2025-11-07T13:48:07.319+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.p.ResyncRequestPublisher         : Successfully sent resync request for testOrderId='208c3588-2927-47ef-b85a-57f0d702fdce', bloodCollectionId='BCT-20251107-00003'. Topic: test-result-resync-request-topic, Partition: 0
+2025-11-07T13:49:21.329+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-07T13:49:31.130+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: group is already rebalancing
+2025-11-07T13:49:31.131+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Revoke previously assigned partitions 
+2025-11-07T13:49:31.131+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions revoked: []
+2025-11-07T13:49:31.131+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-07T13:49:31.392+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully joined group with generation Generation{generationId=70, memberId='consumer-test-order-ingest-group-1-fe303fb1-fcc9-417e-8346-e0851530a401', protocol='range'}
+2025-11-07T13:49:31.394+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Finished assignment for group at generation 70: {consumer-test-order-ingest-group-1-fe303fb1-fcc9-417e-8346-e0851530a401=Assignment(partitions=[instrument-results-topic-0])}
+2025-11-07T13:49:31.736+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully synced group in generation Generation{generationId=70, memberId='consumer-test-order-ingest-group-1-fe303fb1-fcc9-417e-8346-e0851530a401', protocol='range'}
+2025-11-07T13:49:31.736+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Notifying assignor about the new Assignment(partitions=[instrument-results-topic-0])
+2025-11-07T13:49:31.736+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Adding newly assigned partitions: instrument-results-topic-0
+2025-11-07T13:49:31.997+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerUtils        : Setting offset for partition instrument-results-topic-0 to the committed offset FetchPosition{offset=18, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[34.199.182.98:9092 (id: 1 rack: null)], epoch=0}}
+2025-11-07T13:49:32.106+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions assigned: [instrument-results-topic-0]
+2025-11-07T13:49:32.465+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.l.TestResultFullIngestListener   : Kafka listener received a raw message. Delegating to service for processing...
+2025-11-07T13:49:32.475+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.service.TestResultServiceKafka   : Creating new TestResult for 'BCT-20251107-00003'.
+2025-11-07T13:49:32.526+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.l.TestResultFullIngestListener   : Successfully processed message from Kafka.
+2025-11-07T13:49:32.526+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.l.TestResultFullIngestListener   : Kafka listener received a raw message. Delegating to service for processing...
+2025-11-07T13:49:32.545+07:00  WARN 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.service.TestResultServiceKafka   : TestResult for 'BCT-20251107-00003' already exists. Updating it.
+2025-11-07T13:49:32.601+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.l.TestResultFullIngestListener   : Successfully processed message from Kafka.
+2025-11-07T13:49:32.602+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.l.TestResultFullIngestListener   : Kafka listener received a raw message. Delegating to service for processing...
+2025-11-07T13:49:32.613+07:00  WARN 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.service.TestResultServiceKafka   : TestResult for 'BCT-20251107-00003' already exists. Updating it.
+2025-11-07T13:49:32.644+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] c.e.t.i.l.TestResultFullIngestListener   : Successfully processed message from Kafka.
+2025-11-07T13:49:32.864+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.p.TestResultEventPublisher       : Successfully sent MonitoringEventPayload for bloodCollectionId='BCT-20251107-00003'. Topic: test-results-events, Partition: 0
+2025-11-07T13:49:32.964+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.p.TestResultEventPublisher       : Successfully sent MonitoringEventPayload for bloodCollectionId='BCT-20251107-00003'. Topic: test-results-events, Partition: 0
+2025-11-07T13:49:33.066+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.p.TestResultEventPublisher       : Successfully sent MonitoringEventPayload for bloodCollectionId='BCT-20251107-00003'. Topic: test-results-events, Partition: 0
+2025-11-07T13:49:51.344+07:00  INFO 29892 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node -1 disconnected.
+2025-11-07T13:50:16.356+07:00  INFO 29892 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-07T13:50:59.949+07:00  INFO 29892 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node -1 disconnected.
