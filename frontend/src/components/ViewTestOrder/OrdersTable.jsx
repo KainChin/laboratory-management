@@ -116,17 +116,17 @@ export default function OrdersTable() {
     if (localStorage.getItem('scrollToTable')) {
       // Remove the flag
       localStorage.removeItem('scrollToTable');
-      
+
       // Wait for data to load and component to render
       setTimeout(() => {
         // Tìm vị trí của bảng và header
         const tableSection = document.querySelector('table');
         const headerSection = document.querySelector('.flex.justify-between.items-center.mb-3');
-        
+
         if (tableSection && headerSection) {
           // Lấy vị trí của header của bảng
           const headerOffset = headerSection.getBoundingClientRect().top + window.pageYOffset;
-          
+
           // Cuộn đến vị trí của header bảng, thêm offset 100px để header bảng nằm đẹp trên màn hình
           window.scrollTo({
             top: headerOffset - 100,
@@ -497,16 +497,16 @@ export default function OrdersTable() {
           orders.map((o) =>
             o.id === editingId
               ? {
-                  ...o,
-                  name: updated.patientName || f.patientName || o.name,
-                  dob: updated.dateOfBirth || f.dob || o.dob,
-                  status: updated.status || f.status || o.status,
-                  phone: updated.phone || f.phone || o.phone,
-                  email: updated.email || f.email || o.email,
-                  gender: updated.gender || f.gender || o.gender,
-                  address: updated.address || f.address || o.address,
-                  citizenId: updated.citizenId || f.citizenId || o.citizenId,
-                }
+                ...o,
+                name: updated.patientName || f.patientName || o.name,
+                dob: updated.dateOfBirth || f.dob || o.dob,
+                status: updated.status || f.status || o.status,
+                phone: updated.phone || f.phone || o.phone,
+                email: updated.email || f.email || o.email,
+                gender: updated.gender || f.gender || o.gender,
+                address: updated.address || f.address || o.address,
+                citizenId: updated.citizenId || f.citizenId || o.citizenId,
+              }
               : o
           )
         );
@@ -705,15 +705,15 @@ export default function OrdersTable() {
             {orders.length === 0 ? (
               <tr>
                 <td colSpan={5} className="py-8 text-center text-gray-500">
-                  Không có dữ liệu về bệnh nhân
+                  No patient data available
                 </td>
               </tr>
             ) : (
               orders.map((row) => (
                 <tr key={row.id} className="border-b hover:bg-gray-50">
                   <td className="py-2 px-3">
-                    <div 
-                      className="truncate hover:text-red-500 cursor-pointer transition-colors" 
+                    <div
+                      className="truncate hover:text-red-500 cursor-pointer transition-colors"
                       title={row.name}
                       onClick={() => {
                         setIsNavigating(true);
@@ -731,9 +731,8 @@ export default function OrdersTable() {
                   <td className="py-2 px-3">
                     <div className="truncate">
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          statusColor[row.status]
-                        }`}
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColor[row.status]
+                          }`}
                       >
                         {row.status}
                       </span>
@@ -792,24 +791,46 @@ export default function OrdersTable() {
           )}
           {(() => {
             function getItems(current, total) {
-              const WINDOW = 6;
-              if (total <= WINDOW) {
+              if (total <= 7) {
                 return Array.from({ length: total }, (_, i) => i + 1);
               }
-              let start = Math.max(1, current - 1);
-              let end = start + WINDOW - 1;
-              if (end > total) {
-                end = total;
-                start = Math.max(1, end - WINDOW + 1);
-              }
+
               const items = [];
-              for (let i = start; i <= end; i++) items.push(i);
-              if (end < total) {
-                if (end < total - 2) items.push("...");
-                if (total - 1 > end) items.push(total - 1);
-                items.push(total);
+              const first = 1;
+              const last = total;
+              const left = Math.max(2, current - 1);
+              const right = Math.min(total - 1, current + 1);
+
+              items.push(first);
+
+              if (left > 2) {
+                items.push("...");
+              } else {
+                for (let i = 2; i < left; i++) {
+                  items.push(i);
+                }
               }
-              return items;
+
+              for (let i = left; i <= right; i++) {
+                if (i > first && i < last) {
+                  items.push(i);
+                }
+              }
+
+              if (right < last - 1) {
+                if (right === last - 2) {
+                  items.push(last - 1);
+                } else {
+                  items.push("...");
+                }
+              }
+
+              items.push(last);
+
+              // remove duplicates while keeping order
+              return items.filter((value, index, self) => {
+                return index === 0 || value !== self[index - 1];
+              });
             }
             const items = getItems(page, totalPages);
             return items.map((it, idx) =>
@@ -818,9 +839,8 @@ export default function OrdersTable() {
               ) : (
                 <button
                   key={it}
-                  className={`px-3 py-1 rounded border ${
-                    page === it ? "bg-red-500 text-white" : "bg-gray-100 text-gray-700"
-                  }`}
+                  className={`px-3 py-1 rounded border ${page === it ? "bg-red-500 text-white" : "bg-gray-100 text-gray-700"
+                    }`}
                   onClick={() => setPage(it)}
                 >
                   {it}
@@ -892,15 +912,15 @@ export default function OrdersTable() {
               {mode === "view"
                 ? "Detail Test Order Information"
                 : mode === "edit"
-                ? "UPDATE TEST ORDER"
-                : "NEW TEST ORDER"}
+                  ? "UPDATE TEST ORDER"
+                  : "NEW TEST ORDER"}
             </h3>
             <p className="text-center text-sm text-gray-500 mb-6">
               {mode === "view"
                 ? "View patient information for this test order"
                 : mode === "edit"
-                ? "Update patient information for this test order"
-                : "Enter patient information to create a new test order"}
+                  ? "Update patient information for this test order"
+                  : "Enter patient information to create a new test order"}
             </p>
 
             <div className="border rounded-lg p-6 bg-gray-50">
@@ -1008,8 +1028,8 @@ export default function OrdersTable() {
                         ? form.gender === "MALE"
                           ? "Male"
                           : form.gender === "FEMALE"
-                          ? "Female"
-                          : form.gender
+                            ? "Female"
+                            : form.gender
                         : ""}
                     </div>
                   ) : (
@@ -1176,7 +1196,7 @@ export default function OrdersTable() {
               const data = await res.json();
               if (data?.result) {
                 const items = data.result.items || [];
-                
+
                 // Nếu có items trong response, cập nhật danh sách
                 if (items.length > 0) {
                   setTotalPages(data.result.totalPages || 1);
