@@ -13,12 +13,10 @@ import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.repository.TestResultRepository;
 import com.example.test_order_service.service.TestResultService;
 
-// THAY ĐỔI 1: Import các class cần thiết để sửa lỗi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -26,23 +24,21 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 
 @Service
 @Primary
 @Slf4j
-// THAY ĐỔI 2: Xóa @RequiredArgsConstructor
 public class TestResultServiceKafka implements TestResultService {
     private final TestResultRepository testResultRepository;
     private final TestOrderRepository testOrderRepository;
     private final TestResultMapper testResultMapper;
     private final TestResultEventPublisher eventPublisher;
 
-    // THAY ĐỔI 3: Khai báo 'self' là non-final để inject qua setter
     private TestResultServiceKafka self;
 
-    // THAY ĐỔI 4: Thêm constructor thủ công thay cho Lombok
     public TestResultServiceKafka(TestResultRepository testResultRepository,
                                   TestOrderRepository testOrderRepository,
                                   TestResultMapper testResultMapper,
@@ -53,15 +49,10 @@ public class TestResultServiceKafka implements TestResultService {
         this.eventPublisher = eventPublisher;
     }
 
-    // THAY ĐỔI 5: Thêm Setter Injection để phá vỡ vòng lặp phụ thuộc
     @Autowired
     public void setSelf(@Lazy TestResultServiceKafka self) {
         this.self = self;
     }
-
-
-    // --- CÁC PHƯƠNG THỨC CỦA BẠN ĐƯỢC GIỮ NGUYÊN BÊN DƯỚI ---
-    // (Tôi chỉ đổi `jakarta.transaction.Transactional` thành của Spring để đồng bộ)
 
     @Transactional(readOnly = true)
     public RestResponse<?> getResultByBloodCollectionId(String bloodCollectionId) {
@@ -81,15 +72,11 @@ public class TestResultServiceKafka implements TestResultService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public RestResponse<TestResultResponse> receiveHl7(String rawHl7) {
-        // Step 1: Basic validation
         if (rawHl7 == null || rawHl7.isBlank()) {
             throw new IllegalArgumentException("HL7 message is empty");
         }
-
-        // Tách chuỗi HL7 bằng Regex để xử lý được cả dữ liệu một dòng
         String[] lines = rawHl7.trim().split("(?=(PID|OBR|OBX|ZMD|FT1|NTE|ORC))");
 
-        // Step 2: Validate HL7 format
         validateHl7Format(lines);
 
         String bloodCollectionId = null;
@@ -148,12 +135,10 @@ public class TestResultServiceKafka implements TestResultService {
                     break;
 
                 default:
-                    // Ignore other segment types
                     break;
             }
         }
 
-        // Step 3: Check that required segments exist
         if (!hasMSH) throw new IllegalArgumentException("Invalid HL7 format: Missing MSH segment");
         if (!hasOBR) throw new IllegalArgumentException("Invalid HL7 format: Missing OBR segment");
         if (!hasOBX) throw new IllegalArgumentException("Invalid HL7 format: Missing OBX segment");
@@ -164,43 +149,55 @@ public class TestResultServiceKafka implements TestResultService {
 
         final String finalBloodCollectionId = bloodCollectionId.trim();
 
-        testResultRepository.findByBloodCollectionId(finalBloodCollectionId)
-                .ifPresent(r -> {
-                    throw new IllegalArgumentException("TestResult already exists for bloodCollectionId: " + finalBloodCollectionId);
-                });
-
         TestOrder order = testOrderRepository.findByBloodCollectionId(finalBloodCollectionId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "TestOrder not found for blood collection Id: " + finalBloodCollectionId));
 
-        TestResult result = TestResult.builder()
-                .testOrder(order)
-                .bloodCollectionId(order.getBloodCollectionId())
-                .instrumentName(instrument)
-                .hl7RawData(rawHl7)
-                .status("COMPLETED")
-                .build();
+        Optional<TestResult> existingResultOpt = testResultRepository.findByBloodCollectionId(finalBloodCollectionId);
 
-        for (TestResultParameter p : testResultParameterList) {
-            p.setTestResult(result);
-            p.setTestOrder(order);
+        TestResult result;
+        if (existingResultOpt.isPresent()) {
+            log.warn("TestResult for '{}' already exists. Updating it.", finalBloodCollectionId);
+            result = existingResultOpt.get();
+
+            result.getTestResultParameter().clear();
+
+            result.setInstrumentName(instrument);
+            result.setHl7RawData(rawHl7);
+            result.setStatus("UPDATED");
+
+            for (TestResultParameter p : testResultParameterList) {
+                p.setTestResult(result);
+                p.setTestOrder(order);
+                result.getTestResultParameter().add(p);
+            }
+        } else {
+            log.info("Creating new TestResult for '{}'.", finalBloodCollectionId);
+            result = TestResult.builder()
+                    .testOrder(order)
+                    .bloodCollectionId(order.getBloodCollectionId())
+                    .instrumentName(instrument)
+                    .hl7RawData(rawHl7)
+                    .status("COMPLETED")
+                    .build();
+
+            for (TestResultParameter p : testResultParameterList) {
+                p.setTestResult(result);
+                p.setTestOrder(order);
+            }
+            result.setTestResultParameter(testResultParameterList);
         }
-        result.setTestResultParameter(testResultParameterList);
 
         TestResult savedResult = testResultRepository.save(result);
-
         order.setStatus(TestOrderStatus.COMPLETED);
         testOrderRepository.save(order);
-
-        // GỌI PUBLISHER SAU KHI LƯU DB THÀNH CÔNG
         eventPublisher.publishTestResultCreated(savedResult);
-
         TestResultResponse testResultResponse = testResultMapper.toTestResultResponse(savedResult);
 
         return RestResponse.<TestResultResponse>builder()
                 .statusCode(200)
                 .result(testResultResponse)
-                .message("HL7 parsing successfully and event sent")
+                .message("HL7 data processed successfully (created or updated).")
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -225,7 +222,6 @@ public class TestResultServiceKafka implements TestResultService {
                 .build();
     }
 
-    // --- THAY ĐỔI 6: THÊM CÁC PHƯƠNG THỨC CẦN THIẾT CHO RE-PROCESS ---
     public RestResponse<TestResultResponse> reprocessHl7ByBloodCollectionId(String bloodCollectionId) {
         String originalHl7 = self.deleteAndPrepareForReprocess(bloodCollectionId);
         log.info("Old data for {} deleted. Re-ingesting now in a separate transaction...", bloodCollectionId);
@@ -271,7 +267,6 @@ public class TestResultServiceKafka implements TestResultService {
     }
 
     private void validateHl7Format(String rawHl7) {
-        // Overload này để giữ cho code cũ không bị lỗi biên dịch, nhưng logic thực sự dùng mảng
         String[] lines = rawHl7.trim().split("(?=(PID|OBR|OBX|ZMD|FT1|NTE|ORC))");
         validateHl7Format(lines);
     }

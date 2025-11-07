@@ -11,17 +11,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ResyncRequestPublisher {
 
-    // Tên topic này bạn và nhóm kia phải thống nhất với nhau
     private static final String RESYNC_REQUEST_TOPIC = "test-result-resync-request-topic";
-
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     /**
-     * Gửi yêu cầu đồng bộ lại kết quả cho một TestOrder.
-     * @param testOrderId ID của TestOrder cần đồng bộ.
-     * @param reason Lý do yêu cầu.
+     * Sửa lại phương thức để nhận thêm bloodCollectionId
      */
-    public void requestResync(String testOrderId, String reason) {
+    public void requestResync(String testOrderId, String bloodCollectionId, String reason) {
         if (testOrderId == null || testOrderId.isBlank()) {
             log.warn("Attempted to request resync for a null or empty testOrderId. Aborting.");
             return;
@@ -29,18 +25,19 @@ public class ResyncRequestPublisher {
 
         ResyncRequestPayload payload = ResyncRequestPayload.builder()
                 .testOrderId(testOrderId)
+                .bloodCollectionId(bloodCollectionId) // <-- Gán bloodCollectionId vào payload
                 .reason(reason)
                 .build();
 
         try {
-            // Gửi message lên Kafka. Key là testOrderId để đảm bảo các yêu cầu cho cùng 1 order vào cùng partition.
             kafkaTemplate.send(RESYNC_REQUEST_TOPIC, testOrderId, payload)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
                             log.error("Failed to send resync request for testOrderId='{}' to Kafka.", testOrderId, ex);
                         } else {
-                            log.info("Successfully sent resync request for testOrderId='{}'. Topic: {}, Partition: {}",
+                            log.info("Successfully sent resync request for testOrderId='{}', bloodCollectionId='{}'. Topic: {}, Partition: {}",
                                     testOrderId,
+                                    bloodCollectionId,
                                     result.getRecordMetadata().topic(),
                                     result.getRecordMetadata().partition());
                         }

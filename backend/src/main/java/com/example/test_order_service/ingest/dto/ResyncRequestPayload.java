@@ -20,11 +20,12 @@ public class ResyncRequestPayload {
     @Builder.Default
     private String requestId = UUID.randomUUID().toString();
 
+
     /**
      * ID của TestOrder cần được đồng bộ lại.
      */
     private String testOrderId;
-
+    private  String bloodCollectionId;
     /**
      * Service nào đang gửi yêu cầu này.
      */
