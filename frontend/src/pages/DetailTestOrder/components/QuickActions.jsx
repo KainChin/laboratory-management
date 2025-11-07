@@ -102,12 +102,14 @@ export default function QuickActions({ status, onStatusChange }) {
             zIndex: 9999,
             padding: 20,
           }}
+          onClick={closeConfirm}
         >
           <div
             className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-lg mx-auto"
             style={{ maxHeight: "90vh", overflow: "auto" }}
             role="dialog"
             aria-modal
+            onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-2xl text-red-500 font-bold text-center mb-4">
               Confirm Review

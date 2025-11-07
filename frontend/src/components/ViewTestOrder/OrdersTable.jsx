@@ -11,11 +11,15 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import Loading from "../Loading";
+import { showToast } from "../Toast";
 
 // Modal portal so the overlay covers the whole viewport
-function Modal({ children }) {
+function Modal({ children, onBackdropClick }) {
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2"
+      onClick={onBackdropClick}
+    >
       {children}
     </div>,
     document.body
@@ -371,8 +375,15 @@ export default function OrdersTable() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "Failed to create test order");
+        let msg = "Failed to create test order";
+        try {
+          const data = await res.json();
+          msg = data?.message?.[0] || data?.message || msg;
+        } catch {
+          const txt = await res.text();
+          if (txt) msg = txt;
+        }
+        throw new Error(msg);
       }
       const result = await res.json();
       // result.result is the created order (from RestResponse)
@@ -397,6 +408,7 @@ export default function OrdersTable() {
       ]);
       setShowModal(false);
       setSuccessMsg("Create test order successfully!");
+      showToast({ type: "success", title: "Success", message: "Create test order successfully" });
       setTimeout(() => setSuccessMsg(""), 3000);
       resetForm();
       setLocalForm({
@@ -415,7 +427,7 @@ export default function OrdersTable() {
       fetchOrdersWrapper(1); // về trang 1 sau khi thêm mới
       setPage(1);
     } catch (err) {
-      alert("Create failed: " + err.message);
+      showToast({ type: "error", title: "Create Failed", message: err.message || "Failed to create test order" });
     } finally {
       setIsSubmitting(false);
     }
@@ -786,7 +798,11 @@ export default function OrdersTable() {
 
       {/* Modal */}
       {showModal && (
-        <Modal>
+        <Modal onBackdropClick={() => {
+          setShowModal(false);
+          setMode("create");
+          setErrors({});
+        }}>
           <div
             ref={modalRef}
             style={{
@@ -795,6 +811,7 @@ export default function OrdersTable() {
               transition: "transform 120ms ease",
             }}
             className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
+            onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-2xl text-red-500 font-bold text-center">
               {mode === "view"

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ClipboardList } from "lucide-react";
 import "../DetailTestOrder.css";
+import { showToast } from "../../../components/Toast";
 
 function getFlagClass(flag) {
   if (!flag) return "dto-flag-default";
@@ -109,7 +110,17 @@ export default function TestResult({ tests, onUpdate }) {
         headers: { "Content-Type": "text/plain" },
         body: hl7Text,
       });
-      if (!res.ok) throw new Error(`Server responded ${res.status}`);
+      if (!res.ok) {
+        let msg = `Server responded ${res.status}`;
+        try {
+          const errData = await res.json();
+          msg = errData?.message?.[0] || errData?.message || msg;
+        } catch {
+          const txt = await res.text();
+          if (txt) msg = txt;
+        }
+        throw new Error(msg);
+      }
       const data = await res.json();
       const resultPayload = data?.result ?? {};
       const extractedParams = extractParameters(resultPayload);
@@ -146,12 +157,15 @@ export default function TestResult({ tests, onUpdate }) {
       } catch (e) {
         console.warn("onUpdate callback failed:", e);
       }
+
+      showToast({ type: "success", title: "HL7 Imported", message: data?.message || "Retrieved test result successfully" });
       
       // close modal on success
       setIsModalOpen(false);
     } catch (err) {
       console.error("HL7 submit error:", err);
       setPostError(err.message || "Failed to submit HL7");
+      showToast({ type: "error", title: "HL7 Import Failed", message: err.message || "Failed to submit HL7" });
     } finally {
       setPosting(false);
     }
@@ -219,8 +233,17 @@ export default function TestResult({ tests, onUpdate }) {
 
       {/* Modal rendered into document.body to avoid stacking/transform issues */}
       {isModalOpen && createPortal(
-        <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}>
-          <div className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto" style={{ maxHeight: '90vh', overflow: 'auto' }} role="dialog" aria-modal>
+        <div
+          className="modal-overlay"
+          style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
+            style={{ maxHeight: '90vh', overflow: 'auto' }}
+            role="dialog" aria-modal
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-2xl text-red-500 font-bold text-center" style={{ marginBottom: 8 }}>Send HL7 (raw)</h3>
             <p className="text-center text-sm text-gray-500 mb-6">Paste HL7 message here to create test result parameters</p>
             <textarea
