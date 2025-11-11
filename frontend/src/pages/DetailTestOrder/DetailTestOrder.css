@@ -277,9 +277,9 @@ input, textarea {
   text-align:center !important;
   min-width:64px;
 }
-.dto-flag-high { background:#FCA5A5 !important; color:#7F1D1D !important; }   /* light red */
-.dto-flag-low { background:#93C5FD; color:#1E3A8A; }    /* blue */
-.dto-flag-normal { background:#FEF3C7; color:#92400E; }/* amber */
+.dto-flag-H { background:#fff1f0 !important; color:#ef4444 !important; }   /* high red */
+.dto-flag-L { background:#fff2e8 !important; color:#f59e0b !important; }    /* low orange */
+.dto-flag-N { background:#fff7e6 !important; color:#10b981 !important; }/* normal green */
 .dto-flag-default { background:#F3F4F6; color:#374151; }
 
 /* Icons colors */

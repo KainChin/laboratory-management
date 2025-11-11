@@ -7,7 +7,7 @@ import OrderMeta from "./components/OrderMeta";
 import TestResult from "./components/TestResult";
 import Comments from "./components/Comments";
 import QuickActions from "./components/QuickActions";
-import StatusChart from "./components/StatusChart";
+import FlagChart from "./components/FlagChart";
 import Loading from "../../components/Loading";
 import "./DetailTestOrder.css";
 
@@ -15,10 +15,11 @@ export default function DetailTestOrder() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [isNavigating, setIsNavigating] = useState(false);
-  const [isExporting, setIsExporting] = useState(false); // ++ THÊM STATE ĐỂ QUẢN LÝ NÚT IN
+  const [isExporting, setIsExporting] = useState(false);
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [testResults, setTestResults] = useState(null);
 
   // Fetch order data from the API (Giữ nguyên)
   useEffect(() => {
@@ -219,7 +220,13 @@ export default function DetailTestOrder() {
       <div className="dto-grid">
         <div className="dto-left-col">
           <PatientInfo patient={order} />
-          <TestResult tests={order.testResults} />
+          <TestResult 
+            tests={order.testResults} 
+            onUpdate={(newResults) => {
+              setTestResults(newResults.testResults);
+              setOrder({ ...order, testResults: newResults.testResults });
+            }}
+          />
 
           {/* ++ SỬA: Bọc Comments trong div "no-print" để ẩn */}
           <div className="no-print">
@@ -240,8 +247,11 @@ export default function DetailTestOrder() {
             />
           </div>
 
-          {/* Chúng ta giữ lại StatusChart */}
-          <StatusChart status={order.status} />
+          {/* Flag Chart component */}
+          <FlagChart 
+            orderId={id} 
+            testResults={testResults} 
+          />
         </div>
       </div>
     </div>
