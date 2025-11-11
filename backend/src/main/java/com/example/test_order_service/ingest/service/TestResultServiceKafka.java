@@ -72,25 +72,32 @@ public class TestResultServiceKafka implements TestResultService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public RestResponse<TestResultResponse> receiveHl7(String rawHl7) {
+        // Setp 1: Basic validation
         if (rawHl7 == null || rawHl7.isBlank()) {
             throw new IllegalArgumentException("HL7 message is empty");
         }
-        String[] lines = rawHl7.trim().split("(?=(PID|OBR|OBX|ZMD|FT1|NTE|ORC))");
 
-        validateHl7Format(lines);
+        // Step 2: Validate HL7 format BEFORE splitting
+        validateHl7FormatBasic(rawHl7);
+
+        // Step 3: Split segments - using simple newline approach (more standard)
+        String[] lines = rawHl7.split("\\r?\\n");
+
+        // Step 4: Validate segment structure
+        validateHl7Segments(lines);
 
         String bloodCollectionId = null;
         String instrument = "";
         List<TestResultParameter> testResultParameterList = new ArrayList<>();
-
+        //iF we need PID just add more
         boolean hasMSH = false;
         boolean hasOBR = false;
         boolean hasOBX = false;
 
         for (String line : lines) {
             if (line == null || line.isBlank()) continue;
-            String[] parts = line.split(Pattern.quote("|"));
 
+            String[] parts = line.split(Pattern.quote("|"));
             if (parts.length == 0) continue;
 
             String segmentType = parts[0];
@@ -121,6 +128,7 @@ public class TestResultServiceKafka implements TestResultService {
                     testResultParameter.setSequence(safeInt(parts, 1));
                     testResultParameter.setObxIdentifier(parts.length > 3 ? parts[3] : "UNKNOWN");
 
+                    // OBX-3 = "WBC^White Blood Cell"
                     String[] idSplit = parts[3].split("\\^");
                     testResultParameter.setParamCode(idSplit[0]);
                     testResultParameter.setParamName(idSplit.length > 1 ? idSplit[1] : idSplit[0]);
@@ -135,71 +143,139 @@ public class TestResultServiceKafka implements TestResultService {
                     break;
 
                 default:
+                    // Ignore other segment types (PID, etc.)
                     break;
             }
         }
 
+        // Step 6: Validate required segments exist
         if (!hasMSH) throw new IllegalArgumentException("Invalid HL7 format: Missing MSH segment");
         if (!hasOBR) throw new IllegalArgumentException("Invalid HL7 format: Missing OBR segment");
         if (!hasOBX) throw new IllegalArgumentException("Invalid HL7 format: Missing OBX segment");
-
-        if (bloodCollectionId == null) {
+        if (bloodCollectionId == null)
             throw new IllegalArgumentException("Missing blood collection id number in HL7 message");
-        }
 
         final String finalBloodCollectionId = bloodCollectionId.trim();
 
+        // Step 7: Check if TestResult already exists (early exit for duplicate)
+        //If don't want to log, remove log line
+        testResultRepository.findByBloodCollectionId(finalBloodCollectionId)
+                .ifPresent(r -> {
+                    log.warn("TestResult already exists for bloodCollectionId: {}", finalBloodCollectionId);
+                    throw new IllegalArgumentException(
+                            "TestResult already exists for bloodCollectionId: " + finalBloodCollectionId
+                    );
+                });
+
+        // Step 8: Find TestOrder
+        //If don't want to log, remove the parentheses and log line
         TestOrder order = testOrderRepository.findByBloodCollectionId(finalBloodCollectionId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "TestOrder not found for blood collection Id: " + finalBloodCollectionId));
+                .orElseThrow(() -> {
+                    log.error("TestOrder not found for bloodCollectionId: {}", finalBloodCollectionId);
+                    return new IllegalArgumentException(
+                            "TestOrder not found for bloodCollectionId: " + finalBloodCollectionId
+                    );
+                });
 
-        Optional<TestResult> existingResultOpt = testResultRepository.findByBloodCollectionId(finalBloodCollectionId);
+        // Step 9: Create new TestResult
+        log.info("Creating new TestResult for bloodCollectionId: '{}'", finalBloodCollectionId);
+        TestResult result = TestResult.builder()
+                .testOrder(order)
+                .bloodCollectionId(order.getBloodCollectionId())
+                .instrumentName(instrument)
+                .hl7RawData(rawHl7)
+                .status("COMPLETED")
+                .build();
 
-        TestResult result;
-        if (existingResultOpt.isPresent()) {
-            log.warn("TestResult for '{}' already exists. Updating it.", finalBloodCollectionId);
-            result = existingResultOpt.get();
-
-            result.getTestResultParameter().clear();
-
-            result.setInstrumentName(instrument);
-            result.setHl7RawData(rawHl7);
-            result.setStatus("UPDATED");
-
-            for (TestResultParameter p : testResultParameterList) {
-                p.setTestResult(result);
-                p.setTestOrder(order);
-                result.getTestResultParameter().add(p);
-            }
-        } else {
-            log.info("Creating new TestResult for '{}'.", finalBloodCollectionId);
-            result = TestResult.builder()
-                    .testOrder(order)
-                    .bloodCollectionId(order.getBloodCollectionId())
-                    .instrumentName(instrument)
-                    .hl7RawData(rawHl7)
-                    .status("COMPLETED")
-                    .build();
-
-            for (TestResultParameter p : testResultParameterList) {
-                p.setTestResult(result);
-                p.setTestOrder(order);
-            }
-            result.setTestResultParameter(testResultParameterList);
+        // Step 10: Link parameters to result and order
+        for (TestResultParameter p : testResultParameterList) {
+            p.setTestResult(result);
+            p.setTestOrder(order);
         }
+        result.setTestResultParameter(testResultParameterList);
 
+        // Step 11: Save entities
         TestResult savedResult = testResultRepository.save(result);
         order.setStatus(TestOrderStatus.COMPLETED);
         testOrderRepository.save(order);
+
+        // Step 12: Publish event for event-driven architecture
         eventPublisher.publishTestResultCreated(savedResult);
+
+        // Step 13: Build response
         TestResultResponse testResultResponse = testResultMapper.toTestResultResponse(savedResult);
 
         return RestResponse.<TestResultResponse>builder()
                 .statusCode(200)
                 .result(testResultResponse)
-                .message("HL7 data processed successfully (created or updated).")
+                .message("HL7 data processed successfully")
                 .timestamp(LocalDateTime.now())
                 .build();
+    }
+
+    /**
+     * Validates basic HL7 format structure before parsing
+     */
+    private void validateHl7FormatBasic(String rawHl7) {
+        // Check if message starts with MSH segment
+        if (!rawHl7.trim().startsWith("MSH")) {
+            throw new IllegalArgumentException("Invalid HL7 format: Message must start with MSH segment");
+        }
+
+        // Check for proper segment separators
+        if (!rawHl7.contains("\r") && !rawHl7.contains("\n")) {
+            throw new IllegalArgumentException("Invalid HL7 format: Missing segment separators");
+        }
+
+        // Validate MSH segment structure
+        String[] firstLine = rawHl7.split("\\r?\\n")[0].split(Pattern.quote("|"), -1);
+        if (firstLine.length < 3) {
+            throw new IllegalArgumentException("Invalid HL7 format: MSH segment has insufficient fields");
+        }
+
+        // Validate encoding characters in MSH-2
+        if (firstLine.length > 1 && firstLine[1].length() < 4) {
+            throw new IllegalArgumentException("Invalid HL7 format: Missing encoding characters in MSH-2");
+        }
+    }
+
+    /**
+     * Validates individual segment structure
+     */
+    private void validateHl7Segments(String[] segments) {
+        if (segments == null || segments.length == 0) {
+            throw new IllegalArgumentException("Invalid HL7 format: No segments found");
+        }
+
+        for (String segment : segments) {
+            if (segment.isBlank()) continue;
+
+            // Check for field separator
+            if (!segment.contains("|")) {
+                throw new IllegalArgumentException(
+                        "Invalid HL7 format: Segment missing field separator: " + segment
+                );
+            }
+
+            // Check segment identifier (3 characters, letters or numbers)
+            // Using [A-Z0-9] to support segments like ZMD, FT1, etc.
+            if (segment.length() < 3 || !segment.substring(0, 3).matches("[A-Z0-9]{3}")) {
+                throw new IllegalArgumentException(
+                        "Invalid HL7 format: Invalid segment identifier: " + segment
+                );
+            }
+        }
+    }
+
+    /**
+     * Safely parse integer from segment parts
+     */
+    private int safeInt(String[] parts, int index) {
+        try {
+            return parts.length > index ? Integer.parseInt(parts[index]) : 0;
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     @Override
@@ -244,38 +320,9 @@ public class TestResultServiceKafka implements TestResultService {
         return hl7Data;
     }
 
-    private void validateHl7Format(String[] segments) {
-        if (segments == null || segments.length == 0 || !segments[0].startsWith("MSH")) {
-            throw new IllegalArgumentException("Invalid HL7 format: Message must start with MSH segment");
-        }
-        String[] firstLineParts = segments[0].split(Pattern.quote("|"), -1);
-        if (firstLineParts.length < 3) {
-            throw new IllegalArgumentException("Invalid HL7 format: MSH segment has insufficient fields");
-        }
-        if (firstLineParts.length > 1 && firstLineParts[1].length() < 4) {
-            throw new IllegalArgumentException("Invalid HL7 format: Missing encoding characters in MSH-2");
-        }
-        for (String segment : segments) {
-            if (segment.isBlank()) continue;
-            if (!segment.contains("|")) {
-                throw new IllegalArgumentException("Invalid HL7 format: Segment missing field separator: " + segment);
-            }
-            if (segment.length() < 3 || !segment.substring(0, 3).matches("[A-Z0-9]{3}")) {
-                throw new IllegalArgumentException("Invalid HL7 format: Invalid segment identifier: " + segment);
-            }
-        }
-    }
-
-    private void validateHl7Format(String rawHl7) {
-        String[] lines = rawHl7.trim().split("(?=(PID|OBR|OBX|ZMD|FT1|NTE|ORC))");
-        validateHl7Format(lines);
-    }
-
-    private int safeInt(String[] parts, int index) {
-        try {
-            return parts.length > index ? Integer.parseInt(parts[index]) : 0;
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
+    //This method's logic is not suitable for partial HL7 validation
+//    private void validateHl7Format(String rawHl7) {
+//        String[] lines = rawHl7.trim().split("(?=(PID|OBR|OBX|ZMD|FT1|NTE|ORC))");
+//        validateHl7Format(lines);
+//    }
 }

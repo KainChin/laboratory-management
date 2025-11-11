@@ -11,11 +11,15 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import Loading from "../Loading";
+import { showToast } from "../Toast";
 
 // Modal portal so the overlay covers the whole viewport
-function Modal({ children }) {
+function Modal({ children, onBackdropClick }) {
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2"
+      onClick={onBackdropClick}
+    >
       {children}
     </div>,
     document.body
@@ -29,10 +33,11 @@ export default function OrdersTable() {
   const [totalPages, setTotalPages] = useState(1);
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
   const [sortDir, setSortDir] = useState("asc");
   const PAGE_SIZE = 5;
   const [page, setPage] = useState(1);
-  const [successMsg, setSuccessMsg] = useState("");
+  const [jumpInput, setJumpInput] = useState("");
   // Đổi mảng data sang orders (state), để bảng tự động cập nhật khi thao tác
   const [orders, setOrders] = useState([]);
   const [deleteId, setDeleteId] = useState(null);
@@ -110,17 +115,17 @@ export default function OrdersTable() {
     if (localStorage.getItem('scrollToTable')) {
       // Remove the flag
       localStorage.removeItem('scrollToTable');
-      
+
       // Wait for data to load and component to render
       setTimeout(() => {
         // Tìm vị trí của bảng và header
         const tableSection = document.querySelector('table');
         const headerSection = document.querySelector('.flex.justify-between.items-center.mb-3');
-        
+
         if (tableSection && headerSection) {
           // Lấy vị trí của header của bảng
           const headerOffset = headerSection.getBoundingClientRect().top + window.pageYOffset;
-          
+
           // Cuộn đến vị trí của header bảng, thêm offset 100px để header bảng nằm đẹp trên màn hình
           window.scrollTo({
             top: headerOffset - 100,
@@ -130,6 +135,22 @@ export default function OrdersTable() {
       }, 100);
     }
   }, [fetchOrdersWrapper]);
+
+  // Debounce search input: update keyword after user stops typing
+  useEffect(() => {
+    const h = setTimeout(() => {
+      setDebouncedKeyword(searchInput.trim());
+    }, 500);
+    return () => clearTimeout(h);
+  }, [searchInput]);
+
+  // When debounced keyword changes, apply it and reset to page 1
+  useEffect(() => {
+    if (debouncedKeyword !== keyword) {
+      setKeyword(debouncedKeyword);
+      setPage(1);
+    }
+  }, [debouncedKeyword]);
 
   const statusColor = {
     Completed: "bg-green-100 text-green-700",
@@ -145,6 +166,7 @@ export default function OrdersTable() {
   };
 
   const [showModal, setShowModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const modalRef = useRef(null);
   const lastScaleRef = useRef(1);
   const [modalScale, setModalScale] = useState(1);
@@ -338,6 +360,8 @@ export default function OrdersTable() {
 
   // handleCreate accepts optional form object (use localForm when provided)
   async function handleCreate(currentForm) {
+    if (isSubmitting) return;
+
     const f = currentForm || localForm;
     // validate
     const validation = validateForm(f);
@@ -359,6 +383,8 @@ export default function OrdersTable() {
       phone: f.phone,
     };
 
+    setIsSubmitting(true);
+
     try {
       const res = await fetch("http://localhost:6868/api/test-orders", {
         method: "POST",
@@ -366,8 +392,15 @@ export default function OrdersTable() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "Failed to create test order");
+        let msg = "Failed to create test order";
+        try {
+          const data = await res.json();
+          msg = data?.message?.[0] || data?.message || msg;
+        } catch {
+          const txt = await res.text();
+          if (txt) msg = txt;
+        }
+        throw new Error(msg);
       }
       const result = await res.json();
       // result.result is the created order (from RestResponse)
@@ -391,8 +424,7 @@ export default function OrdersTable() {
         },
       ]);
       setShowModal(false);
-      setSuccessMsg("Create test order successfully!");
-      setTimeout(() => setSuccessMsg(""), 3000);
+      showToast({ type: "success", title: "Success", message: "Create test order successfully" });
       resetForm();
       setLocalForm({
         patientName: "",
@@ -410,7 +442,9 @@ export default function OrdersTable() {
       fetchOrdersWrapper(1); // về trang 1 sau khi thêm mới
       setPage(1);
     } catch (err) {
-      alert("Create failed: " + err.message);
+      showToast({ type: "error", title: "Create Failed", message: err.message || "Failed to create test order" });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -460,24 +494,23 @@ export default function OrdersTable() {
           orders.map((o) =>
             o.id === editingId
               ? {
-                  ...o,
-                  name: updated.patientName || f.patientName || o.name,
-                  dob: updated.dateOfBirth || f.dob || o.dob,
-                  status: updated.status || f.status || o.status,
-                  phone: updated.phone || f.phone || o.phone,
-                  email: updated.email || f.email || o.email,
-                  gender: updated.gender || f.gender || o.gender,
-                  address: updated.address || f.address || o.address,
-                  citizenId: updated.citizenId || f.citizenId || o.citizenId,
-                }
+                ...o,
+                name: updated.patientName || f.patientName || o.name,
+                dob: updated.dateOfBirth || f.dob || o.dob,
+                status: updated.status || f.status || o.status,
+                phone: updated.phone || f.phone || o.phone,
+                email: updated.email || f.email || o.email,
+                gender: updated.gender || f.gender || o.gender,
+                address: updated.address || f.address || o.address,
+                citizenId: updated.citizenId || f.citizenId || o.citizenId,
+              }
               : o
           )
         );
 
         setShowModal(false);
         setEditingId(null);
-        setSuccessMsg("Update successfully!");
-        setTimeout(() => setSuccessMsg(""), 3000);
+        showToast({ type: "success", title: "Success", message: "Test order updated successfully" });
         resetForm();
         setLocalForm({
           patientName: "",
@@ -580,11 +613,6 @@ export default function OrdersTable() {
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative">
       {isNavigating && <Loading />}
-      {successMsg && (
-        <div className="absolute left-1/2 -translate-x-1/2 top-2 bg-green-100 text-green-700 px-6 py-2 rounded-lg shadow font-semibold z-50">
-          {successMsg}
-        </div>
-      )}
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-red-500 font-semibold">Test Order Lists</h2>
         <div className="flex gap-2">
@@ -606,8 +634,7 @@ export default function OrdersTable() {
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                setKeyword(searchInput);
-                setPage(1);
+                setDebouncedKeyword(searchInput.trim());
               }
             }}
             placeholder="Search patient name..."
@@ -617,8 +644,7 @@ export default function OrdersTable() {
         <button
           className="bg-red-100 text-red-500 px-3 py-1.5 rounded-lg flex items-center gap-1"
           onClick={() => {
-            setKeyword(searchInput);
-            setPage(1);
+            setDebouncedKeyword(searchInput.trim());
           }}
         >
           <Filter size={14} /> Search
@@ -670,15 +696,15 @@ export default function OrdersTable() {
             {orders.length === 0 ? (
               <tr>
                 <td colSpan={5} className="py-8 text-center text-gray-500">
-                  Không có dữ liệu về bệnh nhân
+                  No patient data available
                 </td>
               </tr>
             ) : (
               orders.map((row) => (
                 <tr key={row.id} className="border-b hover:bg-gray-50">
                   <td className="py-2 px-3">
-                    <div 
-                      className="truncate hover:text-red-500 cursor-pointer transition-colors" 
+                    <div
+                      className="truncate hover:text-red-500 cursor-pointer transition-colors"
                       title={row.name}
                       onClick={() => {
                         setIsNavigating(true);
@@ -696,9 +722,8 @@ export default function OrdersTable() {
                   <td className="py-2 px-3">
                     <div className="truncate">
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          statusColor[row.status]
-                        }`}
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColor[row.status]
+                          }`}
                       >
                         {row.status}
                       </span>
@@ -747,39 +772,123 @@ export default function OrdersTable() {
       {/* Pagination controls */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center mt-4 gap-2">
-          <button
-            className="px-3 py-1 rounded border bg-gray-100 text-gray-700 disabled:opacity-50"
-            onClick={() => setPage(page - 1)}
-            disabled={page === 1}
-          >
-            Prev
-          </button>
-          {[...Array(totalPages)].map((_, i) => (
+          {page > 1 && (
             <button
-              key={i}
-              className={`px-3 py-1 rounded border ${
-                page === i + 1
-                  ? "bg-red-500 text-white"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-              onClick={() => setPage(i + 1)}
+              className="px-3 py-1 rounded border bg-gray-100 text-gray-700"
+              onClick={() => setPage(page - 1)}
             >
-              {i + 1}
+              Prev
             </button>
-          ))}
-          <button
-            className="px-3 py-1 rounded border bg-gray-100 text-gray-700 disabled:opacity-50"
-            onClick={() => setPage(page + 1)}
-            disabled={page === totalPages}
-          >
-            Next
-          </button>
+          )}
+          {(() => {
+            function getItems(current, total) {
+              if (total <= 7) {
+                return Array.from({ length: total }, (_, i) => i + 1);
+              }
+
+              const items = [];
+              const first = 1;
+              const last = total;
+              const left = Math.max(2, current - 1);
+              const right = Math.min(total - 1, current + 1);
+
+              items.push(first);
+
+              if (left > 2) {
+                items.push("...");
+              } else {
+                for (let i = 2; i < left; i++) {
+                  items.push(i);
+                }
+              }
+
+              for (let i = left; i <= right; i++) {
+                if (i > first && i < last) {
+                  items.push(i);
+                }
+              }
+
+              if (right < last - 1) {
+                if (right === last - 2) {
+                  items.push(last - 1);
+                } else {
+                  items.push("...");
+                }
+              }
+
+              items.push(last);
+
+              // remove duplicates while keeping order
+              return items.filter((value, index, self) => {
+                return index === 0 || value !== self[index - 1];
+              });
+            }
+            const items = getItems(page, totalPages);
+            return items.map((it, idx) =>
+              it === "..." ? (
+                <span key={`el-${idx}`} className="px-2 text-gray-500">…</span>
+              ) : (
+                <button
+                  key={it}
+                  className={`px-3 py-1 rounded border ${page === it ? "bg-red-500 text-white" : "bg-gray-100 text-gray-700"
+                    }`}
+                  onClick={() => setPage(it)}
+                >
+                  {it}
+                </button>
+              )
+            );
+          })()}
+          {page < totalPages && (
+            <button
+              className="px-3 py-1 rounded border bg-gray-100 text-gray-700"
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </button>
+          )}
+          <div className="flex items-center gap-1 ml-2">
+            <input
+              type="number"
+              min={1}
+              max={totalPages}
+              value={jumpInput}
+              onChange={(e) => setJumpInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const num = parseInt(jumpInput || "", 10);
+                  if (!isNaN(num)) {
+                    const nextVal = Math.min(Math.max(1, num), totalPages);
+                    setPage(nextVal);
+                  }
+                }
+              }}
+              placeholder="Page"
+              className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
+            />
+            <button
+              className="px-2 py-1.5 rounded-lg border bg-gray-100 text-gray-700"
+              onClick={() => {
+                const num = parseInt(jumpInput || "", 10);
+                if (!isNaN(num)) {
+                  const nextVal = Math.min(Math.max(1, num), totalPages);
+                  setPage(nextVal);
+                }
+              }}
+            >
+              Go
+            </button>
+          </div>
         </div>
       )}
 
       {/* Modal */}
       {showModal && (
-        <Modal>
+        <Modal onBackdropClick={() => {
+          setShowModal(false);
+          setMode("create");
+          setErrors({});
+        }}>
           <div
             ref={modalRef}
             style={{
@@ -788,20 +897,21 @@ export default function OrdersTable() {
               transition: "transform 120ms ease",
             }}
             className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
+            onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-2xl text-red-500 font-bold text-center">
               {mode === "view"
                 ? "Detail Test Order Information"
                 : mode === "edit"
-                ? "UPDATE TEST ORDER"
-                : "NEW TEST ORDER"}
+                  ? "UPDATE TEST ORDER"
+                  : "NEW TEST ORDER"}
             </h3>
             <p className="text-center text-sm text-gray-500 mb-6">
               {mode === "view"
                 ? "View patient information for this test order"
                 : mode === "edit"
-                ? "Update patient information for this test order"
-                : "Enter patient information to create a new test order"}
+                  ? "Update patient information for this test order"
+                  : "Enter patient information to create a new test order"}
             </p>
 
             <div className="border rounded-lg p-6 bg-gray-50">
@@ -909,8 +1019,8 @@ export default function OrdersTable() {
                         ? form.gender === "MALE"
                           ? "Male"
                           : form.gender === "FEMALE"
-                          ? "Female"
-                          : form.gender
+                            ? "Female"
+                            : form.gender
                         : ""}
                     </div>
                   ) : (
@@ -1028,6 +1138,7 @@ export default function OrdersTable() {
                   setShowModal(false);
                   setMode("create");
                   setErrors({});
+                  setIsSubmitting(false);
                 }}
                 className="px-4 py-2 border border-gray-200 rounded-lg bg-white"
               >
@@ -1043,9 +1154,10 @@ export default function OrdersTable() {
               ) : mode === "view" ? null : (
                 <button
                   onClick={() => handleCreate(localForm)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={isSubmitting}
                 >
-                  Create
+                  {isSubmitting ? "Creating..." : "Create"}
                 </button>
               )}
             </div>
@@ -1075,7 +1187,7 @@ export default function OrdersTable() {
               const data = await res.json();
               if (data?.result) {
                 const items = data.result.items || [];
-                
+
                 // Nếu có items trong response, cập nhật danh sách
                 if (items.length > 0) {
                   setTotalPages(data.result.totalPages || 1);
@@ -1104,15 +1216,16 @@ export default function OrdersTable() {
                   // Nếu đang ở trang 1 và không có test order nào thì không cần gọi lại API
                 }
               }
-              setSuccessMsg("Delete test order successfully!");
+              showToast({ type: "success", title: "Success", message: "Test order deleted successfully" });
               setDeleteError("");
               setShowDeleteModal(false);
               setDeleteId(null);
-              setTimeout(() => setSuccessMsg(""), 3000);
             }
           } catch (err) {
             console.warn("Delete failed", err);
-            setDeleteError("Network error or server error!");
+            const errorMsg = err.message || "Network error or server error!";
+            setDeleteError(errorMsg);
+            showToast({ type: "error", title: "Delete Failed", message: errorMsg });
             setDeleteMsg("");
             setTimeout(() => {
               setDeleteError("");

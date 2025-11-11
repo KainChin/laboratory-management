@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -43,19 +44,23 @@ public class TestResultServiceImpl implements TestResultService {
 
     @Override
     public RestResponse<TestResultResponse> receiveHl7(String rawHl7) {
-        // Step 1: Basic validation
+        // Setp 1: Basic validation
         if (rawHl7 == null || rawHl7.isBlank()) {
             throw new IllegalArgumentException("HL7 message is empty");
         }
 
-        // Step 2: Validate HL7 format
-        validateHl7Format(rawHl7);
+        // Step 2: Validate HL7 format BEFORE splitting
+        validateHl7FormatBasic(rawHl7);
 
+        // Step 3: Split segments - using simple newline approach (more standard)
         String[] lines = rawHl7.split("\\r?\\n");
+
+        // Step 4: Validate segment structure
+        validateHl7Segments(lines);
+
         String bloodCollectionId = null;
         String instrument = "";
         List<TestResultParameter> testResultParameterList = new ArrayList<>();
-
         //iF we need PID just add more
         boolean hasMSH = false;
         boolean hasOBR = false;
@@ -63,8 +68,8 @@ public class TestResultServiceImpl implements TestResultService {
 
         for (String line : lines) {
             if (line == null || line.isBlank()) continue;
-            String[] parts = line.split("\\|");
 
+            String[] parts = line.split(Pattern.quote("|"));
             if (parts.length == 0) continue;
 
             String segmentType = parts[0];
@@ -115,7 +120,7 @@ public class TestResultServiceImpl implements TestResultService {
             }
         }
 
-        // Step 3: Check that required segments exist
+        // Step 6: Validate required segments exist
         if (!hasMSH) {
             throw new IllegalArgumentException("Invalid HL7 format: Missing MSH segment");
         }
@@ -132,15 +137,21 @@ public class TestResultServiceImpl implements TestResultService {
 
         final String finalBloodCollectionId = bloodCollectionId.trim();
 
+        // Step 7: Check if TestResult already exists (early exit for duplicate)
         testResultRepository.findByBloodCollectionId(finalBloodCollectionId)
                 .ifPresent(r -> {
-                    throw new IllegalArgumentException("TestResult already exists for bloodCollectionId: " + finalBloodCollectionId);
+                    throw new IllegalArgumentException(
+                            "TestResult already exists for bloodCollectionId: " + finalBloodCollectionId
+                    );
                 });
 
+        // Step 8: Find TestOrder
         TestOrder order = testOrderRepository.findByBloodCollectionId(finalBloodCollectionId)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "TestOrder not found for blood collection Id: " + finalBloodCollectionId));
+                        "TestOrder not found for blood collection Id: " + finalBloodCollectionId
+                ));
 
+        // Step 9: Create new TestResult
         TestResult result = TestResult.builder()
                 .testOrder(order)
                 .bloodCollectionId(order.getBloodCollectionId())
@@ -149,40 +160,45 @@ public class TestResultServiceImpl implements TestResultService {
                 .status("COMPLETED")
                 .build();
 
+        // Step 10: Link parameters to result and order
         for (TestResultParameter p : testResultParameterList) {
             p.setTestResult(result);
             p.setTestOrder(order);
         }
-
         result.setTestResultParameter(testResultParameterList);
 
-        testResultRepository.save(result);
-
+        // Step 11: Save entities
+        TestResult savedResult = testResultRepository.save(result);
         order.setStatus(TestOrderStatus.COMPLETED);
         testOrderRepository.save(order);
 
-        TestResultResponse testResultResponse = testResultMapper.toTestResultResponse(result);
+        // Step 12: Build response
+        TestResultResponse testResultResponse = testResultMapper.toTestResultResponse(savedResult);
 
         return RestResponse.<TestResultResponse>builder()
                 .statusCode(200)
                 .result(testResultResponse)
-                .message("HL7 parsing successfully")
+                .message("HL7 data processed successfully")
                 .timestamp(LocalDateTime.now())
                 .build();
     }
 
     /**
-     * Validates basic HL7 format structure
-     * According to section 3.6.1.3 - Publish Test Results Using HL7
+     * Validates basic HL7 format structure before parsing
      */
-    private void validateHl7Format(String rawHl7) {
+    private void validateHl7FormatBasic(String rawHl7) {
         // Check if message starts with MSH segment
         if (!rawHl7.trim().startsWith("MSH")) {
             throw new IllegalArgumentException("Invalid HL7 format: Message must start with MSH segment");
         }
 
-        // Check for proper field separator (|)
-        String[] firstLine = rawHl7.split("\\r?\\n")[0].split("\\|", -1);
+        // Check for proper segment separators
+        if (!rawHl7.contains("\r") && !rawHl7.contains("\n")) {
+            throw new IllegalArgumentException("Invalid HL7 format: Missing segment separators");
+        }
+
+        // Validate MSH segment structure
+        String[] firstLine = rawHl7.split("\\r?\\n")[0].split(Pattern.quote("|"), -1);
         if (firstLine.length < 3) {
             throw new IllegalArgumentException("Invalid HL7 format: MSH segment has insufficient fields");
         }
@@ -191,29 +207,39 @@ public class TestResultServiceImpl implements TestResultService {
         if (firstLine.length > 1 && firstLine[1].length() < 4) {
             throw new IllegalArgumentException("Invalid HL7 format: Missing encoding characters in MSH-2");
         }
+    }
 
-        // Check for at least one segment separator (newline)
-        if (!rawHl7.contains("\r") && !rawHl7.contains("\n")) {
-            throw new IllegalArgumentException("Invalid HL7 format: Missing segment separators");
+    /**
+     * Validates individual segment structure
+     */
+    private void validateHl7Segments(String[] segments) {
+        if (segments == null || segments.length == 0) {
+            throw new IllegalArgumentException("Invalid HL7 format: No segments found");
         }
 
-        // Validate segment structure - each line should have pipe delimiters
-        String[] segments = rawHl7.split("\\r?\\n");
         for (String segment : segments) {
             if (segment.isBlank()) continue;
 
+            // Check for field separator
             if (!segment.contains("|")) {
-                throw new IllegalArgumentException("Invalid HL7 format: Segment missing field separator: " + segment);
+                throw new IllegalArgumentException(
+                        "Invalid HL7 format: Segment missing field separator: " + segment
+                );
             }
 
-            // Check if segment starts with valid 3-character segment ID
-            if (segment.length() < 3 || !segment.substring(0, 3).matches("[A-Z]{3}")) {
-                throw new IllegalArgumentException("Invalid HL7 format: Invalid segment identifier: " + segment);
+            // Check segment identifier (3 characters, letters or numbers)
+            // Using [A-Z0-9] to support segments like ZMD, FT1, etc.
+            if (segment.length() < 3 || !segment.substring(0, 3).matches("[A-Z0-9]{3}")) {
+                throw new IllegalArgumentException(
+                        "Invalid HL7 format: Invalid segment identifier: " + segment
+                );
             }
         }
     }
 
-    //Safely parse integer from segment parts
+    /**
+     * Safely parse integer from segment parts
+     */
     private int safeInt(String[] parts, int index) {
         try {
             return parts.length > index ? Integer.parseInt(parts[index]) : 0;

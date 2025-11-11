@@ -1,26 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { calculateTestResultStats, getFlagMeaning } from "../../../utils/flagUtils";
+import { getFlagColor, getFlagMeaning } from "../../../utils/flagUtils";
 
 export default function FlagChart({ orderId: propOrderId = null, testResults = null }) {
-  const [stats, setStats] = useState({
-    normal: 0,
-    high: 0,
-    low: 0,
-    other: 0,
-    hasResults: false
-  });
+  const [topFlags, setTopFlags] = useState([]);
+  const [otherCount, setOtherCount] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [hasResults, setHasResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const processTestResults = (results) => {
     if (!results) {
-      setStats({
-        normal: 0,
-        high: 0,
-        low: 0,
-        other: 0,
-        hasResults: false
-      });
+      setTopFlags([]);
+      setOtherCount(0);
+      setTotal(0);
+      setHasResults(false);
       return;
     }
 
@@ -32,29 +26,46 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
       parameters = results;
     }
 
-    // Calculate counts based on flags
-    const counts = {
-      normal: 0,
-      high: 0,
-      low: 0,
-      other: 0,
-      hasResults: parameters.length > 0
-    };
+    if (parameters.length === 0) {
+      setTopFlags([]);
+      setOtherCount(0);
+      setTotal(0);
+      setHasResults(false);
+      return;
+    }
 
+    // Count each unique flag
+    const flagCounts = {};
     parameters.forEach(param => {
-      const flag = (param.flag || '').toUpperCase();
-      if (flag === 'N') {
-        counts.normal++;
-      } else if (flag === 'H' || flag === 'HH' || flag === '>') {
-        counts.high++;
-      } else if (flag === 'L' || flag === 'LL' || flag === '<') {
-        counts.low++;
-      } else {
-        counts.other++;
-      }
+      const flag = param.flag ? param.flag.toString().toUpperCase() : 'N';
+      flagCounts[flag] = (flagCounts[flag] || 0) + 1;
     });
 
-    setStats(counts);
+    // Convert to array and sort by count (descending)
+    const flagArray = Object.entries(flagCounts).map(([flag, count]) => ({
+      flag,
+      count,
+      percentage: 0 // will calculate after we know total
+    }));
+
+    flagArray.sort((a, b) => b.count - a.count);
+
+    const totalCount = parameters.length;
+    const topN = 5;
+    
+    // Take top 5 (or all if fewer than 5)
+    const topFlagsList = flagArray.slice(0, topN).map(item => ({
+      ...item,
+      percentage: Math.round((item.count / totalCount) * 100)
+    }));
+
+    // Calculate "Other" count for remaining flags
+    const otherCountValue = flagArray.slice(topN).reduce((sum, item) => sum + item.count, 0);
+
+    setTopFlags(topFlagsList);
+    setOtherCount(otherCountValue);
+    setTotal(totalCount);
+    setHasResults(true);
   };
 
   useEffect(() => {
@@ -81,16 +92,11 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
     }
   }, [propOrderId, testResults]);
 
-  const total = stats.normal + stats.high + stats.low + stats.other;
-  const pct = (n) => (total === 0 ? "NaN" : Math.round((n / total) * 100)); // Remove decimals, show NaN if no data
+  // Calculate percentage helper
+  const pct = (n) => (total === 0 ? "NaN" : Math.round((n / total) * 100));
 
-  // prepare donut segments (values on 0-100 scale)
-  const vNormal = total ? (stats.normal / total) * 100 : 0;
-  const vHigh = total ? (stats.high / total) * 100 : 0;
-  const vLow = total ? (stats.low / total) * 100 : 0;
-  const vOther = total ? (stats.other / total) * 100 : 0;
-
-  // cumulative offset (SVG circle uses strokeDashoffset; rotate start by 25)
+  // Prepare donut segments (values on 0-100 scale)
+  // Ensure "Other" is always last, regardless of percentage
   let offset = 25;
   const segments = [];
   const pushSeg = (value, color, key) => {
@@ -99,10 +105,19 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
     offset -= value;
     segments.push(seg);
   };
-  pushSeg(vNormal, "#10b981", "N"); // Normal - xanh lá
-  pushSeg(vHigh, "#ef4444", "H");   // High - đỏ
-  pushSeg(vLow, "#f59e0b", "L");    // Low - cam
-  pushSeg(vOther, "#9ca3af", "other");
+
+  // Add segments for top flags first (sorted by percentage)
+  topFlags.forEach(flagData => {
+    const percentage = flagData.percentage;
+    const color = getFlagColor(flagData.flag);
+    pushSeg(percentage, color, flagData.flag);
+  });
+
+  // Add "Other" segment last if there are remaining flags
+  if (otherCount > 0) {
+    const otherPercentage = Math.round((otherCount / total) * 100);
+    pushSeg(otherPercentage, "#9ca3af", "OTHER");
+  }
 
   return (
     <aside className="card status-card">
@@ -151,28 +166,19 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
             <div style={{ color: "#6b7280", fontSize: 13, textAlign: 'center' }}>No results</div>
           ) : (
             <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 13, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-              {stats.normal > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width:10, height:10, background:"#10b981", borderRadius:3 }} />
-                  <span>Normal {pct(stats.normal)}%</span>
-                </li>
-              )}
-              {stats.high > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width:10, height:10, background:"#ef4444", borderRadius:3 }} />
-                  <span>High {pct(stats.high)}%</span>
-                </li>
-              )}
-              {stats.low > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width:10, height:10, background:"#f59e0b", borderRadius:3 }} />
-                  <span>Low {pct(stats.low)}%</span>
-                </li>
-              )}
-              {stats.other > 0 && (
+              {topFlags.map((flagData) => {
+                const flagMeaning = getFlagMeaning(flagData.flag);
+                return (
+                  <li key={flagData.flag} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ display: "inline-block", width:10, height:10, background: getFlagColor(flagData.flag), borderRadius:3 }} />
+                    <span>{flagMeaning} {flagData.percentage}%</span>
+                  </li>
+                );
+              })}
+              {otherCount > 0 && (
                 <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
                   <span style={{ display: "inline-block", width:10, height:10, background:"#9ca3af", borderRadius:3 }} />
-                  <span>Other {pct(stats.other)}%</span>
+                  <span>{getFlagMeaning('OTHER')} {pct(otherCount)}%</span>
                 </li>
               )}
             </ul>

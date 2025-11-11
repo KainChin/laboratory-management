@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TestOrders from "./pages/TestOrders";
 import DetailTestOrder from "./pages/DetailTestOrder"; // <-- sử dụng index.jsx trong folder
+import ToastContainer from "./components/Toast";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           </main>
         </div>
       </div>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

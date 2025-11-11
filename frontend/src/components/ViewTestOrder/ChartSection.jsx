@@ -76,10 +76,6 @@ export default function ChartSection({ data = [], activityTotals = null }) {
         </div>
       </div>
 
-      {!hasRealData && (
-        <div className="text-sm text-gray-400 italic mb-2 text-right">Demo data</div>
-      )}
-
       <ResponsiveContainer width="100%" height={360}>
         <LineChart data={dataToRender} margin={{ top: 12, right: 24, left: 24, bottom: 8 }}>
           <CartesianGrid stroke="#f3f4f6" vertical={false} />
