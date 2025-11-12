@@ -18,4 +18,5 @@ public interface TestOrderService {
     PageResponse<TestOrderResponse> deleteTestOrder(String orderId, Pageable pageable, String keyword);
     RestResponse<?> getTestOrderStatistics();
     RestResponse<TestOrderResponse> reviewTestOrder(String orderId);
+    PageResponse<TestOrderDetailResponse> getTestOrderByEmail(Pageable pageable, String email);
 }

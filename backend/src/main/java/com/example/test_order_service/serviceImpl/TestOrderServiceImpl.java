@@ -13,12 +13,12 @@ import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
 import com.example.test_order_service.utils.GeneralUtils;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -236,6 +236,19 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .result(response)
                 .message("Test order reviewed successfully")
                 .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    public PageResponse<TestOrderDetailResponse> getTestOrderByEmail(Pageable pageable, String email) {
+        Page<TestOrder> testOrderPage = testOrderRepository.findByEmail(pageable, email);
+
+        return PageResponse.<TestOrderDetailResponse>builder()
+                .currentPage(testOrderPage.getNumber() + 1)
+                .totalPages(testOrderPage.getTotalPages())
+                .items(testOrderPage.stream()
+                        .map(testOrderMapper::toTestOrderDetailResponse)
+                        .toList())
                 .build();
     }
 }

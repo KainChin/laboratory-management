@@ -118,4 +118,27 @@ public class TestOrderController {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    @GetMapping("/email/")
+    public RestResponse<PageResponse<TestOrderDetailResponse>> getTestOrderByEmail(
+            @RequestParam(required = false, defaultValue = "") String email,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "createdBy") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        int pageIndex = page < 1 ? 0 : page - 1;
+
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortBy));
+
+        PageResponse<TestOrderDetailResponse> testOrderPage = testOrderService.getTestOrderByEmail(pageable, email);
+
+        return RestResponse.<PageResponse<TestOrderDetailResponse>>builder()
+                .timestamp(LocalDateTime.now())
+                .statusCode(200)
+                .message("Test orders retrieved successfully")
+                .result(testOrderPage)
+                .build();
+    }
 }
