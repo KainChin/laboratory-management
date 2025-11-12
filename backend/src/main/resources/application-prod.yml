@@ -5,11 +5,11 @@ spring:
   application:
     name: test-order-service
 
-  datasource:
-    url: jdbc:postgresql://dpg-d48m8cili9vc739csk7g-a.singapore-postgres.render.com:5432/test_order_service?sslmode=require
-    username: lacdong21
-    password: BPIhttA0Z2avq4020SmVljUsoHDGFi6t
-    driver-class-name: org.postgresql.Driver
+#  datasource:
+#    url: jdbc:postgresql://dpg-d48m8cili9vc739csk7g-a.singapore-postgres.render.com:5432/test_order_service?sslmode=require
+#    username: lacdong21
+#    password: BPIhttA0Z2avq4020SmVljUsoHDGFi6t
+#    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:

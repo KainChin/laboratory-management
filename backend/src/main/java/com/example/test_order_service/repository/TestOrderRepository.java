@@ -3,6 +3,7 @@ package com.example.test_order_service.repository;
 import com.example.test_order_service.entity.TestOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +25,6 @@ public interface TestOrderRepository extends JpaRepository<TestOrder, String> {
 
     @Query("SELECT count(*) FROM TestOrder t WHERE t.bloodCollectionId LIKE CONCAT('%', :dateCode, '%')")
     long countByDateCode(@Param("dateCode") String dateCode);
+
+    @Query("SELECT t FROM TestOrder t where t.deleted = false AND t.email ILIKE CONCAT('%', :email, '%')") Page<TestOrder> findByEmail(Pageable pageable, @Param("email") String email);
 }
