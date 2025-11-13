@@ -818,3 +818,779 @@
 2025-11-13T01:06:26.183+07:00  INFO 41124 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Unregistering ...
 2025-11-13T01:06:26.296+07:00  INFO 41124 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - deregister  status: 200
 2025-11-13T01:06:26.296+07:00  INFO 41124 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Completed shut down of DiscoveryClient
+2025-11-13T01:11:19.279+07:00  INFO 16708 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Fetching config from server at : http://localhost:8888
+2025-11-13T01:11:19.405+07:00  INFO 16708 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Exception on Url - http://localhost:8888:org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8888/test-order-service/default": Connection refused: getsockopt. Will be trying the next url if available
+2025-11-13T01:11:19.405+07:00  WARN 16708 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/test-order-service/default": Connection refused: getsockopt
+2025-11-13T01:11:19.408+07:00  INFO 16708 --- [test-order-service] [main] c.e.t.TestOrderServiceApplication        : The following 1 profile is active: "prod"
+2025-11-13T01:11:20.210+07:00  INFO 16708 --- [test-order-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-13T01:11:20.390+07:00  INFO 16708 --- [test-order-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 174 ms. Found 5 JPA repository interfaces.
+2025-11-13T01:11:20.736+07:00  INFO 16708 --- [test-order-service] [main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=9500ef62-f022-3749-939f-4257a8603e12
+2025-11-13T01:11:20.852+07:00  WARN 16708 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-13T01:11:20.853+07:00  WARN 16708 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-13T01:11:20.854+07:00  WARN 16708 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-13T01:11:20.854+07:00  WARN 16708 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-13T01:11:20.855+07:00  WARN 16708 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'reactorDeferringLoadBalancerExchangeFilterFunction' of type [org.springframework.cloud.client.loadbalancer.reactive.DeferringLoadBalancerExchangeFilterFunction] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-13T01:11:21.020+07:00  INFO 16708 --- [test-order-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 6868 (http)
+2025-11-13T01:11:21.033+07:00  INFO 16708 --- [test-order-service] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-13T01:11:21.033+07:00  INFO 16708 --- [test-order-service] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-13T01:11:21.102+07:00  INFO 16708 --- [test-order-service] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-11-13T01:11:21.103+07:00  INFO 16708 --- [test-order-service] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1677 ms
+2025-11-13T01:11:21.229+07:00  INFO 16708 --- [test-order-service] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-13T01:11:21.297+07:00  INFO 16708 --- [test-order-service] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-11-13T01:11:21.328+07:00  INFO 16708 --- [test-order-service] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-13T01:11:21.607+07:00  INFO 16708 --- [test-order-service] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-13T01:11:21.647+07:00  INFO 16708 --- [test-order-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-13T01:11:21.852+07:00  INFO 16708 --- [test-order-service] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4ae6451d
+2025-11-13T01:11:21.854+07:00  INFO 16708 --- [test-order-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-13T01:11:22.849+07:00  INFO 16708 --- [test-order-service] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-13T01:11:23.029+07:00  INFO 16708 --- [test-order-service] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-13T01:11:23.310+07:00  INFO 16708 --- [test-order-service] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-13T01:11:24.474+07:00  WARN 16708 --- [test-order-service] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-13T01:11:25.967+07:00  INFO 16708 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T01:11:27.009+07:00  INFO 16708 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T01:11:27.025+07:00  INFO 16708 --- [test-order-service] [main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2025-11-13T01:11:28.040+07:00  INFO 16708 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T01:11:28.080+07:00  WARN 16708 --- [test-order-service] [main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2025-11-13T01:11:28.218+07:00  INFO 16708 --- [test-order-service] [main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2025-11-13T01:11:28.242+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2025-11-13T01:11:28.247+07:00  INFO 16708 --- [test-order-service] [main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T01:11:28.257+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2025-11-13T01:11:28.257+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2025-11-13T01:11:28.257+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2025-11-13T01:11:28.257+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2025-11-13T01:11:28.257+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2025-11-13T01:11:28.257+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2025-11-13T01:11:28.257+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2025-11-13T01:11:28.943+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2025-11-13T01:11:28.945+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2025-11-13T01:11:28.950+07:00  INFO 16708 --- [test-order-service] [main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2025-11-13T01:11:28.952+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1762971088951 with initial instances count: 1
+2025-11-13T01:11:28.954+07:00  INFO 16708 --- [test-order-service] [main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application TEST-ORDER-SERVICE with eureka with status UP
+2025-11-13T01:11:28.955+07:00  INFO 16708 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1762971088955, current=UP, previous=STARTING]
+2025-11-13T01:11:28.960+07:00  INFO 16708 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-13T01:11:29.135+07:00  INFO 16708 --- [test-order-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 6868 (http) with context path '/'
+2025-11-13T01:11:29.135+07:00  INFO 16708 --- [test-order-service] [main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 6868
+2025-11-13T01:11:29.173+07:00  INFO 16708 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-13T01:11:30.153+07:00  INFO 16708 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T01:11:31.175+07:00  INFO 16708 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T01:11:31.273+07:00  INFO 16708 --- [test-order-service] [main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = earliest
+	bootstrap.servers = [34.199.182.98:9092]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-test-order-ingest-group-1
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	enable.metrics.push = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = test-order-ingest-group
+	group.instance.id = null
+	group.protocol = classic
+	group.remote.assignor = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+
+2025-11-13T01:11:31.338+07:00  INFO 16708 --- [test-order-service] [main] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2025-11-13T01:11:31.427+07:00  INFO 16708 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.7.1
+2025-11-13T01:11:31.427+07:00  INFO 16708 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: e2494e6ffb89f828
+2025-11-13T01:11:31.427+07:00  INFO 16708 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1762971091425
+2025-11-13T01:11:31.430+07:00  INFO 16708 --- [test-order-service] [main] o.a.k.c.c.internals.LegacyKafkaConsumer  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Subscribed to topic(s): instrument-results-topic
+2025-11-13T01:11:31.442+07:00  INFO 16708 --- [test-order-service] [main] c.e.t.TestOrderServiceApplication        : Started TestOrderServiceApplication in 15.07 seconds (process running for 15.953)
+2025-11-13T01:11:31.443+07:00  INFO 16708 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : ENV spring.kafka.bootstrap-servers = 34.199.182.98:9092
+2025-11-13T01:11:31.445+07:00  INFO 16708 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : KafkaProperties bootstrapServers = [34.199.182.98:9092]
+2025-11-13T01:11:31.445+07:00  INFO 16708 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : KafkaProperties consumer.auto-offset-reset = earliest
+2025-11-13T01:11:33.387+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cluster ID: V2CDABArS5ei1OPV7NBkyw
+2025-11-13T01:11:34.453+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-13T01:11:34.458+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-13T01:11:35.293+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-order-ingest-group-1-b5e9bda3-0b8f-42cb-b900-fb002369a4dc
+2025-11-13T01:11:35.293+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-13T01:11:35.568+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully joined group with generation Generation{generationId=10, memberId='consumer-test-order-ingest-group-1-b5e9bda3-0b8f-42cb-b900-fb002369a4dc', protocol='range'}
+2025-11-13T01:11:35.573+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Finished assignment for group at generation 10: {consumer-test-order-ingest-group-1-b5e9bda3-0b8f-42cb-b900-fb002369a4dc=Assignment(partitions=[instrument-results-topic-0])}
+2025-11-13T01:11:35.869+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully synced group in generation Generation{generationId=10, memberId='consumer-test-order-ingest-group-1-b5e9bda3-0b8f-42cb-b900-fb002369a4dc', protocol='range'}
+2025-11-13T01:11:35.875+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Notifying assignor about the new Assignment(partitions=[instrument-results-topic-0])
+2025-11-13T01:11:35.885+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Adding newly assigned partitions: instrument-results-topic-0
+2025-11-13T01:11:36.183+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Found no committed offset for partition instrument-results-topic-0
+2025-11-13T01:11:36.957+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting offset for partition instrument-results-topic-0 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[34.199.182.98:9092 (id: 1 rack: null)], epoch=0}}.
+2025-11-13T01:11:36.957+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions assigned: [instrument-results-topic-0]
+2025-11-13T01:12:05.824+07:00  INFO 16708 --- [test-order-service] [http-nio-6868-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-13T01:12:05.825+07:00  INFO 16708 --- [test-order-service] [http-nio-6868-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-13T01:12:05.826+07:00  INFO 16708 --- [test-order-service] [http-nio-6868-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-11-13T01:12:30.804+07:00  INFO 16708 --- [test-order-service] [SpringApplicationShutdownHook] o.s.c.n.e.s.EurekaServiceRegistry        : Unregistering application TEST-ORDER-SERVICE with eureka with status DOWN
+2025-11-13T01:12:30.805+07:00  INFO 16708 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1762971150805, current=DOWN, previous=UP]
+2025-11-13T01:12:30.807+07:00  INFO 16708 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-13T01:12:30.819+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Revoke previously assigned partitions instrument-results-topic-0
+2025-11-13T01:12:30.820+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions revoked: [instrument-results-topic-0]
+2025-11-13T01:12:30.821+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Member consumer-test-order-ingest-group-1-b5e9bda3-0b8f-42cb-b900-fb002369a4dc sending LeaveGroup request to coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) due to the consumer unsubscribed from all topics
+2025-11-13T01:12:30.823+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting generation and member id due to: consumer pro-actively leaving the group
+2025-11-13T01:12:30.823+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: consumer pro-actively leaving the group
+2025-11-13T01:12:30.823+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.LegacyKafkaConsumer  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Unsubscribed all topics or patterns and assigned partitions
+2025-11-13T01:12:30.825+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting generation and member id due to: consumer pro-actively leaving the group
+2025-11-13T01:12:30.827+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: consumer pro-actively leaving the group
+2025-11-13T01:12:30.973+07:00  INFO 16708 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-13T01:12:31.367+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2025-11-13T01:12:31.368+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2025-11-13T01:12:31.368+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+2025-11-13T01:12:31.368+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2025-11-13T01:12:31.380+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.kafka.common.utils.AppInfoParser     : App info kafka.consumer for consumer-test-order-ingest-group-1 unregistered
+2025-11-13T01:12:31.381+07:00  INFO 16708 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: Consumer stopped
+2025-11-13T01:12:33.482+07:00  INFO 16708 --- [test-order-service] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-13T01:12:33.494+07:00  INFO 16708 --- [test-order-service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-13T01:12:33.497+07:00  INFO 16708 --- [test-order-service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-11-13T01:12:33.500+07:00  INFO 16708 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Shutting down DiscoveryClient ...
+2025-11-13T01:12:36.509+07:00  INFO 16708 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Unregistering ...
+2025-11-13T01:12:36.615+07:00  INFO 16708 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - deregister  status: 200
+2025-11-13T01:12:36.615+07:00  INFO 16708 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Completed shut down of DiscoveryClient
+2025-11-13T15:38:17.066+07:00  INFO 61836 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Fetching config from server at : http://localhost:8888
+2025-11-13T15:38:17.131+07:00  INFO 61836 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Exception on Url - http://localhost:8888:org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8888/test-order-service/default": Connection refused: getsockopt. Will be trying the next url if available
+2025-11-13T15:38:17.132+07:00  WARN 61836 --- [test-order-service] [main] c.c.c.ConfigServicePropertySourceLocator : Could not locate PropertySource: I/O error on GET request for "http://localhost:8888/test-order-service/default": Connection refused: getsockopt
+2025-11-13T15:38:17.133+07:00  INFO 61836 --- [test-order-service] [main] c.e.t.TestOrderServiceApplication        : The following 1 profile is active: "prod"
+2025-11-13T15:38:17.772+07:00  INFO 61836 --- [test-order-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-13T15:38:17.904+07:00  INFO 61836 --- [test-order-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 128 ms. Found 5 JPA repository interfaces.
+2025-11-13T15:38:18.116+07:00  INFO 61836 --- [test-order-service] [main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=9500ef62-f022-3749-939f-4257a8603e12
+2025-11-13T15:38:18.218+07:00  WARN 61836 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-13T15:38:18.219+07:00  WARN 61836 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-13T15:38:18.221+07:00  WARN 61836 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-13T15:38:18.221+07:00  WARN 61836 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-13T15:38:18.223+07:00  WARN 61836 --- [test-order-service] [main] trationDelegate$BeanPostProcessorChecker : Bean 'reactorDeferringLoadBalancerExchangeFilterFunction' of type [org.springframework.cloud.client.loadbalancer.reactive.DeferringLoadBalancerExchangeFilterFunction] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-13T15:38:18.394+07:00  INFO 61836 --- [test-order-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 6868 (http)
+2025-11-13T15:38:18.406+07:00  INFO 61836 --- [test-order-service] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-13T15:38:18.406+07:00  INFO 61836 --- [test-order-service] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-13T15:38:18.465+07:00  INFO 61836 --- [test-order-service] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-11-13T15:38:18.465+07:00  INFO 61836 --- [test-order-service] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1322 ms
+2025-11-13T15:38:18.582+07:00  INFO 61836 --- [test-order-service] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-13T15:38:18.641+07:00  INFO 61836 --- [test-order-service] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-11-13T15:38:18.671+07:00  INFO 61836 --- [test-order-service] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-13T15:38:18.914+07:00  INFO 61836 --- [test-order-service] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-13T15:38:18.937+07:00  INFO 61836 --- [test-order-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-13T15:38:19.075+07:00  INFO 61836 --- [test-order-service] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@50930bff
+2025-11-13T15:38:19.076+07:00  INFO 61836 --- [test-order-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-13T15:38:20.030+07:00  INFO 61836 --- [test-order-service] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-13T15:38:20.215+07:00  INFO 61836 --- [test-order-service] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-13T15:38:20.527+07:00  INFO 61836 --- [test-order-service] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-13T15:38:21.459+07:00  WARN 61836 --- [test-order-service] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-13T15:38:22.873+07:00  INFO 61836 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T15:38:23.927+07:00  INFO 61836 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T15:38:23.966+07:00  INFO 61836 --- [test-order-service] [main] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2025-11-13T15:38:24.977+07:00  INFO 61836 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T15:38:25.017+07:00  WARN 61836 --- [test-order-service] [main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2025-11-13T15:38:25.117+07:00  INFO 61836 --- [test-order-service] [main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2025-11-13T15:38:25.136+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2025-11-13T15:38:25.139+07:00  INFO 61836 --- [test-order-service] [main] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T15:38:25.145+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2025-11-13T15:38:25.145+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2025-11-13T15:38:25.145+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2025-11-13T15:38:25.146+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2025-11-13T15:38:25.146+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2025-11-13T15:38:25.146+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2025-11-13T15:38:25.146+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2025-11-13T15:38:26.111+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2025-11-13T15:38:26.117+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2025-11-13T15:38:26.118+07:00  INFO 61836 --- [test-order-service] [main] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2025-11-13T15:38:26.120+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1763023106119 with initial instances count: 2
+2025-11-13T15:38:26.123+07:00  INFO 61836 --- [test-order-service] [main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application TEST-ORDER-SERVICE with eureka with status UP
+2025-11-13T15:38:26.124+07:00  INFO 61836 --- [test-order-service] [main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1763023106124, current=UP, previous=STARTING]
+2025-11-13T15:38:26.127+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-13T15:38:26.293+07:00  INFO 61836 --- [test-order-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 6868 (http) with context path '/'
+2025-11-13T15:38:26.294+07:00  INFO 61836 --- [test-order-service] [main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 6868
+2025-11-13T15:38:26.379+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-13T15:38:27.313+07:00  INFO 61836 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T15:38:28.343+07:00  INFO 61836 --- [test-order-service] [main] o.s.cloud.commons.util.InetUtils         : Cannot determine local hostname
+2025-11-13T15:38:28.420+07:00  INFO 61836 --- [test-order-service] [main] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = earliest
+	bootstrap.servers = [34.199.182.98:9092]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-test-order-ingest-group-1
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	enable.metrics.push = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = test-order-ingest-group
+	group.instance.id = null
+	group.protocol = classic
+	group.remote.assignor = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+
+2025-11-13T15:38:28.478+07:00  INFO 61836 --- [test-order-service] [main] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2025-11-13T15:38:28.565+07:00  INFO 61836 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.7.1
+2025-11-13T15:38:28.565+07:00  INFO 61836 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: e2494e6ffb89f828
+2025-11-13T15:38:28.565+07:00  INFO 61836 --- [test-order-service] [main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1763023108564
+2025-11-13T15:38:28.569+07:00  INFO 61836 --- [test-order-service] [main] o.a.k.c.c.internals.LegacyKafkaConsumer  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Subscribed to topic(s): instrument-results-topic
+2025-11-13T15:38:28.578+07:00  INFO 61836 --- [test-order-service] [main] c.e.t.TestOrderServiceApplication        : Started TestOrderServiceApplication in 14.32 seconds (process running for 15.107)
+2025-11-13T15:38:28.579+07:00  INFO 61836 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : ENV spring.kafka.bootstrap-servers = 34.199.182.98:9092
+2025-11-13T15:38:28.580+07:00  INFO 61836 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : KafkaProperties bootstrapServers = [34.199.182.98:9092]
+2025-11-13T15:38:28.580+07:00  INFO 61836 --- [test-order-service] [main] c.e.t.config.StartupConfigLogger         : KafkaProperties consumer.auto-offset-reset = earliest
+2025-11-13T15:38:29.726+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cluster ID: V2CDABArS5ei1OPV7NBkyw
+2025-11-13T15:38:29.805+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-13T15:38:29.818+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-13T15:38:30.625+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-order-ingest-group-1-52cb0f87-ee20-4201-b27f-e9d0bb26a36b
+2025-11-13T15:38:30.626+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-13T15:38:30.898+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully joined group with generation Generation{generationId=1, memberId='consumer-test-order-ingest-group-1-52cb0f87-ee20-4201-b27f-e9d0bb26a36b', protocol='range'}
+2025-11-13T15:38:30.913+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Finished assignment for group at generation 1: {consumer-test-order-ingest-group-1-52cb0f87-ee20-4201-b27f-e9d0bb26a36b=Assignment(partitions=[instrument-results-topic-0])}
+2025-11-13T15:38:31.191+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully synced group in generation Generation{generationId=1, memberId='consumer-test-order-ingest-group-1-52cb0f87-ee20-4201-b27f-e9d0bb26a36b', protocol='range'}
+2025-11-13T15:38:31.192+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Notifying assignor about the new Assignment(partitions=[instrument-results-topic-0])
+2025-11-13T15:38:31.198+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Adding newly assigned partitions: instrument-results-topic-0
+2025-11-13T15:38:31.472+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Found no committed offset for partition instrument-results-topic-0
+2025-11-13T15:38:32.294+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting offset for partition instrument-results-topic-0 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[34.199.182.98:9092 (id: 1 rack: null)], epoch=0}}.
+2025-11-13T15:38:32.295+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions assigned: [instrument-results-topic-0]
+2025-11-13T15:39:28.011+07:00  INFO 61836 --- [test-order-service] [http-nio-6868-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-13T15:39:28.012+07:00  INFO 61836 --- [test-order-service] [http-nio-6868-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-13T15:39:28.014+07:00  INFO 61836 --- [test-order-service] [http-nio-6868-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-11-13T15:40:24.616+07:00  INFO 61836 --- [test-order-service] [http-nio-6868-exec-4] o.a.k.clients.producer.ProducerConfig    : ProducerConfig values: 
+	acks = -1
+	auto.include.jmx.reporter = true
+	batch.size = 16384
+	bootstrap.servers = [34.199.182.98:9092]
+	buffer.memory = 33554432
+	client.dns.lookup = use_all_dns_ips
+	client.id = test-order-service-producer-1
+	compression.type = none
+	connections.max.idle.ms = 540000
+	delivery.timeout.ms = 120000
+	enable.idempotence = true
+	enable.metrics.push = true
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metadata.max.idle.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.adaptive.partitioning.enable = true
+	partitioner.availability.timeout.ms = 0
+	partitioner.class = null
+	partitioner.ignore.keys = false
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 2147483647
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.springframework.kafka.support.serializer.JsonSerializer
+
+2025-11-13T15:40:24.618+07:00  INFO 61836 --- [test-order-service] [http-nio-6868-exec-4] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2025-11-13T15:40:24.641+07:00  INFO 61836 --- [test-order-service] [http-nio-6868-exec-4] o.a.k.clients.producer.KafkaProducer     : [Producer clientId=test-order-service-producer-1] Instantiated an idempotent producer.
+2025-11-13T15:40:24.692+07:00  INFO 61836 --- [test-order-service] [http-nio-6868-exec-4] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.7.1
+2025-11-13T15:40:24.692+07:00  INFO 61836 --- [test-order-service] [http-nio-6868-exec-4] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: e2494e6ffb89f828
+2025-11-13T15:40:24.693+07:00  INFO 61836 --- [test-order-service] [http-nio-6868-exec-4] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1763023224692
+2025-11-13T15:40:26.537+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.Metadata        : [Producer clientId=test-order-service-producer-1] Cluster ID: V2CDABArS5ei1OPV7NBkyw
+2025-11-13T15:40:26.755+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] o.a.k.c.p.internals.TransactionManager   : [Producer clientId=test-order-service-producer-1] ProducerId set to 7 with epoch 0
+2025-11-13T15:40:27.642+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] c.e.t.i.publisher.CommentEventPublisher  : Successfully sent comment event 'COMMENT_CREATED' for commentId='4b054b23-98cf-4cd6-b7ea-bd04916ae653'. Topic: comment-events-topic
+2025-11-13T15:42:59.728+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node -1 disconnected.
+2025-11-13T15:43:25.160+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T15:44:56.751+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node -1 disconnected.
+2025-11-13T15:48:00.008+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node -1 disconnected.
+2025-11-13T15:48:25.168+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T15:49:27.027+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T15:49:56.946+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node -1 disconnected.
+2025-11-13T15:53:25.171+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T15:54:27.227+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T15:58:25.190+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T15:58:58.111+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:03:25.206+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T16:03:28.995+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:07:59.867+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:08:25.222+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T16:12:30.800+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:13:25.238+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T16:17:01.665+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:18:25.254+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T16:21:32.572+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:23:25.263+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T16:26:03.447+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:28:25.270+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T16:30:34.347+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:33:25.279+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T16:35:05.213+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:38:25.295+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T16:39:36.102+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:43:25.298+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T16:44:06.999+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:44:22.628+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 2147483646 disconnected.
+2025-11-13T16:44:22.628+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:44:22.629+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:44:22.629+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight FETCH request with correlation id 6361 due to node 1 being disconnected (elapsed time since creation: 730ms, elapsed time since send: 730ms, request timeout: 30000ms)
+2025-11-13T16:44:22.629+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight METADATA request with correlation id 6362 due to node 1 being disconnected (elapsed time since creation: 570ms, elapsed time since send: 570ms, request timeout: 30000ms)
+2025-11-13T16:44:22.630+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] o.a.kafka.clients.FetchSessionHandler    : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Error sending fetch request (sessionId=1230109883, epoch=5010) to node 1:
+
+org.apache.kafka.common.errors.DisconnectException: null
+
+2025-11-13T16:44:22.647+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) is unavailable or invalid due to cause: coordinator unavailable. isDisconnected: true. Rediscovery will be attempted.
+2025-11-13T16:44:22.737+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:44:22.738+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:22.745+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:44:22.745+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:22.840+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:44:22.840+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:22.964+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:44:22.965+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:23.026+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:44:23.027+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:23.151+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:44:23.154+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:23.503+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:44:23.503+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:23.629+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:44:23.629+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:24.486+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:44:24.486+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:24.557+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:44:24.557+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:44:26.665+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-13T16:45:54.993+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:45:54.993+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:45:54.993+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight FETCH request with correlation id 6505 due to node 1 being disconnected (elapsed time since creation: 1220ms, elapsed time since send: 1220ms, request timeout: 30000ms)
+2025-11-13T16:45:54.994+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.kafka.clients.FetchSessionHandler    : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Error sending fetch request (sessionId=1879302392, epoch=109) to node 1:
+
+org.apache.kafka.common.errors.DisconnectException: null
+
+2025-11-13T16:45:54.994+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] o.a.h.c.h.i.c.HttpRequestRetryExec       : Recoverable I/O exception (java.net.SocketException) caught when processing request to {s}->https://discovery-server-zsph.onrender.com:443
+2025-11-13T16:45:54.994+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 2147483646 disconnected.
+2025-11-13T16:45:54.994+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) is unavailable or invalid due to cause: coordinator unavailable. isDisconnected: true. Rediscovery will be attempted.
+2025-11-13T16:45:55.049+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:45:55.050+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:45:55.127+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:45:55.128+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:45:55.171+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:45:55.171+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:45:55.354+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:45:55.354+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:45:55.396+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:45:55.396+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:45:55.701+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:45:55.701+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:45:55.811+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:45:55.812+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:45:56.092+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:45:56.093+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:45:56.609+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T16:45:56.610+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:45:56.926+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T16:45:56.926+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T16:46:00.160+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-13T16:48:25.318+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T17:04:15.984+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:15.984+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:15.985+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight FETCH request with correlation id 6829 due to node 1 being disconnected (elapsed time since creation: 899088ms, elapsed time since send: 899088ms, request timeout: 30000ms)
+2025-11-13T17:04:15.985+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 2147483646 disconnected.
+2025-11-13T17:04:15.986+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.kafka.clients.FetchSessionHandler    : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Error sending fetch request (sessionId=729755219, epoch=251) to node 1:
+
+org.apache.kafka.common.errors.DisconnectException: null
+
+2025-11-13T17:04:15.987+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) is unavailable or invalid due to cause: coordinator unavailable. isDisconnected: true. Rediscovery will be attempted.
+2025-11-13T17:04:16.373+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:16.373+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:16.455+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:16.456+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:16.599+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:16.600+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:16.647+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:16.647+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:16.799+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:16.800+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:16.850+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:16.851+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:17.209+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:17.210+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:17.253+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:17.253+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:18.076+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:18.083+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:18.098+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:18.098+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:19.157+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:19.157+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:19.159+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:19.159+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:19.404+07:00  WARN 61836 --- [test-order-service] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m28s989ms418µs600ns).
+2025-11-13T17:04:20.097+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:20.099+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:20.211+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:20.211+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:21.112+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:21.114+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:21.349+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:21.349+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:22.126+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:22.126+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:22.387+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:04:22.387+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:22.945+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:04:22.946+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:04:28.404+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - Re-registering apps/TEST-ORDER-SERVICE
+2025-11-13T17:04:28.404+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-13T17:04:28.542+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-13T17:04:28.879+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-13T17:04:29.360+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Attempt to heartbeat with Generation{generationId=1, memberId='consumer-test-order-ingest-group-1-52cb0f87-ee20-4201-b27f-e9d0bb26a36b', protocol='range'} and group instance id Optional.empty failed due to UNKNOWN_MEMBER_ID, resetting generation
+2025-11-13T17:04:29.360+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting generation and member id due to: encountered UNKNOWN_MEMBER_ID from HEARTBEAT response
+2025-11-13T17:04:29.360+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: encountered UNKNOWN_MEMBER_ID from HEARTBEAT response
+2025-11-13T17:04:29.361+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Giving away all assigned partitions as lost since generation/memberID has been reset,indicating that consumer is in old state or no longer part of the group
+2025-11-13T17:04:29.361+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Lost previously assigned partitions instrument-results-topic-0
+2025-11-13T17:04:29.362+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions lost: [instrument-results-topic-0]
+2025-11-13T17:04:29.362+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions revoked: [instrument-results-topic-0]
+2025-11-13T17:04:29.363+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-13T17:04:30.181+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-order-ingest-group-1-c07ea41f-b0e7-4625-98af-3627cfabde13
+2025-11-13T17:04:30.183+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-13T17:23:18.793+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:18.795+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Disconnecting from node 2147483646 due to request timeout.
+2025-11-13T17:23:18.795+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight JOIN_GROUP request with correlation id 6840 due to node 2147483646 being disconnected (elapsed time since creation: 1128610ms, elapsed time since send: 1128610ms, request timeout: 305000ms)
+2025-11-13T17:23:18.798+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) is unavailable or invalid due to cause: null. isDisconnected: true. Rediscovery will be attempted.
+2025-11-13T17:23:19.095+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:19.096+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:19.216+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:19.217+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:19.405+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:23:19.494+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:23:19.495+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:19.529+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:19.529+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:20.381+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:23:20.381+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:20.386+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:20.386+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:20.810+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:23:20.810+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:21.325+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:30.211+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:30.212+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:30.212+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:23:30.212+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:30.212+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:30.977+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:23:30.978+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:31.085+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:31.085+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:31.979+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:23:31.979+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:32.136+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:32.136+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:32.986+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:23:32.987+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:32.987+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:32.989+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:23:33.934+07:00  WARN 61836 --- [test-order-service] [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=19m21s308ms429µs300ns).
+2025-11-13T17:23:43.531+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - Re-registering apps/TEST-ORDER-SERVICE
+2025-11-13T17:23:43.531+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-13T17:23:43.625+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-HeartbeatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-13T17:23:45.068+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:23:45.068+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight API_VERSIONS request with correlation id 6842 due to node 1 being disconnected (elapsed time since creation: 6157ms, elapsed time since send: 6157ms, request timeout: 30000ms)
+2025-11-13T17:23:45.080+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:23:45.080+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Cancelled in-flight API_VERSIONS request with correlation id 55 due to node 1 being disconnected (elapsed time since creation: 6169ms, elapsed time since send: 6169ms, request timeout: 30000ms)
+2025-11-13T17:23:46.919+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-13T17:23:46.920+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: rebalance failed due to 'null' (DisconnectException)
+2025-11-13T17:23:47.021+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-13T17:23:47.699+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] JoinGroup failed: The coordinator is not aware of this member. Need to re-join the group. Sent generation was Generation{generationId=-1, memberId='consumer-test-order-ingest-group-1-c07ea41f-b0e7-4625-98af-3627cfabde13', protocol='null'}
+2025-11-13T17:23:47.699+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting generation and member id due to: encountered UNKNOWN_MEMBER_ID from JOIN_GROUP response
+2025-11-13T17:23:47.699+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: encountered UNKNOWN_MEMBER_ID from JOIN_GROUP response
+2025-11-13T17:23:47.699+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: rebalance failed due to 'The coordinator is not aware of this member.' (UnknownMemberIdException)
+2025-11-13T17:23:47.699+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-13T17:23:47.958+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: need to re-join with the given member-id: consumer-test-order-ingest-group-1-9d519ac4-4096-4180-9d11-e6d4c7e2862e
+2025-11-13T17:23:47.958+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] (Re-)joining group
+2025-11-13T17:23:48.233+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully joined group with generation Generation{generationId=1, memberId='consumer-test-order-ingest-group-1-9d519ac4-4096-4180-9d11-e6d4c7e2862e', protocol='range'}
+2025-11-13T17:23:48.236+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Finished assignment for group at generation 1: {consumer-test-order-ingest-group-1-9d519ac4-4096-4180-9d11-e6d4c7e2862e=Assignment(partitions=[instrument-results-topic-0])}
+2025-11-13T17:23:48.495+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Successfully synced group in generation Generation{generationId=1, memberId='consumer-test-order-ingest-group-1-9d519ac4-4096-4180-9d11-e6d4c7e2862e', protocol='range'}
+2025-11-13T17:23:48.496+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Notifying assignor about the new Assignment(partitions=[instrument-results-topic-0])
+2025-11-13T17:23:48.496+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Adding newly assigned partitions: instrument-results-topic-0
+2025-11-13T17:23:48.760+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Found no committed offset for partition instrument-results-topic-0
+2025-11-13T17:23:49.014+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting offset for partition instrument-results-topic-0 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[34.199.182.98:9092 (id: 1 rack: null)], epoch=0}}.
+2025-11-13T17:23:49.014+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions assigned: [instrument-results-topic-0]
+2025-11-13T17:24:00.648+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:24:00.648+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:24:00.649+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight FETCH request with correlation id 6868 due to node 1 being disconnected (elapsed time since creation: 448ms, elapsed time since send: 448ms, request timeout: 30000ms)
+2025-11-13T17:24:00.649+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.kafka.clients.FetchSessionHandler    : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Error sending fetch request (sessionId=611280285, epoch=14) to node 1:
+
+org.apache.kafka.common.errors.DisconnectException: null
+
+2025-11-13T17:24:00.649+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 2147483646 disconnected.
+2025-11-13T17:24:00.649+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Cancelled in-flight HEARTBEAT request with correlation id 6869 due to node 2147483646 being disconnected (elapsed time since creation: 387ms, elapsed time since send: 387ms, request timeout: 30000ms)
+2025-11-13T17:24:00.649+07:00  INFO 61836 --- [test-order-service] [kafka-coordinator-heartbeat-thread | test-order-ingest-group] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) is unavailable or invalid due to cause: null. isDisconnected: true. Rediscovery will be attempted.
+2025-11-13T17:24:00.714+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:24:00.714+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:24:00.760+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:24:00.760+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:24:00.841+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:24:00.841+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:24:00.900+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:24:00.900+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:24:01.129+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:24:01.130+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:24:01.148+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:24:01.148+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:24:01.641+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Node 1 disconnected.
+2025-11-13T17:24:01.642+07:00  WARN 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:24:01.661+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:24:01.661+07:00  WARN 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Connection to node 1 (/34.199.182.98:9092) could not be established. Node may not be available.
+2025-11-13T17:24:03.983+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Discovered group coordinator 34.199.182.98:9092 (id: 2147483646 rack: null)
+2025-11-13T17:27:08.784+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T17:28:33.748+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:32:08.785+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T17:33:04.564+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:37:08.799+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T17:37:35.382+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:42:06.209+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:42:08.808+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T17:46:37.051+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:47:08.823+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T17:51:07.885+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:52:08.838+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T17:55:38.740+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T17:57:08.854+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T18:00:09.565+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T18:02:08.867+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T18:04:40.396+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T18:07:08.871+07:00  INFO 61836 --- [test-order-service] [AsyncResolver-bootstrap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2025-11-13T18:09:11.282+07:00  INFO 61836 --- [test-order-service] [kafka-producer-network-thread | test-order-service-producer-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=test-order-service-producer-1] Node 1 disconnected.
+2025-11-13T18:10:13.033+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] o.s.c.n.e.s.EurekaServiceRegistry        : Unregistering application TEST-ORDER-SERVICE with eureka with status DOWN
+2025-11-13T18:10:13.033+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1763032213033, current=DOWN, previous=UP]
+2025-11-13T18:10:13.033+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868: registering service...
+2025-11-13T18:10:13.057+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Revoke previously assigned partitions instrument-results-topic-0
+2025-11-13T18:10:13.058+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: partitions revoked: [instrument-results-topic-0]
+2025-11-13T18:10:13.058+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Member consumer-test-order-ingest-group-1-9d519ac4-4096-4180-9d11-e6d4c7e2862e sending LeaveGroup request to coordinator 34.199.182.98:9092 (id: 2147483646 rack: null) due to the consumer unsubscribed from all topics
+2025-11-13T18:10:13.059+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting generation and member id due to: consumer pro-actively leaving the group
+2025-11-13T18:10:13.059+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: consumer pro-actively leaving the group
+2025-11-13T18:10:13.059+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.LegacyKafkaConsumer  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Unsubscribed all topics or patterns and assigned partitions
+2025-11-13T18:10:13.067+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Resetting generation and member id due to: consumer pro-actively leaving the group
+2025-11-13T18:10:13.067+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-test-order-ingest-group-1, groupId=test-order-ingest-group] Request joining group due to: consumer pro-actively leaving the group
+2025-11-13T18:10:13.159+07:00  INFO 61836 --- [test-order-service] [DiscoveryClient-InstanceInfoReplicator-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - registration status: 204
+2025-11-13T18:10:13.775+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2025-11-13T18:10:13.775+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2025-11-13T18:10:13.775+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+2025-11-13T18:10:13.775+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2025-11-13T18:10:13.788+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.a.kafka.common.utils.AppInfoParser     : App info kafka.consumer for consumer-test-order-ingest-group-1 unregistered
+2025-11-13T18:10:13.790+07:00  INFO 61836 --- [test-order-service] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : test-order-ingest-group: Consumer stopped
+2025-11-13T18:10:15.998+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] o.a.k.clients.producer.KafkaProducer     : [Producer clientId=test-order-service-producer-1] Closing the Kafka producer with timeoutMillis = 30000 ms.
+2025-11-13T18:10:16.001+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2025-11-13T18:10:16.001+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2025-11-13T18:10:16.001+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+2025-11-13T18:10:16.001+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2025-11-13T18:10:16.002+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] o.a.kafka.common.utils.AppInfoParser     : App info kafka.producer for test-order-service-producer-1 unregistered
+2025-11-13T18:10:16.009+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-13T18:10:16.021+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-13T18:10:16.026+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-11-13T18:10:16.027+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Shutting down DiscoveryClient ...
+2025-11-13T18:10:19.036+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Unregistering ...
+2025-11-13T18:10:19.143+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_TEST-ORDER-SERVICE/test-order-service:6868 - deregister  status: 200
+2025-11-13T18:10:19.144+07:00  INFO 61836 --- [test-order-service] [SpringApplicationShutdownHook] com.netflix.discovery.DiscoveryClient    : Completed shut down of DiscoveryClient

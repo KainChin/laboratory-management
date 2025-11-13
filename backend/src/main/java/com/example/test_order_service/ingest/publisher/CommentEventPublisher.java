@@ -1,6 +1,7 @@
 package com.example.test_order_service.ingest.publisher;
 
 import com.example.test_order_service.entity.Comment;
+import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.ingest.dto.CommentEventPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ public class CommentEventPublisher {
      * @param eventType Loại sự kiện (ví dụ: "COMMENT_CREATED")
      */
     public void publishCommentEvent(Comment comment, String eventType) {
+
+        TestOrder testOrder = comment.getTestOrder();
         if (comment == null || comment.getTestOrder() == null) {
             log.warn("Attempted to publish comment event for a null comment or null testOrder. Aborting.");
             return;
@@ -37,6 +40,8 @@ public class CommentEventPublisher {
                     .eventType(eventType)
                     .commentId(comment.getCommentId())
                     .testOrderId(testOrderId)
+                    .patientId(testOrder.getPatientId()) // <-- LẤY PATIENT ID
+                    .email(testOrder.getEmail())
                     .commentText(comment.getCommentText())
                     .createdBy(comment.getCreatedBy())
                     .createdAt(comment.getCreatedAt())
