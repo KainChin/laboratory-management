@@ -38,6 +38,7 @@ export default function OrderMeta(props) {
 
   const statusColorMap = {
     COMPLETED: "bg-emerald-100 text-emerald-700",
+    REVIEWED: "bg-purple-100 text-purple-700",
     AI_REVIEWED: "bg-orange-50 text-orange-600",
     CANCELLED: "bg-rose-100 text-rose-700",
     PENDING: "bg-blue-100 text-blue-700",

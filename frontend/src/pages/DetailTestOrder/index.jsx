@@ -436,12 +436,17 @@ export default function DetailTestOrder() {
             justifyContent: "center",
             zIndex: 9999,
             padding: 20,
+            animation: "fadeInOverlay 0.3s ease-out",
           }}
           onClick={closeConfirmModal}
         >
           <div
             className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-lg mx-auto"
-            style={{ maxHeight: "90vh", overflow: "auto" }}
+            style={{ 
+              maxHeight: "90vh", 
+              overflow: "auto",
+              animation: "slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
             role="dialog"
             aria-modal
             onClick={(e) => e.stopPropagation()}
@@ -461,7 +466,11 @@ export default function DetailTestOrder() {
                   background: "#f3f4f6",
                   cursor: isUpdating ? "not-allowed" : "pointer",
                   opacity: isUpdating ? 0.6 : 1,
+                  transition: "all 0.2s ease",
+                  border: "none",
                 }}
+                onMouseOver={(e) => !isUpdating && (e.target.style.background = "#e5e7eb")}
+                onMouseOut={(e) => (e.target.style.background = "#f3f4f6")}
                 disabled={isUpdating}
               >
                 No, cancel
@@ -478,7 +487,11 @@ export default function DetailTestOrder() {
                   gap: 8,
                   opacity: isUpdating ? 0.6 : 1,
                   cursor: isUpdating ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease",
+                  border: "none",
                 }}
+                onMouseOver={(e) => !isUpdating && (e.target.style.background = "#dc2626")}
+                onMouseOut={(e) => (e.target.style.background = "#ef4444")}
                 disabled={isUpdating}
               >
                 {isUpdating ? "Updating..." : "Yes, update"}

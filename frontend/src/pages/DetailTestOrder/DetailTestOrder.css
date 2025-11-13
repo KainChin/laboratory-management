@@ -8,6 +8,78 @@
   --base: #111827;
 }
 
+/* ==================== ANIMATIONS & TRANSITIONS ==================== */
+
+/* Page fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal slide up animation */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Modal overlay fade in */
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Card slide in from left */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Card slide in from right */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Button pulse effect */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* ==================== END ANIMATIONS ==================== */
+
 /* global */
 html, body {
   font-family: var(--ui-font);
@@ -76,8 +148,21 @@ input, textarea {
   .comment-body { font-size: 15px; }
 }
 
-.dto-page { padding: 28px 12px; font-family: Inter, Arial, sans-serif; color:#111827; background:transparent; }
-.dto-page-header { display:flex; align-items:center; gap:18px; margin-bottom:18px; }
+.dto-page { 
+  padding: 28px 12px; 
+  font-family: Inter, Arial, sans-serif; 
+  color:#111827; 
+  background:transparent;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.dto-page-header { 
+  display:flex; 
+  align-items:center; 
+  gap:18px; 
+  margin-bottom:18px;
+  animation: slideInLeft 0.5s ease-out;
+}
 .dto-back { width:40px; height:40px; border-radius:50%; background:#fff0f0; border:1px solid #ffd6d6; color:#ef4444; display:flex; align-items:center; justify-content:center; cursor:pointer; }
 .dto-title { margin:0; color:#ef4444; font-weight:800; font-size:22px; letter-spacing:1px; }
 .order-id { margin-top:6px; color:#6b7280; font-size:13px; }
@@ -89,7 +174,33 @@ input, textarea {
 .dto-grid { display:grid; grid-template-columns: 1fr 360px; gap:22px; align-items:start; }
 
 /* card base */
-.card { background:#fff; border:1px solid #eef2f6; border-radius:10px; padding:18px; box-shadow:0 1px 0 rgba(15,23,42,0.03); margin-bottom:18px; }
+.card { 
+  background:#fff; 
+  border:1px solid #eef2f6; 
+  border-radius:10px; 
+  padding:18px; 
+  box-shadow:0 1px 0 rgba(15,23,42,0.03); 
+  margin-bottom:18px;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(15,23,42,0.08);
+  transform: translateY(-2px);
+}
+
+.patient-card {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.dto-left-col {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+.dto-right-col {
+  animation: slideInRight 0.5s ease-out;
+}
 .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .card-header-left { display:flex; align-items:center; gap:12px; }
 .icon-sq { width:34px; height:34px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; background:#fff0f0; border:1px solid #ffd6d6; color:#ef4444; }

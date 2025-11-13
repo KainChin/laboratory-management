@@ -187,7 +187,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
       fontWeight: 600,
       color: "#000",
       outline: "none",
-      transition: "border-color 0.2s",
+      transition: "all 0.3s ease",
     },
     select: {
       width: "100%",
@@ -198,7 +198,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
       fontWeight: 600,
       color: "#000",
       outline: "none",
-      transition: "border-color 0.2s",
+      transition: "all 0.3s ease",
       backgroundColor: "#fff",
     },
     buttonGroup: {
@@ -209,7 +209,13 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
   };
 
   return (
-    <section style={styles.card} className="patient-card">
+    <section 
+      style={{
+        ...styles.card,
+        transition: "all 0.3s ease",
+      }} 
+      className="patient-card"
+    >
       <div style={styles.header}>
         <div style={styles.headerLeft}>
           <div style={styles.iconSq}>
