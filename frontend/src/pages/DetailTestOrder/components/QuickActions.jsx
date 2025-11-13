@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import axios from '../../../api/axios';
 import { createPortal } from "react-dom";
 
-export default function QuickActions({ status, onStatusChange }) {
+export default function QuickActions({ status, onStatusChange, onEditOrder }) {
   const { id } = useParams();
   const [isReviewing, setIsReviewing] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -83,7 +83,12 @@ export default function QuickActions({ status, onStatusChange }) {
         )}
         <button className="btn-purple full">AI Auto Review</button>
         <button className="btn-orange full">Generate Report</button>
-        <button className="btn-red full">Edit Order</button>
+        <button 
+          className="btn-red full"
+          onClick={onEditOrder}
+        >
+          Edit Order
+        </button>
       </div>
 
       {isConfirmOpen && createPortal(
