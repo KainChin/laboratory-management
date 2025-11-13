@@ -19,4 +19,5 @@ public interface TestOrderService {
     RestResponse<?> getTestOrderStatistics();
     RestResponse<TestOrderResponse> reviewTestOrder(String orderId);
     PageResponse<TestOrderDetailResponse> getTestOrderByEmail(Pageable pageable, String email);
+    RestResponse<?> getDailyStatistics();
 }

@@ -3,7 +3,7 @@ import ChartSection from "../components/ViewTestOrder/ChartSection";
 import ActivityCard from "../components/ViewTestOrder/ActivityCard";
 import OrdersTable from "../components/ViewTestOrder/OrdersTable";
 import DeleteConfirmationModal from "../components/ViewTestOrder/DeleteConfirmationModal";
-import { BarChart3, Clock3, CheckCircle2, XCircle } from "lucide-react";
+import { BarChart3, Clock3, CheckCircle2, CheckCheck } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
@@ -13,7 +13,7 @@ export default function TestOrders() {
     total: 0,
     pending: 0,
     completed: 0,
-    cancelled: 0,
+    reviewed: 0,
     weeklyData: [],
   });
 
@@ -33,20 +33,20 @@ export default function TestOrders() {
         const total = Number(stats.total ?? stats.count ?? 0);
         const pending = Number(stats.pending ?? 0);
         const completed = Number(stats.completed ?? 0);
-        const cancelled = Number(stats.cancelled ?? 0);
+        const reviewed = Number(stats.reviewed ?? 0);
 
         let weeklyData = [];
         if (Array.isArray(stats.weeklyData) && stats.weeklyData.length) {
           weeklyData = stats.weeklyData.map((it) => ({
             week: it.week ?? it.weekLabel ?? it.label,
             Completed: Number(it.Completed ?? it.completed ?? 0),
-            Cancelled: Number(it.Cancelled ?? it.cancelled ?? 0),
+            Reviewed: Number(it.Reviewed ?? it.reviewed ?? 0),
             Pending: Number(it.Pending ?? it.pending ?? 0),
           }));
         }
 
         if (mounted) {
-          setOrderStats({ total, pending, completed, cancelled, weeklyData });
+          setOrderStats({ total, pending, completed, reviewed, weeklyData });
         }
       } catch (err) {
         console.error("Error fetching statistics:", err);
@@ -82,11 +82,11 @@ export default function TestOrders() {
       border: "border-green-200",
     },
     {
-      title: "Cancelled",
-      value: orderStats.cancelled.toLocaleString(),
-      color: "text-red-600",
-      icon: <XCircle className="text-red-400" size={18} />,
-      border: "border-red-200",
+      title: "Reviewed",
+      value: orderStats.reviewed.toLocaleString(),
+      color: "text-purple-600",
+      icon: <CheckCheck className="text-purple-400" size={18} />,
+      border: "border-purple-200",
     },
   ];
 
@@ -231,10 +231,9 @@ export default function TestOrders() {
       {/* CHART */}
       <div ref={chartRef}>
         <ChartSection
-          data={orderStats.weeklyData}
           activityTotals={{
             Completed: orderStats.completed,
-            Cancelled: orderStats.cancelled,
+            Reviewed: orderStats.reviewed,
             Pending: orderStats.pending,
           }}
         />
