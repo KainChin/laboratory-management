@@ -489,7 +489,7 @@ export default function DetailTestOrder() {
                 No, cancel
               </button>
               <button
-                onClick={handleConfirmUpdate}
+                onClick={confirmUpdate}
                 className="px-4 min-h-[40px] py-2 rounded-lg"
                 style={{
                   background: "#FF5A5A",
