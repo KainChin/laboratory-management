@@ -303,7 +303,7 @@ export default function DetailTestOrder() {
     return <Loading />;
   }
   if (error) {
-    return <div className="text-center py-8 text-[#f65f63]">{error}</div>;
+    return <div className="text-center py-8 text-[#FF5A5A]">{error}</div>;
   }
   if (!order) {
     return <div className="text-center py-8">No test order found</div>;
@@ -321,7 +321,7 @@ export default function DetailTestOrder() {
           <div className="absolute -left-1 -top-1 w-10 h-10 bg-[#fff0f0] rounded-full"></div>
           <button
             onClick={handleGoBack}
-            className="relative z-10 p-2 bg-[#f65f63] text-white rounded-full hover:bg-[#FF3A3A] transition-all duration-300 transform hover:scale-105 active:scale-95"
+            className="relative z-10 p-2 bg-[#FF5A5A] text-white rounded-full hover:bg-[#FF3A3A] transition-all duration-300 transform hover:scale-105 active:scale-95"
             aria-label="Go back to test orders list"
           >
             <ArrowLeft size={24} aria-hidden="true" />
@@ -329,11 +329,11 @@ export default function DetailTestOrder() {
         </div>
 
         <div>
-          <h1 className="text-[24px] font-bold text-[#f65f63] tracking-[0.35em] leading-tight">
+          <h1 className="text-[24px] font-bold text-[#FF5A5A] tracking-[0.35em] leading-tight">
             TEST ORDER DETAIL
           </h1>
           <div className="text-sm">
-            <span className="text-[#f65f63] font-medium">ORDER ID:</span> <span className="font-medium text-black">{order.testOrderId}</span>
+            <span className="text-[#FF5A5A] font-medium">ORDER ID:</span> <span className="font-medium text-black">{order.testOrderId}</span>
           </div>
         </div>
 
@@ -342,7 +342,7 @@ export default function DetailTestOrder() {
           <button
             onClick={handleExportPDF}
             disabled={isExporting}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#f65f63] text-white rounded-lg hover:bg-[#FF3A3A] transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-sm"
+            className="flex items-center gap-2 px-6 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded-lg hover:bg-[#FF3A3A] transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-sm"
             style={{ border: "1px solid #CCC" }}
             onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
             onBlur={(e) => e.target.style.borderColor = "#CCC"}
@@ -461,7 +461,7 @@ export default function DetailTestOrder() {
             aria-modal
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 id="confirm-update-title" className="text-2xl text-[#f65f63] font-bold text-center mb-4">
+            <h3 id="confirm-update-title" className="text-2xl text-[#FF5A5A] font-bold text-center mb-4">
               Confirm Update
             </h3>
             <p id="confirm-update-description" className="text-center text-sm text-gray-600 mb-6">
@@ -471,7 +471,7 @@ export default function DetailTestOrder() {
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
               <button
                 onClick={closeConfirmModal}
-                className="px-4 py-2 rounded-lg"
+                className="px-4 min-h-[40px] py-2 rounded-lg"
                 style={{ 
                   background: "#f3f4f6",
                   cursor: isUpdating ? "not-allowed" : "pointer",
@@ -489,10 +489,10 @@ export default function DetailTestOrder() {
                 No, cancel
               </button>
               <button
-                onClick={confirmUpdate}
-                className="px-4 py-2 rounded-lg"
+                onClick={handleConfirmUpdate}
+                className="px-4 min-h-[40px] py-2 rounded-lg"
                 style={{
-                  background: "#f65f63",
+                  background: "#FF5A5A",
                   color: "#fff",
                   fontWeight: 600,
                   display: "inline-flex",
@@ -504,7 +504,7 @@ export default function DetailTestOrder() {
                   border: "1px solid #CCC",
                 }}
                 onMouseOver={(e) => !isUpdating && (e.target.style.background = "#e54e54")}
-                onMouseOut={(e) => (e.target.style.background = "#f65f63")}
+                onMouseOut={(e) => (e.target.style.background = "#FF5A5A")}
                 onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
                 onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 disabled={isUpdating}

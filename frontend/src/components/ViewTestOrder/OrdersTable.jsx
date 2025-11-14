@@ -653,11 +653,11 @@ export default function OrdersTable() {
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative">
       {isNavigating && <Loading />}
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-red-500 font-semibold">Test Order Lists</h2>
+        <h2 className="text-[#FF5A5A] font-semibold">Test Order Lists</h2>
         <div className="flex gap-2">
           <button
             onClick={openCreateModal}
-            className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
+            className="bg-[#FF5A5A] text-white px-3 min-h-[40px] py-2 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
           >
             + New Test Order
           </button>
@@ -677,11 +677,11 @@ export default function OrdersTable() {
               }
             }}
             placeholder="Search patient name..."
-            className="w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
+            className="w-full pl-8 pr-3 min-h-[40px] py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
           />
         </div>
         <button
-          className="bg-red-100 text-red-500 px-3 py-1.5 rounded-lg flex items-center gap-1 **hover:bg-red-200 hover:text-[#FF3A3A]**"
+          className="bg-red-100 text-[#FF5A5A] px-3 min-h-[40px] py-2 rounded-lg flex items-center gap-1 hover:bg-red-200 hover:text-[#FF3A3A] transition-colors duration-300"
           onClick={() => {
             setDebouncedKeyword(searchInput.trim());
           }}
@@ -689,7 +689,7 @@ export default function OrdersTable() {
           <Filter size={24} /> Search
         </button>
         <button
-          className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg ml-2 border"
+          className="bg-gray-100 text-gray-700 px-3 min-h-[40px] py-2 rounded-lg ml-2 border"
           onClick={() => {
             setSortDir(sortDir === "asc" ? "desc" : "asc");
             setPage(1);
@@ -713,7 +713,7 @@ export default function OrdersTable() {
             <col style={{ width: "10%" }} />
           </colgroup>
           <thead>
-            <tr className="bg-red-500 text-white">
+            <tr className="bg-[#FF5A5A] text-white">
               <th className="py-2 px-3 rounded-tl-lg">
                 <div className="truncate">Name</div>
               </th>
@@ -743,7 +743,7 @@ export default function OrdersTable() {
                 <tr key={row.id} className="border-b hover:bg-gray-50">
                   <td className="py-2 px-3">
                     <div
-                      className="truncate hover:text-red-500 cursor-pointer transition-colors"
+                      className="truncate hover:text-[#FF5A5A] cursor-pointer transition-colors"
                       title={row.name}
                       onClick={() => {
                         setIsNavigating(true);
@@ -794,7 +794,7 @@ export default function OrdersTable() {
                         <Edit size={24} />
                       </button>
                       <button
-                        className="text-red-500 hover:text-[#FF3A3A] transition-colors duration-300"
+                        className="text-[#FF5A5A] hover:text-[#FF3A3A] transition-colors duration-300"
                         onClick={() => {
                           setDeleteId(row.id);
                           setShowDeleteModal(true);
@@ -816,7 +816,7 @@ export default function OrdersTable() {
         <div className="flex justify-center items-center mt-4 gap-2">
           {page > 1 && (
             <button
-              className="px-3 py-1 rounded border bg-gray-100 text-gray-700 **hover:bg-gray-200 hover:border-[#FF3A3A]**"
+              className="px-3 min-h-[40px] py-2 rounded border bg-gray-100 text-gray-700 **hover:bg-gray-200 hover:border-[#FF3A3A]**"
               onClick={() => setPage(page - 1)}
             >
               Prev
@@ -874,9 +874,9 @@ export default function OrdersTable() {
               ) : (
                 <button
                   key={it}
-                  className={`px-3 py-1 rounded border ${
+                  className={`px-3 min-h-[40px] py-2 rounded border ${
                     page === it
-                      ? "bg-red-500 text-white"
+                      ? "bg-[#FF5A5A] text-white"
                       : "bg-gray-100 text-gray-700"
                   }`}
                   onClick={() => setPage(it)}
@@ -888,7 +888,7 @@ export default function OrdersTable() {
           })()}
           {page < totalPages && (
             <button
-              className="px-3 py-1 rounded border bg-gray-100 text-gray-700 **hover:bg-gray-200 hover:border-[#FF3A3A]**"
+              className="px-3 min-h-[40px] py-2 rounded border bg-gray-100 text-gray-700 **hover:bg-gray-200 hover:border-[#FF3A3A]**"
               onClick={() => setPage(page + 1)}
             >
               Next
@@ -911,10 +911,10 @@ export default function OrdersTable() {
                 }
               }}
               placeholder="Page"
-              className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
+              className="w-20 px-2 min-h-[40px] py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
             />
             <button
-              className="px-3 py-1 rounded border bg-gray-100 text-gray-700 **hover:bg-gray-200 hover:border-[#FF3A3A]**"
+              className="px-3 min-h-[40px] py-2 rounded border bg-gray-100 text-gray-700 **hover:bg-gray-200 hover:border-[#FF3A3A]**"
               onClick={() => {
                 const num = parseInt(jumpInput || "", 10);
                 if (!isNaN(num)) {
@@ -949,7 +949,7 @@ export default function OrdersTable() {
             className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-2xl text-red-500 font-bold text-center">
+            <h3 className="text-2xl text-[#FF5A5A] font-bold text-center">
               {mode === "view"
                 ? "Detail Test Order Information"
                 : mode === "edit"
@@ -967,7 +967,7 @@ export default function OrdersTable() {
             <div className="border rounded-lg p-6 bg-gray-50">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label className="text-[#FF5A5A] font-semibold text-sm">
                     Patient Name
                   </label>
                   <input
@@ -979,7 +979,7 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter patient's full name (e.g., John Doe)"
                   />
                   {errors.patientName && (
@@ -989,11 +989,11 @@ export default function OrdersTable() {
                   )}
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label className="text-[#FF5A5A] font-semibold text-sm">
                     Date of Birth
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white">
+                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white">
                       {form.dob}
                     </div>
                   ) : (
@@ -1006,7 +1006,7 @@ export default function OrdersTable() {
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
                       type="date"
-                      className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
+                      className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
                     />
                   )}
                   {errors.dob && (
@@ -1017,7 +1017,7 @@ export default function OrdersTable() {
                 </div>
 
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label className="text-[#FF5A5A] font-semibold text-sm">
                     Phone Number
                   </label>
                   <input
@@ -1029,7 +1029,7 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter phone number (e.g., +84 123 456 789)"
                   />
                   {errors.phone && (
@@ -1039,7 +1039,7 @@ export default function OrdersTable() {
                   )}
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label className="text-[#FF5A5A] font-semibold text-sm">
                     Email
                   </label>
                   <input
@@ -1052,7 +1052,7 @@ export default function OrdersTable() {
                     }}
                     type="email"
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter email address (e.g., patient@example.com)"
                   />
                   {errors.email && (
@@ -1063,11 +1063,11 @@ export default function OrdersTable() {
                 </div>
 
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label className="text-[#FF5A5A] font-semibold text-sm">
                     Gender
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white">
+                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white">
                       {form.gender
                         ? form.gender === "MALE"
                           ? "Male"
@@ -1085,7 +1085,7 @@ export default function OrdersTable() {
                         setLocalForm((s) => ({ ...s, [name]: value }));
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
-                      className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
+                      className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
                       <option value="Male">Male</option>
@@ -1100,11 +1100,11 @@ export default function OrdersTable() {
                   )}
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label className="text-[#FF5A5A] font-semibold text-sm">
                     Status
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white">
+                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white">
                       {form.status || ""}
                     </div>
                   ) : (
@@ -1116,7 +1116,7 @@ export default function OrdersTable() {
                         setLocalForm((s) => ({ ...s, [name]: value }));
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
-                      className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
+                      className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
                       <option value="Pending">Pending</option>
@@ -1131,7 +1131,7 @@ export default function OrdersTable() {
                   )}
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label className="text-[#FF5A5A] font-semibold text-sm">
                     Address
                   </label>
                   <input
@@ -1142,13 +1142,13 @@ export default function OrdersTable() {
                       setLocalForm((s) => ({ ...s, [name]: value }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter full address (e.g., 123 Main St, District 1)"
                   />
                 </div>
 
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label className="text-[#FF5A5A] font-semibold text-sm">
                     Country
                   </label>
                   <input
@@ -1159,12 +1159,12 @@ export default function OrdersTable() {
                       setLocalForm((s) => ({ ...s, [name]: value }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter country (e.g., Vietnam)"
                   />
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label className="text-[#FF5A5A] font-semibold text-sm">
                     Citizen ID
                   </label>
                   <input
@@ -1176,7 +1176,7 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter citizen ID or passport number"
                   />
                   {errors.citizenId && (
@@ -1196,21 +1196,21 @@ export default function OrdersTable() {
                   setErrors({});
                   setIsSubmitting(false);
                 }}
-                className="px-4 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-100 transition-colors duration-300"
+                className="px-4 min-h-[40px] py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-100 transition-colors duration-300"
               >
                 Close
               </button>
               {mode === "edit" ? (
                 <button
                   onClick={() => handleUpdate(localForm)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
+                  className="px-4 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
                 >
                   Save
                 </button>
               ) : mode === "view" ? null : (
                 <button
                   onClick={() => handleCreate(localForm)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#FF3A3A] disabled:hover:bg-red-500 transition-colors duration-300"
+                  className="px-4 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#FF3A3A] disabled:hover:bg-[#FF5A5A] transition-colors duration-300"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Creating..." : "Create"}
@@ -1305,7 +1305,7 @@ export default function OrdersTable() {
         </div>
       )}
       {deleteError && (
-        <div className="fixed left-1/2 top-5 -translate-x-1/2 bg-red-100 text-red-600 px-6 py-2 shadow-lg rounded-lg z-50 font-semibold">
+        <div className="fixed left-1/2 top-5 -translate-x-1/2 bg-red-100 text-[#FF5A5A] px-6 py-2 shadow-lg rounded-lg z-50 font-semibold">
           {deleteError}
         </div>
       )}

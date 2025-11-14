@@ -180,7 +180,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     },
     input: {
       width: "100%",
-      padding: "8px 12px",
+      minHeight: "40px",
+      padding: "10px 12px",
       border: "1px solid #CCC",
       borderRadius: 6,
       fontSize: 16,
@@ -191,7 +192,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     },
     select: {
       width: "100%",
-      padding: "8px 12px",
+      minHeight: "40px",
+      padding: "10px 12px",
       border: "1px solid #CCC",
       borderRadius: 6,
       fontSize: 15,
@@ -228,7 +230,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
             <button
               onClick={onCancel}
               style={{
-                padding: "8px 16px",
+                padding: "10px 16px",
+                minHeight: "40px",
                 borderRadius: 8,
                 border: "1px solid #CCC",
                 background: "#fff",
@@ -247,10 +250,11 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
             <button
               onClick={handleSubmit}
               style={{
-                padding: "8px 16px",
+                padding: "10px 16px",
+                minHeight: "40px",
                 borderRadius: 8,
                 border: "1px solid #CCC",
-                background: "#f65f63",
+                background: "#FF5A5A",
                 color: "#fff",
                 fontSize: 14,
                 fontWeight: 600,
@@ -258,7 +262,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 transition: "all 0.2s",
               }}
               onMouseOver={(e) => e.target.style.background = "#FF3A3A"}
-              onMouseOut={(e) => e.target.style.background = "#f65f63"}
+              onMouseOut={(e) => e.target.style.background = "#FF5A5A"}
               aria-label="Save patient information changes"
             >
               Change

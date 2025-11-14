@@ -58,7 +58,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 h-screen w-16 bg-red-500 text-white flex flex-col items-center py-4 space-y-6 z-40">
+      <aside className="fixed left-0 top-0 h-screen w-16 bg-[#FF5A5A] text-white flex flex-col items-center py-4 space-y-6 z-40">
         <button className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition">
           <Menu size={24} />
         </button>
@@ -86,7 +86,7 @@ export default function Sidebar() {
           (showTopBtn ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none")
         }
       >
-        <ChevronUp size={24} className="text-red-500" />
+        <ChevronUp size={24} className="text-[#FF5A5A]" />
       </button>
     </>
   );

@@ -168,7 +168,7 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
           {loading ? (
             <div role="status" aria-live="polite" style={{ color: "#6b7280", textAlign: 'center' }}>Loading…</div>
           ) : error ? (
-            <div role="alert" aria-live="assertive" style={{ color: "#f65f63", fontSize: 13, textAlign: 'center' }}>{error}</div>
+            <div role="alert" aria-live="assertive" style={{ color: "#FF5A5A", fontSize: 14, textAlign: 'center' }}>{error}</div>
           ) : total === 0 ? (
             <div role="status" style={{ color: "#6b7280", fontSize: 13, textAlign: 'center' }}>No results</div>
           ) : (

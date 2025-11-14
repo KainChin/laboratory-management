@@ -1,7 +1,7 @@
 export default function ActivityCard() {
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-      <h2 className="font-semibold text-red-500 mb-2">Recent Activity</h2>
+      <h2 className="font-semibold text-[#FF5A5A] mb-2">Recent Activity</h2>
       <p className="text-sm text-gray-500 mb-4">
         Manage patient test orders and view laboratory results
       </p>

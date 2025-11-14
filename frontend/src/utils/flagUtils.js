@@ -62,11 +62,11 @@ export function getFlagColor(flag) {
   // Known flag colors matching the CSS
   const colorMap = {
     'N': '#10b981',  // green for Normal
-    'H': '#f65f63',  // red for High
+    'H': '#FF5A5A',  // red for High
     'HH': '#FF0000', // darker red
     'L': '#f59e0b',  // orange for Low
     'LL': '#d97706', // darker orange
-    '>': '#f65f63',  // red (high)
+    '>': '#FF5A5A',  // red (high)
     '<': '#f59e0b',  // orange (low)
     'A': '#f97316',  // orange for Abnormal
     'AA': '#FF0000', // dark red
@@ -74,9 +74,9 @@ export function getFlagColor(flag) {
     'MS': '#a855f7', // lighter purple
     'I': '#3b82f6',  // blue for Intermediate
     'B': '#10b981',  // green for Better
-    'W': '#f65f63',  // red for Worse
+    'W': '#FF5A5A',  // red for Worse
     'D': '#f59e0b',  // orange for down
-    'U': '#f65f63',  // red for up
+    'U': '#FF5A5A',  // red for up
     'S': '#06b6d4',  // cyan for Susceptible
     'R': '#f59e0b',  // orange for Resistant
     'P': '#10b981',  // green for Positive

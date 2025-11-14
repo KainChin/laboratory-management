@@ -139,7 +139,7 @@ export default function TestOrders() {
         cell.fill = {
           type: "pattern",
           pattern: "solid",
-          fgColor: { argb: "FFF65F63" },
+          fgColor: { argb: "FFFF5A5A" },
         };
         cell.alignment = { horizontal: "center", vertical: "middle" };
         cell.border = {
@@ -220,13 +220,13 @@ export default function TestOrders() {
       <div className="space-y-4">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center">
           <div />
-          <h1 className="justify-self-center text-[24px] leading-none font-extrabold tracking-[0.35em] uppercase text-[#f65f63]">
+          <h1 className="justify-self-center text-[24px] leading-none font-extrabold tracking-[0.35em] uppercase text-[#FF5A5A]">
             TEST ORDERS
           </h1>
           <div className="justify-self-end flex gap-4">
             <button
               onClick={handleExportExcel}
-              className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
+              className="bg-[#FF5A5A] text-white px-3 min-h-[40px] py-2 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
             >
               Export Excel
             </button>

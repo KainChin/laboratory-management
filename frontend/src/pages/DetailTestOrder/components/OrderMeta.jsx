@@ -71,7 +71,7 @@ export default function OrderMeta(props) {
         <div className="status-left">
           {/* Status keeps Info icon (different from Created) */}
           <div className="icon-sq small"><Info size={24} /></div>
-          <div className="muted" style={{ color: "#f65f63" }}>STATUS</div>
+          <div className="muted" style={{ color: "#FF5A5A" }}>STATUS</div>
         </div>
         <div>
           <span className={badgeClasses} role="status" aria-label={`Current status: ${status}`}>{status}</span>

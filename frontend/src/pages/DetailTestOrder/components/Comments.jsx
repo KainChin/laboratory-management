@@ -606,7 +606,7 @@ export default function Comments({
                             padding: 8,
                             borderRadius: 8,
                             cursor: "pointer",
-                            color: "#f65f63",
+                            color: "#FF5A5A",
                           }}
                           onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
                           onBlur={(e) => e.target.style.borderColor = "#CCC"}
@@ -674,12 +674,12 @@ export default function Comments({
                 background: "#fff",
                 borderRadius: 10,
                 boxShadow: "0 12px 40px rgba(2,6,23,0.12)",
-                padding: 12,
+                padding: 20,
                 border: "1px solid #CCC",
-                height: confirmPortal.height,
+                minWidth: 360,
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between",
+                gap: 20,
               }}
             >
               <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
@@ -704,7 +704,7 @@ export default function Comments({
                   >
                     Delete comment
                   </div>
-                  <div style={{ color: "#6b7280", fontSize: 13, marginTop: 8 }}>>
+                  <div style={{ color: "#6b7280", fontSize: 13, marginTop: 8 }}>
                     This action cannot be undone. Are you sure?
                   </div>
                 </div>
@@ -716,7 +716,8 @@ export default function Comments({
                 <button
                   onClick={() => setConfirmPortal(null)}
                   style={{
-                    padding: "8px 12px",
+                    minHeight: "40px",
+                    padding: "10px 16px",
                     borderRadius: 8,
                     border: "1px solid #CCC",
                     background: "#fff",
@@ -732,10 +733,11 @@ export default function Comments({
                   onClick={() => doDelete(confirmPortal.commentId)}
                   disabled={deletingId === confirmPortal.commentId}
                   style={{
-                    padding: "8px 12px",
+                    minHeight: "40px",
+                    padding: "10px 16px",
                     borderRadius: 8,
                     border: "1px solid #CCC",
-                    background: "#f65f63",
+                    background: "#FF5A5A",
                     color: "#fff",
                     fontWeight: 800,
                   }}
