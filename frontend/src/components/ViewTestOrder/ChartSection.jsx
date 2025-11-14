@@ -97,15 +97,15 @@ export default function ChartSection({ activityTotals = null }) {
         </div>
 
         <div className="flex items-start gap-8">
-          <div className="text-right">
+          <div className="text-center">
             <div className="text-sm text-gray-500">Pending</div>
             <div className="text-2xl font-bold text-blue-600">{totals.Pending}</div>
           </div>
-          <div className="text-right">
+          <div className="text-center">
             <div className="text-sm text-gray-500">Completed</div>
             <div className="text-2xl font-bold text-green-600">{totals.Completed}</div>
           </div>
-          <div className="text-right">
+          <div className="text-center">
             <div className="text-sm text-gray-500">Reviewed</div>
             <div className="text-2xl font-bold text-purple-600">{totals.Reviewed}</div>
           </div>
@@ -125,8 +125,8 @@ export default function ChartSection({ activityTotals = null }) {
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tickCount={6} 
-            domain={[0, Math.ceil(maxValue * 1.1)]} 
+            allowDecimals={false}
+            domain={[0, 'auto']} 
             tick={{ fill: "#777777", fontSize: 13 }} 
           />
           <Tooltip
