@@ -303,7 +303,7 @@ export default function DetailTestOrder() {
     return <Loading />;
   }
   if (error) {
-    return <div className="text-center py-8 text-red-500">{error}</div>;
+    return <div className="text-center py-8 text-[#f65f63]">{error}</div>;
   }
   if (!order) {
     return <div className="text-center py-8">No test order found</div>;
@@ -318,10 +318,10 @@ export default function DetailTestOrder() {
       {/* ++ SỬA: Thêm class "no-print" để ẩn toàn bộ header khi in */}
       <div className="dto-page-header no-print">
         <div className="relative">
-          <div className="absolute -left-1 -top-1 w-10 h-10 bg-red-50 rounded-full"></div>
+          <div className="absolute -left-1 -top-1 w-10 h-10 bg-[#fff0f0] rounded-full"></div>
           <button
             onClick={handleGoBack}
-            className="relative z-10 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all duration-300 transform hover:scale-105 active:scale-95"
+            className="relative z-10 p-2 bg-[#f65f63] text-white rounded-full hover:bg-[#e54e54] transition-all duration-300 transform hover:scale-105 active:scale-95"
           >
             <ArrowLeft size={20} />
           </button>
@@ -331,8 +331,8 @@ export default function DetailTestOrder() {
           <h1 className="text-[28px] font-bold text-[#f65f63] tracking-[0.35em] leading-tight">
             TEST ORDER DETAIL
           </h1>
-          <div className="text-gray-600 text-sm">
-            ORDER ID: <span className="font-medium">{order.testOrderId}</span>
+          <div className="text-sm">
+            <span className="text-[#f65f63] font-medium">ORDER ID:</span> <span className="font-medium text-black">{order.testOrderId}</span>
           </div>
         </div>
 
@@ -341,7 +341,7 @@ export default function DetailTestOrder() {
           <button
             onClick={handleExportPDF}
             disabled={isExporting}
-            className="flex items-center gap-2 px-6 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-sm"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#f65f63] text-white rounded-lg hover:bg-[#e54e54] transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-sm"
           >
             {isExporting ? "Generating PDF..." : "Export PDF"}
           </button>
@@ -451,7 +451,7 @@ export default function DetailTestOrder() {
             aria-modal
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-2xl text-red-500 font-bold text-center mb-4">
+            <h3 className="text-2xl text-[#f65f63] font-bold text-center mb-4">
               Confirm Update
             </h3>
             <p className="text-center text-sm text-gray-600 mb-6">
@@ -479,7 +479,7 @@ export default function DetailTestOrder() {
                 onClick={confirmUpdate}
                 className="px-4 py-2 rounded-lg"
                 style={{
-                  background: "#ef4444",
+                  background: "#f65f63",
                   color: "#fff",
                   fontWeight: 600,
                   display: "inline-flex",
@@ -490,8 +490,8 @@ export default function DetailTestOrder() {
                   transition: "all 0.2s ease",
                   border: "none",
                 }}
-                onMouseOver={(e) => !isUpdating && (e.target.style.background = "#dc2626")}
-                onMouseOut={(e) => (e.target.style.background = "#ef4444")}
+                onMouseOver={(e) => !isUpdating && (e.target.style.background = "#e54e54")}
+                onMouseOut={(e) => (e.target.style.background = "#f65f63")}
                 disabled={isUpdating}
               >
                 {isUpdating ? "Updating..." : "Yes, update"}

@@ -590,7 +590,7 @@ export default function Comments({
                             padding: 8,
                             borderRadius: 8,
                             cursor: "pointer",
-                            color: "#ef4444",
+                            color: "#f65f63",
                           }}
                         >
                           <Trash2 size={14} />
@@ -713,7 +713,7 @@ export default function Comments({
                     padding: "8px 12px",
                     borderRadius: 8,
                     border: "none",
-                    background: "#ef4444",
+                    background: "#f65f63",
                     color: "#fff",
                     fontWeight: 800,
                   }}

@@ -161,7 +161,7 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
           {loading ? (
             <div style={{ color: "#6b7280", textAlign: 'center' }}>Loading…</div>
           ) : error ? (
-            <div style={{ color: "#ef4444", fontSize: 13, textAlign: 'center' }}>{error}</div>
+            <div style={{ color: "#f65f63", fontSize: 13, textAlign: 'center' }}>{error}</div>
           ) : total === 0 ? (
             <div style={{ color: "#6b7280", fontSize: 13, textAlign: 'center' }}>No results</div>
           ) : (
