@@ -421,7 +421,7 @@ export default function Comments({
       <div className="card-header">
         <div className="card-header-left">
           <div className="icon-sq">
-            <MessageSquare size={14} />
+            <MessageSquare size={24} />
           </div>
           <h3>Comments</h3>
         </div>
@@ -572,7 +572,7 @@ export default function Comments({
                             cursor: "pointer",
                           }}
                         >
-                          <Edit2 size={14} />
+                          <Edit2 size={24} />
                         </button>
                       )}
                       {!isEditing && (
@@ -593,7 +593,7 @@ export default function Comments({
                             color: "#f65f63",
                           }}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={24} />
                         </button>
                       )}
                     </div>
@@ -677,7 +677,7 @@ export default function Comments({
                     color: "#ef4444",
                   }}
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={24} />
                 </div>
                 <div>
                   <div

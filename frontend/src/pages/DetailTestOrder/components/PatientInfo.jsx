@@ -219,7 +219,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
       <div style={styles.header}>
         <div style={styles.headerLeft}>
           <div style={styles.iconSq}>
-            <User size={16} />
+            <User size={24} />
           </div>
           <h3 style={styles.title}>Patient Information</h3>
         </div>
