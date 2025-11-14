@@ -25,7 +25,9 @@ export default function TestOrders() {
 
     async function fetchStatistics() {
       try {
-        const res = await fetch("http://localhost:6868/api/test-orders/statistics");
+        const res = await fetch(
+          "http://localhost:6868/api/test-orders/statistics"
+        );
         if (!res.ok) throw new Error("Failed to fetch statistics");
         const json = await res.json();
         const stats = json.result || json.data || {};
@@ -99,8 +101,11 @@ export default function TestOrders() {
         sortDir: "desc",
       });
 
-      const response = await fetch(`http://localhost:6868/api/test-orders?${queryParams}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await fetch(
+        `http://localhost:6868/api/test-orders?${queryParams}`
+      );
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
 
       const result = await response.json();
       const orders = result.result?.items || [];
@@ -131,7 +136,11 @@ export default function TestOrders() {
       // Header styling
       sheet.getRow(1).eachCell((cell) => {
         cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
-        cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF65F63" } };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFF65F63" },
+        };
         cell.alignment = { horizontal: "center", vertical: "middle" };
         cell.border = {
           top: { style: "thin", color: { argb: "FFAAAAAA" } },
@@ -164,7 +173,11 @@ export default function TestOrders() {
         if (status.includes("comp")) color = "FFD4EDDA"; // green
         else if (status.includes("cancel")) color = "FFF8D7DA"; // red
 
-        statusCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: color } };
+        statusCell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: color },
+        };
         row.alignment = { vertical: "middle" };
         row.border = {
           bottom: { style: "hair", color: { argb: "FFD9D9D9" } },
@@ -191,7 +204,10 @@ export default function TestOrders() {
       }
 
       const buffer = await workbook.xlsx.writeBuffer();
-      saveAs(new Blob([buffer]), `TestOrders_${new Date().toISOString().split("T")[0]}.xlsx`);
+      saveAs(
+        new Blob([buffer]),
+        `TestOrders_${new Date().toISOString().split("T")[0]}.xlsx`
+      );
     } catch (error) {
       console.error("Export failed:", error);
       alert(`Export failed: ${error.message}`);
@@ -210,7 +226,7 @@ export default function TestOrders() {
           <div className="justify-self-end flex gap-4">
             <button
               onClick={handleExportExcel}
-              className="bg-[#f65f63]/90 hover:bg-[#f65f63] text-white font-semibold px-5 py-2 rounded-lg transition-shadow shadow-sm hover:shadow"
+              className="bg-red-500 text-white px-3 py-1.5 rounded-lg **hover:bg-[#FF3A3A]**"
             >
               Export Excel
             </button>

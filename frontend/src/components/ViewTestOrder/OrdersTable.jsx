@@ -1,4 +1,3 @@
-
 import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
 import {
   useState,
@@ -112,24 +111,27 @@ export default function OrdersTable() {
     fetchOrdersWrapper();
 
     // Check if we should scroll to table (coming from detail page)
-    if (localStorage.getItem('scrollToTable')) {
+    if (localStorage.getItem("scrollToTable")) {
       // Remove the flag
-      localStorage.removeItem('scrollToTable');
+      localStorage.removeItem("scrollToTable");
 
       // Wait for data to load and component to render
       setTimeout(() => {
         // Tìm vị trí của bảng và header
-        const tableSection = document.querySelector('table');
-        const headerSection = document.querySelector('.flex.justify-between.items-center.mb-3');
+        const tableSection = document.querySelector("table");
+        const headerSection = document.querySelector(
+          ".flex.justify-between.items-center.mb-3"
+        );
 
         if (tableSection && headerSection) {
           // Lấy vị trí của header của bảng
-          const headerOffset = headerSection.getBoundingClientRect().top + window.pageYOffset;
+          const headerOffset =
+            headerSection.getBoundingClientRect().top + window.pageYOffset;
 
           // Cuộn đến vị trí của header bảng, thêm offset 100px để header bảng nằm đẹp trên màn hình
           window.scrollTo({
             top: headerOffset - 100,
-            behavior: 'smooth'
+            behavior: "smooth",
           });
         }
       }, 100);
@@ -424,7 +426,11 @@ export default function OrdersTable() {
         },
       ]);
       setShowModal(false);
-      showToast({ type: "success", title: "Success", message: "Create test order successfully" });
+      showToast({
+        type: "success",
+        title: "Success",
+        message: "Create test order successfully",
+      });
       resetForm();
       setLocalForm({
         patientName: "",
@@ -442,7 +448,11 @@ export default function OrdersTable() {
       fetchOrdersWrapper(1); // về trang 1 sau khi thêm mới
       setPage(1);
     } catch (err) {
-      showToast({ type: "error", title: "Create Failed", message: err.message || "Failed to create test order" });
+      showToast({
+        type: "error",
+        title: "Create Failed",
+        message: err.message || "Failed to create test order",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -494,23 +504,27 @@ export default function OrdersTable() {
           orders.map((o) =>
             o.id === editingId
               ? {
-                ...o,
-                name: updated.patientName || f.patientName || o.name,
-                dob: updated.dateOfBirth || f.dob || o.dob,
-                status: updated.status || f.status || o.status,
-                phone: updated.phone || f.phone || o.phone,
-                email: updated.email || f.email || o.email,
-                gender: updated.gender || f.gender || o.gender,
-                address: updated.address || f.address || o.address,
-                citizenId: updated.citizenId || f.citizenId || o.citizenId,
-              }
+                  ...o,
+                  name: updated.patientName || f.patientName || o.name,
+                  dob: updated.dateOfBirth || f.dob || o.dob,
+                  status: updated.status || f.status || o.status,
+                  phone: updated.phone || f.phone || o.phone,
+                  email: updated.email || f.email || o.email,
+                  gender: updated.gender || f.gender || o.gender,
+                  address: updated.address || f.address || o.address,
+                  citizenId: updated.citizenId || f.citizenId || o.citizenId,
+                }
               : o
           )
         );
 
         setShowModal(false);
         setEditingId(null);
-        showToast({ type: "success", title: "Success", message: "Test order updated successfully" });
+        showToast({
+          type: "success",
+          title: "Success",
+          message: "Test order updated successfully",
+        });
         resetForm();
         setLocalForm({
           patientName: "",
@@ -618,7 +632,7 @@ export default function OrdersTable() {
         <div className="flex gap-2">
           <button
             onClick={openCreateModal}
-            className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600"
+            className="bg-red-500 text-white px-3 py-1.5 rounded-lg **hover:bg-[#FF3A3A]**"
           >
             + New Test Order
           </button>
@@ -642,7 +656,7 @@ export default function OrdersTable() {
           />
         </div>
         <button
-          className="bg-red-100 text-red-500 px-3 py-1.5 rounded-lg flex items-center gap-1"
+          className="bg-red-100 text-red-500 px-3 py-1.5 rounded-lg flex items-center gap-1 **hover:bg-red-200 hover:text-[#FF3A3A]**"
           onClick={() => {
             setDebouncedKeyword(searchInput.trim());
           }}
@@ -709,7 +723,7 @@ export default function OrdersTable() {
                       onClick={() => {
                         setIsNavigating(true);
                         // Cuộn lên đầu trang với animation mượt mà
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                         // Đợi animation cuộn hoàn thành (500ms) trước khi chuyển trang
                         setTimeout(() => {
                           navigate(`/test-orders/detail/${row.id}`);
@@ -722,8 +736,9 @@ export default function OrdersTable() {
                   <td className="py-2 px-3">
                     <div className="truncate">
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColor[row.status]
-                          }`}
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          statusColor[row.status]
+                        }`}
                       >
                         {row.status}
                       </span>
@@ -774,7 +789,7 @@ export default function OrdersTable() {
         <div className="flex justify-center items-center mt-4 gap-2">
           {page > 1 && (
             <button
-              className="px-3 py-1 rounded border bg-gray-100 text-gray-700"
+              className="px-3 py-1 rounded border bg-gray-100 text-gray-700 **hover:bg-gray-200 hover:border-[#FF3A3A]**"
               onClick={() => setPage(page - 1)}
             >
               Prev
@@ -826,12 +841,17 @@ export default function OrdersTable() {
             const items = getItems(page, totalPages);
             return items.map((it, idx) =>
               it === "..." ? (
-                <span key={`el-${idx}`} className="px-2 text-gray-500">…</span>
+                <span key={`el-${idx}`} className="px-2 text-gray-500">
+                  …
+                </span>
               ) : (
                 <button
                   key={it}
-                  className={`px-3 py-1 rounded border ${page === it ? "bg-red-500 text-white" : "bg-gray-100 text-gray-700"
-                    }`}
+                  className={`px-3 py-1 rounded border ${
+                    page === it
+                      ? "bg-red-500 text-white"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
                   onClick={() => setPage(it)}
                 >
                   {it}
@@ -841,7 +861,7 @@ export default function OrdersTable() {
           })()}
           {page < totalPages && (
             <button
-              className="px-3 py-1 rounded border bg-gray-100 text-gray-700"
+              className="px-3 py-1 rounded border bg-gray-100 text-gray-700 **hover:bg-gray-200 hover:border-[#FF3A3A]**"
               onClick={() => setPage(page + 1)}
             >
               Next
@@ -867,7 +887,7 @@ export default function OrdersTable() {
               className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
             />
             <button
-              className="px-2 py-1.5 rounded-lg border bg-gray-100 text-gray-700"
+              className="px-3 py-1 rounded border bg-gray-100 text-gray-700 **hover:bg-gray-200 hover:border-[#FF3A3A]**"
               onClick={() => {
                 const num = parseInt(jumpInput || "", 10);
                 if (!isNaN(num)) {
@@ -884,11 +904,13 @@ export default function OrdersTable() {
 
       {/* Modal */}
       {showModal && (
-        <Modal onBackdropClick={() => {
-          setShowModal(false);
-          setMode("create");
-          setErrors({});
-        }}>
+        <Modal
+          onBackdropClick={() => {
+            setShowModal(false);
+            setMode("create");
+            setErrors({});
+          }}
+        >
           <div
             ref={modalRef}
             style={{
@@ -903,15 +925,15 @@ export default function OrdersTable() {
               {mode === "view"
                 ? "Detail Test Order Information"
                 : mode === "edit"
-                  ? "UPDATE TEST ORDER"
-                  : "NEW TEST ORDER"}
+                ? "UPDATE TEST ORDER"
+                : "NEW TEST ORDER"}
             </h3>
             <p className="text-center text-sm text-gray-500 mb-6">
               {mode === "view"
                 ? "View patient information for this test order"
                 : mode === "edit"
-                  ? "Update patient information for this test order"
-                  : "Enter patient information to create a new test order"}
+                ? "Update patient information for this test order"
+                : "Enter patient information to create a new test order"}
             </p>
 
             <div className="border rounded-lg p-6 bg-gray-50">
@@ -932,7 +954,7 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.patientName && (
-                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.patientName}
                     </div>
                   )}
@@ -959,7 +981,7 @@ export default function OrdersTable() {
                     />
                   )}
                   {errors.dob && (
-                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.dob}
                     </div>
                   )}
@@ -981,7 +1003,7 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.phone && (
-                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.phone}
                     </div>
                   )}
@@ -1003,7 +1025,7 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.email && (
-                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.email}
                     </div>
                   )}
@@ -1019,8 +1041,8 @@ export default function OrdersTable() {
                         ? form.gender === "MALE"
                           ? "Male"
                           : form.gender === "FEMALE"
-                            ? "Female"
-                            : form.gender
+                          ? "Female"
+                          : form.gender
                         : ""}
                     </div>
                   ) : (
@@ -1041,7 +1063,7 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.gender && (
-                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.gender}
                     </div>
                   )}
@@ -1072,7 +1094,7 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.status && (
-                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.status}
                     </div>
                   )}
@@ -1124,7 +1146,7 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.citizenId && (
-                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.citizenId}
                     </div>
                   )}
@@ -1216,7 +1238,11 @@ export default function OrdersTable() {
                   // Nếu đang ở trang 1 và không có test order nào thì không cần gọi lại API
                 }
               }
-              showToast({ type: "success", title: "Success", message: "Test order deleted successfully" });
+              showToast({
+                type: "success",
+                title: "Success",
+                message: "Test order deleted successfully",
+              });
               setDeleteError("");
               setShowDeleteModal(false);
               setDeleteId(null);
@@ -1225,7 +1251,11 @@ export default function OrdersTable() {
             console.warn("Delete failed", err);
             const errorMsg = err.message || "Network error or server error!";
             setDeleteError(errorMsg);
-            showToast({ type: "error", title: "Delete Failed", message: errorMsg });
+            showToast({
+              type: "error",
+              title: "Delete Failed",
+              message: errorMsg,
+            });
             setDeleteMsg("");
             setTimeout(() => {
               setDeleteError("");
