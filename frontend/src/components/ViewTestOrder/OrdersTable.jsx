@@ -627,7 +627,7 @@ export default function OrdersTable() {
 
       <div className="flex items-center gap-2 mb-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-2 top-2 text-gray-400" />
+          <Search size={24} className="absolute left-2 top-2 text-gray-400" />
           <input
             type="text"
             value={searchInput}
@@ -647,7 +647,7 @@ export default function OrdersTable() {
             setDebouncedKeyword(searchInput.trim());
           }}
         >
-          <Filter size={14} /> Search
+          <Filter size={24} /> Search
         </button>
         <button
           className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg ml-2 border"
@@ -739,28 +739,30 @@ export default function OrdersTable() {
                       {row.creator}
                     </div>
                   </td>
-                  <td className="py-2 px-3 text-center space-x-2">
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => openViewModal(row)}
-                    >
-                      <Eye size={15} />
-                    </button>
-                    <button
-                      className="text-orange-500 hover:text-orange-700"
-                      onClick={() => openEditModal(row)}
-                    >
-                      <Edit size={15} />
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => {
-                        setDeleteId(row.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                  <td className="py-2 px-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        className="text-blue-500 hover:text-blue-700"
+                        onClick={() => openViewModal(row)}
+                      >
+                        <Eye size={24} />
+                      </button>
+                      <button
+                        className="text-orange-500 hover:text-orange-700"
+                        onClick={() => openEditModal(row)}
+                      >
+                        <Edit size={24} />
+                      </button>
+                      <button
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => {
+                          setDeleteId(row.id);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <Trash2 size={24} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

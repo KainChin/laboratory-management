@@ -323,7 +323,7 @@ export default function DetailTestOrder() {
             onClick={handleGoBack}
             className="relative z-10 p-2 bg-[#f65f63] text-white rounded-full hover:bg-[#e54e54] transition-all duration-300 transform hover:scale-105 active:scale-95"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={24} />
           </button>
         </div>
 

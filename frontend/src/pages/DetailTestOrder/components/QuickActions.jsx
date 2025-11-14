@@ -80,7 +80,7 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
       <div className="card-header">
         <div className="card-header-left">
           <div className="icon-sq">
-            <List size={14} />
+            <List size={24} />
           </div>
           <h4>Quick Action</h4>
         </div>

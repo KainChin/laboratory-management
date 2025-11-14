@@ -176,7 +176,7 @@ export default function TestResult({ tests, onUpdate }) {
     <section className="dto-card">
       <div className="dto-card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div className="dto-icon"><ClipboardList size={16} /></div>
+          <div className="dto-icon"><ClipboardList size={24} /></div>
           <h3 className="dto-title">Test Result</h3>
         </div>
 

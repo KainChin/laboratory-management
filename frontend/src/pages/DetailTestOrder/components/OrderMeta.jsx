@@ -53,7 +53,7 @@ export default function OrderMeta(props) {
       <div className="card-header">
         <div className="card-header-left">
           {/* Created uses Calendar icon now */}
-          <div className="icon-sq"><Calendar size={14} /></div>
+          <div className="icon-sq"><Calendar size={24} /></div>
           <h4>Created</h4>
         </div>
       </div>
@@ -70,7 +70,7 @@ export default function OrderMeta(props) {
       <div className="status-row">
         <div className="status-left">
           {/* Status keeps Info icon (different from Created) */}
-          <div className="icon-sq small"><Info size={14} /></div>
+          <div className="icon-sq small"><Info size={24} /></div>
           <div className="muted" style={{ color: "#f65f63" }}>STATUS</div>
         </div>
         <div>
