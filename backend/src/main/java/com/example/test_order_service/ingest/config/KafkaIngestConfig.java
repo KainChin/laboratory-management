@@ -1,7 +1,6 @@
 package com.example.test_order_service.ingest.config;
 
 import com.example.test_order_service.ingest.dto.InstrumentResultPayload;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
