@@ -169,14 +169,14 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
               {topFlags.map((flagData) => {
                 const flagMeaning = getFlagMeaning(flagData.flag);
                 return (
-                  <li key={flagData.flag} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <li key={flagData.flag} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ display: "inline-block", width:10, height:10, background: getFlagColor(flagData.flag), borderRadius:3 }} />
                     <span>{flagMeaning} {flagData.percentage}%</span>
                   </li>
                 );
               })}
               {otherCount > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ display: "inline-block", width:10, height:10, background:"#9ca3af", borderRadius:3 }} />
                   <span>{getFlagMeaning('OTHER')} {pct(otherCount)}%</span>
                 </li>

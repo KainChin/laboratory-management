@@ -204,7 +204,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     buttonGroup: {
       display: "flex",
       gap: 8,
-      marginTop: 4,
+      marginTop: 8,
     },
   };
 
@@ -287,7 +287,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   <div style={{
                     color: "#FF0000",
                     fontSize: 12,
-                    marginTop: 4,
+                    marginTop: 8,
                     fontWeight: 500
                   }}>
                     {errors.patientName}
@@ -323,7 +323,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   <div style={{
                     color: "#FF0000",
                     fontSize: 13,
-                    marginTop: 4,
+                    marginTop: 8,
                     fontWeight: 500
                   }}>
                     {errors.gender}
@@ -355,7 +355,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   <div style={{
                     color: "#FF0000",
                     fontSize: 13,
-                    marginTop: 4,
+                    marginTop: 8,
                     fontWeight: 500
                   }}>
                     {errors.phone}
@@ -423,7 +423,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   <div style={{
                     color: "#FF0000",
                     fontSize: 13,
-                    marginTop: 4,
+                    marginTop: 8,
                     fontWeight: 500
                   }}>
                     {errors.dateOfBirth}
@@ -455,7 +455,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   <div style={{
                     color: "#FF0000",
                     fontSize: 13,
-                    marginTop: 4,
+                    marginTop: 8,
                     fontWeight: 500
                   }}>
                     {errors.email}

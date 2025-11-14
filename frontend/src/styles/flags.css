@@ -1,7 +1,7 @@
 /* Flag styles */
 .dto-flag {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 8px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;

@@ -156,25 +156,25 @@ export default function StatusChart({ orderId: propOrderId = null }) {
           ) : (
             <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 13, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
               {stats.normal > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ display: "inline-block", width:10, height:10, background:"#10b981", borderRadius:3 }} />
                   <span>Normal {pct(stats.normal)}%</span>
                 </li>
               )}
               {stats.high > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ display: "inline-block", width:10, height:10, background:"#ef4444", borderRadius:3 }} />
                   <span>High {pct(stats.high)}%</span>
                 </li>
               )}
               {stats.low > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ display: "inline-block", width:10, height:10, background:"#f59e0b", borderRadius:3 }} />
                   <span>Low {pct(stats.low)}%</span>
                 </li>
               )}
               {stats.other > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ display: "inline-block", width:10, height:10, background:"#9ca3af", borderRadius:3 }} />
                   <span>Other {pct(stats.other)}%</span>
                 </li>

@@ -222,7 +222,7 @@ input, textarea {
 .status-left { display:flex; align-items:center; gap:8px; }
 
 /* badges */
-.badge { padding:6px 12px; border-radius:999px; font-size:13px; color:#fff; display:inline-block; min-width:72px; text-align:center; }
+.badge { padding:8px 12px; border-radius:999px; font-size:13px; color:#fff; display:inline-block; min-width:72px; text-align:center; }
 .badge.green { background:#10b981; }
 .badge.yellow { background:#f59e0b; }
 .badge.red { background:#f65f63; }
@@ -238,7 +238,7 @@ input, textarea {
 .test-name { font-weight:700; }
 
 /* flag pill */
-.flag { background:#fde68a; color:#92400e; padding:4px 10px; border-radius:999px; font-size:12px; }
+.flag { background:#fde68a; color:#92400e; padding:8px 12px; border-radius:999px; font-size:12px; }
 
 /* comments */
 .small-desc { color:#6b7280; font-size:13px; margin-bottom:8px; }
@@ -247,7 +247,7 @@ input, textarea {
 .comment-author { margin-bottom:8px; color:#111827; font-weight:700; }
 .comment-body { color:#111827; line-height:1.4; }
 .comment-actions { position:absolute; right:12px; top:12px; display:flex; gap:8px; }
-.icon-btn { border:none; background:transparent; color:#3b82f6; cursor:pointer; padding:4px; }
+.icon-btn { border:none; background:transparent; color:#3b82f6; cursor:pointer; padding:8px; }
 
 /* comment input */
 .comment-input { display:flex; gap:10px; margin-top:12px; align-items:center; }
@@ -367,7 +367,7 @@ input, textarea {
 /* Badges (status) - tuned sizes to match image */
 .dto-badge {
   display:inline-block;
-  padding:6px 18px; /* wider pill for status */
+  padding:8px 18px; /* wider pill for status */
   border-radius:9999px;
   font-weight:600;
   font-size:13px;
@@ -385,7 +385,7 @@ input, textarea {
 /* Flags - smaller pills */
 .dto-flag {
   display:inline-block;
-  padding:6px 10px; /* narrower than status */
+  padding:8px 10px; /* narrower than status */
   border-radius:9999px;
   font-weight:600;
   font-size:13px;
@@ -411,8 +411,8 @@ input, textarea {
 @media (max-width:800px) {
   .name-col { width:160px; }
   .result-col, .ref-col { width:120px; }
-  .dto-badge { min-width: 70px; padding:6px 12px; }
-  .dto-flag { min-width:56px; padding:6px 8px; }
+  .dto-badge { min-width: 70px; padding:8px 12px; }
+  .dto-flag { min-width:56px; padding:8px; }
 }
 @media (max-width: 980px) {
   .dto-grid { grid-template-columns: 1fr; }

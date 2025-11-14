@@ -685,7 +685,7 @@ export default function Comments({
                   >
                     Delete comment
                   </div>
-                  <div style={{ color: "#6b7280", fontSize: 13, marginTop: 4 }}>
+                  <div style={{ color: "#6b7280", fontSize: 13, marginTop: 8 }}>>
                     This action cannot be undone. Are you sure?
                   </div>
                 </div>
