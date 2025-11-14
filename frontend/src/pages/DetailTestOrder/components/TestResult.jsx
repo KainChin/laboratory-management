@@ -194,31 +194,32 @@ export default function TestResult({ tests, onUpdate }) {
             aria-label="Add Test Result"
             disabled={disableNew}
             title={disableNew ? "Test results already exist" : "Add new test result"}
+            aria-disabled={disableNew ? "true" : "false"}
           >
             Add Test Result
           </button>
         </div>
       </div>
 
-      <table className="dto-table">
+      <table className="dto-table" role="table" aria-label="Test Results Table">
         <thead>
-          <tr>
-            <th className="dto-th">Sequence</th>
-            <th className="dto-th">Parameter Name</th>
-            <th className="dto-th">Value</th>
-            <th className="dto-th">Reference Range</th>
-            <th className="dto-th">Flag</th>
+          <tr role="row">
+            <th className="dto-th" role="columnheader" aria-label="Sequence Number">Sequence</th>
+            <th className="dto-th" role="columnheader" aria-label="Parameter Name">Parameter Name</th>
+            <th className="dto-th" role="columnheader" aria-label="Test Result Value">Value</th>
+            <th className="dto-th" role="columnheader" aria-label="Reference Range">Reference Range</th>
+            <th className="dto-th" role="columnheader" aria-label="Result Flag">Flag</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody role="rowgroup">
           {parameters.length === 0 ? (
-            <tr><td colSpan={5} className="dto-empty">No test results</td></tr>
+            <tr role="row"><td colSpan={5} className="dto-empty" role="cell" aria-label="No test results available">No test results</td></tr>
           ) : (
             parameters.map((param) => {
               const flagClass = getFlagClass(param.flag);
               const flagColor = getFlagColor(param.flag);
               return (
-                <tr key={param.id} className="dto-row">
+                <tr key={param.id} className="dto-row" role="row">
                   <td className="dto-td">{param.sequence}</td>
                   <td className="dto-td">{param.paramName}</td>
                   <td className="dto-td">{param.value}{param.unit ? ` ${param.unit}` : ""}</td>
@@ -244,6 +245,10 @@ export default function TestResult({ tests, onUpdate }) {
           className="modal-overlay"
           style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}
           onClick={() => setIsModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="hl7-modal-title"
+          aria-describedby="hl7-description"
         >
           <div
             className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
@@ -251,8 +256,8 @@ export default function TestResult({ tests, onUpdate }) {
             role="dialog" aria-modal
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-2xl text-red-500 font-bold text-center" style={{ marginBottom: 8 }}>Send HL7 (raw)</h3>
-            <p className="text-center text-sm text-gray-500 mb-6">Paste HL7 message here to create test result parameters</p>
+            <h3 id="hl7-modal-title" className="text-2xl text-red-500 font-bold text-center" style={{ marginBottom: 8 }}>Send HL7 (raw)</h3>
+            <p id="hl7-description" className="text-center text-sm text-gray-500 mb-6">Paste HL7 message here to create test result parameters</p>
             <textarea
               value={hl7Text}
               onChange={(e) => setHl7Text(e.target.value)}
@@ -260,18 +265,32 @@ export default function TestResult({ tests, onUpdate }) {
               style={{ width: "100%", minHeight: 220, padding: 10, borderRadius: 6, border: "1px solid #CCC", fontFamily: "monospace" }}
               onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
               onBlur={(e) => e.target.style.borderColor = "#CCC"}
+              id="hl7-message-input"
+              aria-label="HL7 Message Input"
+              aria-required="true"
+              aria-describedby="hl7-description"
+              aria-invalid={postError ? "true" : "false"}
             />
 
-            {postError && <div style={{ color: "#e11d48", marginTop: 8 }}>{postError}</div>}
+            {postError && <div role="alert" aria-live="assertive" style={{ color: "#e11d48", marginTop: 8 }}>{postError}</div>}
 
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
-              <button onClick={closeModal} className="px-4 py-2 rounded-lg" style={{ background: "#f3f4f6", border: "1px solid #CCC" }}>Cancel</button>
+              <button 
+                onClick={closeModal} 
+                className="px-4 py-2 rounded-lg" 
+                style={{ background: "#f3f4f6", border: "1px solid #CCC" }}
+                aria-label="Cancel and close modal"
+              >
+                Cancel
+              </button>
               <button
                 onClick={submitHl7}
                 className="px-4 py-2 rounded-lg"
                 style={{ background: "#ef4444", color: "#fff", fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 8, border: "1px solid #CCC" }}
                 disabled={posting}
                 title={posting ? "Sending HL7..." : "Send HL7"}
+                aria-label={posting ? "Sending HL7 message" : "Send HL7 message"}
+                aria-busy={posting ? "true" : "false"}
               >
                 {posting ? (
                   <>

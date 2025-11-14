@@ -417,13 +417,13 @@ export default function Comments({
   }, [editingId]);
 
   return (
-    <section className="card">
+    <section className="card" role="region" aria-labelledby="comments-section-title">
       <div className="card-header">
         <div className="card-header-left">
-          <div className="icon-sq">
+          <div className="icon-sq" aria-hidden="true">
             <MessageSquare size={24} />
           </div>
-          <h3>Comments</h3>
+          <h3 id="comments-section-title">Comments</h3>
         </div>
       </div>
 
@@ -432,13 +432,17 @@ export default function Comments({
       </div>
 
       {error && (
-        <div style={{ color: "#FF0000", marginBottom: 8 }}>{error}</div>
+        <div role="alert" aria-live="assertive" style={{ color: "#FF0000", marginBottom: 8 }}>{error}</div>
       )}
 
       <div
         ref={commentsListRef}
         className="comments-list"
         style={{ maxHeight: 260, overflowY: "auto", paddingRight: 8 }}
+        role="list"
+        aria-label="Comments list"
+        aria-live="polite"
+        aria-atomic="false"
       >
         {loading ? (
           <div className="dto-empty">Loading comments...</div>
@@ -464,6 +468,8 @@ export default function Comments({
                   border: "1px solid #CCC",
                   boxShadow: "0 6px 14px rgba(12,18,26,0.04)",
                 }}
+                role="listitem"
+                aria-label={`Comment by ${c.createdBy ?? c.author ?? "Unknown"}`}
               >
                 <div
                   style={{
@@ -502,6 +508,9 @@ export default function Comments({
                           disabled={editingSaving}
                           rows={6}
                           style={{ width: "100%", boxSizing: "border-box" }} // <-- ensure full width
+                          id={`edit-comment-${cid}`}
+                          aria-label="Edit comment text"
+                          aria-required="true"
                         />
                         <div
                           style={{
@@ -525,6 +534,8 @@ export default function Comments({
                                 cursor: "pointer",
                               }}
                               title="Save (Ctrl+Enter)"
+                              aria-label="Save comment changes"
+                              aria-busy={editingSaving ? "true" : "false"}
                             >
                               {editingSaving ? "Saving..." : "Save"}
                             </button>
@@ -537,6 +548,7 @@ export default function Comments({
                                 borderRadius: 8,
                                 cursor: "pointer",
                               }}
+                              aria-label="Cancel editing"
                             >
                               Cancel
                             </button>
@@ -574,8 +586,9 @@ export default function Comments({
                           }}
                           onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
                           onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                          aria-label={`Edit comment by ${c.createdBy ?? c.author ?? "Unknown"}`}
                         >
-                          <Edit2 size={24} />
+                          <Edit2 size={24} aria-hidden="true" />
                         </button>
                       )}
                       {!isEditing && (
@@ -597,8 +610,9 @@ export default function Comments({
                           }}
                           onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
                           onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                          aria-label={`Delete comment by ${c.createdBy ?? c.author ?? "Unknown"}`}
                         >
-                          <Trash2 size={24} />
+                          <Trash2 size={24} aria-hidden="true" />
                         </button>
                       )}
                     </div>
@@ -710,6 +724,7 @@ export default function Comments({
                   }}
                   onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
                   onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                  aria-label="Cancel delete comment"
                 >
                   Cancel
                 </button>
@@ -726,6 +741,8 @@ export default function Comments({
                   }}
                   onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
                   onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                  aria-label="Confirm delete comment"
+                  aria-busy={deletingId === confirmPortal.commentId ? "true" : "false"}
                 >
                   {deletingId === confirmPortal.commentId
                     ? "Deleting..."
@@ -747,8 +764,17 @@ export default function Comments({
             if (e.key === "Enter") handleAdd();
           }}
           className="input-field"
+          id="new-comment-input"
+          aria-label="New comment text"
+          aria-required="false"
         />
-        <button className="btn-primary" onClick={handleAdd} disabled={saving}>
+        <button 
+          className="btn-primary" 
+          onClick={handleAdd} 
+          disabled={saving}
+          aria-label="Add new comment"
+          aria-busy={saving ? "true" : "false"}
+        >
           {saving ? "Saving..." : "Add Comment"}
         </button>
       </div>

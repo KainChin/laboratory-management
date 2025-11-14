@@ -120,20 +120,27 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
   }
 
   return (
-    <aside className="card status-card">
+    <aside className="card status-card" role="complementary" aria-labelledby="flag-chart-title">
       <div className="card-header">
         <div className="card-header-left">
-          <div className="icon-sq">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <div className="icon-sq" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M3 12h18M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h4>Flag Chart</h4>
+          <h4 id="flag-chart-title">Flag Chart</h4>
         </div>
       </div>
 
       <div className="donut-wrap" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-        <svg width="140" height="140" viewBox="0 0 42 42" className="donut" aria-hidden>
+        <svg 
+          width="140" 
+          height="140" 
+          viewBox="0 0 42 42" 
+          className="donut" 
+          role="img"
+          aria-label={`Flag distribution chart showing ${total} total test results`}
+        >
           <circle className="donut-ring" cx="21" cy="21" r="15.9155" fill="transparent" stroke="#f3f4f6" strokeWidth="6"></circle>
 
           {segments.length === 0 ? (
@@ -159,26 +166,30 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
         <div>
           <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, textAlign: 'center' }}>Overview</div>
           {loading ? (
-            <div style={{ color: "#6b7280", textAlign: 'center' }}>Loading…</div>
+            <div role="status" aria-live="polite" style={{ color: "#6b7280", textAlign: 'center' }}>Loading…</div>
           ) : error ? (
-            <div style={{ color: "#f65f63", fontSize: 13, textAlign: 'center' }}>{error}</div>
+            <div role="alert" aria-live="assertive" style={{ color: "#f65f63", fontSize: 13, textAlign: 'center' }}>{error}</div>
           ) : total === 0 ? (
-            <div style={{ color: "#6b7280", fontSize: 13, textAlign: 'center' }}>No results</div>
+            <div role="status" style={{ color: "#6b7280", fontSize: 13, textAlign: 'center' }}>No results</div>
           ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 13, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <ul 
+              style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 13, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}
+              role="list"
+              aria-label="Flag distribution legend"
+            >
               {topFlags.map((flagData) => {
                 const flagMeaning = getFlagMeaning(flagData.flag);
                 return (
-                  <li key={flagData.flag} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ display: "inline-block", width:10, height:10, background: getFlagColor(flagData.flag), borderRadius:3 }} />
-                    <span>{flagMeaning} {flagData.percentage}%</span>
+                  <li key={flagData.flag} style={{ display: "flex", alignItems: "center", gap: 8 }} role="listitem">
+                    <span style={{ display: "inline-block", width:10, height:10, background: getFlagColor(flagData.flag), borderRadius:3 }} aria-hidden="true" />
+                    <span aria-label={`${flagMeaning}: ${flagData.percentage} percent`}>{flagMeaning} {flagData.percentage}%</span>
                   </li>
                 );
               })}
               {otherCount > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ display: "inline-block", width:10, height:10, background:"#9ca3af", borderRadius:3 }} />
-                  <span>{getFlagMeaning('OTHER')} {pct(otherCount)}%</span>
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }} role="listitem">
+                  <span style={{ display: "inline-block", width:10, height:10, background:"#9ca3af", borderRadius:3 }} aria-hidden="true" />
+                  <span aria-label={`Other flags: ${pct(otherCount)} percent`}>{getFlagMeaning('OTHER')} {pct(otherCount)}%</span>
                 </li>
               )}
             </ul>

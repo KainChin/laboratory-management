@@ -49,22 +49,22 @@ export default function OrderMeta(props) {
     " inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold";
 
   return (
-    <aside className="card meta-card">
+    <aside className="card meta-card" role="complementary" aria-labelledby="order-meta-title">
       <div className="card-header">
         <div className="card-header-left">
           {/* Created uses Calendar icon now */}
-          <div className="icon-sq"><Calendar size={24} /></div>
-          <h4>Created</h4>
+          <div className="icon-sq" aria-hidden="true"><Calendar size={24} /></div>
+          <h4 id="order-meta-title">Created</h4>
         </div>
       </div>
 
-      <div className="meta-list">
-        <div><span className="muted">Created</span><span className="meta-value">{created}</span></div>
-        <div><span className="muted">Created By</span><span className="meta-value">{createdBy}</span></div>
-        <div><span className="muted">Run Date</span><span className="meta-value">{runDate}</span></div>
-        <div><span className="muted">Run By</span><span className="meta-value">{runBy}</span></div>
-        <div><span className="muted">Reviewed Date</span><span className="meta-value">{reviewedDate}</span></div>
-        <div><span className="muted">Reviewed By</span><span className="meta-value">{reviewedBy}</span></div>
+      <div className="meta-list" role="list" aria-label="Order metadata">
+        <div role="listitem"><span className="muted">Created</span><span className="meta-value" aria-label="Created date">{created}</span></div>
+        <div role="listitem"><span className="muted">Created By</span><span className="meta-value" aria-label="Created by user">{createdBy}</span></div>
+        <div role="listitem"><span className="muted">Run Date</span><span className="meta-value" aria-label="Test run date">{runDate}</span></div>
+        <div role="listitem"><span className="muted">Run By</span><span className="meta-value" aria-label="Test run by user">{runBy}</span></div>
+        <div role="listitem"><span className="muted">Reviewed Date</span><span className="meta-value" aria-label="Reviewed date">{reviewedDate}</span></div>
+        <div role="listitem"><span className="muted">Reviewed By</span><span className="meta-value" aria-label="Reviewed by user">{reviewedBy}</span></div>
       </div>
 
       <div className="status-row">
@@ -74,7 +74,7 @@ export default function OrderMeta(props) {
           <div className="muted" style={{ color: "#f65f63" }}>STATUS</div>
         </div>
         <div>
-          <span className={badgeClasses}>{status}</span>
+          <span className={badgeClasses} role="status" aria-label={`Current status: ${status}`}>{status}</span>
         </div>
       </div>
     </aside>

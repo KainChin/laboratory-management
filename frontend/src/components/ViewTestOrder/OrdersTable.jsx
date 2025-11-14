@@ -954,6 +954,7 @@ export default function OrdersTable() {
                     }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter patient's full name (e.g., John Doe)"
                   />
                   {errors.patientName && (
                     <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
@@ -1003,6 +1004,7 @@ export default function OrdersTable() {
                     }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter phone number (e.g., +84 123 456 789)"
                   />
                   {errors.phone && (
                     <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
@@ -1025,6 +1027,7 @@ export default function OrdersTable() {
                     type="email"
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter email address (e.g., patient@example.com)"
                   />
                   {errors.email && (
                     <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
@@ -1114,6 +1117,7 @@ export default function OrdersTable() {
                     }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter full address (e.g., 123 Main St, District 1)"
                   />
                 </div>
 
@@ -1130,6 +1134,7 @@ export default function OrdersTable() {
                     }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter country (e.g., Vietnam)"
                   />
                 </div>
                 <div>
@@ -1146,6 +1151,7 @@ export default function OrdersTable() {
                     }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter citizen ID or passport number"
                   />
                   {errors.citizenId && (
                     <div className="text-sm mt-1" style={{ color: "#FF0000" }}>

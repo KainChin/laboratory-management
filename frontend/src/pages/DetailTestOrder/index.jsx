@@ -322,8 +322,9 @@ export default function DetailTestOrder() {
           <button
             onClick={handleGoBack}
             className="relative z-10 p-2 bg-[#f65f63] text-white rounded-full hover:bg-[#e54e54] transition-all duration-300 transform hover:scale-105 active:scale-95"
+            aria-label="Go back to test orders list"
           >
-            <ArrowLeft size={24} />
+            <ArrowLeft size={24} aria-hidden="true" />
           </button>
         </div>
 
@@ -345,14 +346,16 @@ export default function DetailTestOrder() {
             style={{ border: "1px solid #CCC" }}
             onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
             onBlur={(e) => e.target.style.borderColor = "#CCC"}
+            aria-label={isExporting ? "Generating PDF file" : "Export test order as PDF"}
+            aria-busy={isExporting ? "true" : "false"}
           >
             {isExporting ? "Generating PDF..." : "Export PDF"}
           </button>
         </div>
       </div>
 
-      <div className="dto-grid">
-        <div className="dto-left-col">
+      <div className="dto-grid" role="main" aria-label="Test order details">
+        <div className="dto-left-col" role="region" aria-label="Patient and test information">
           <PatientInfo 
             patient={order} 
             isEditing={isEditingPatient}
@@ -399,7 +402,7 @@ export default function DetailTestOrder() {
           </div>
         </div>
 
-        <div className="dto-right-col">
+        <div className="dto-right-col" role="complementary" aria-label="Order metadata and actions">
           <OrderMeta order={order} />
 
           {/* ++ SỬA: Bọc QuickActions trong div "no-print" để ẩn */}
@@ -442,6 +445,10 @@ export default function DetailTestOrder() {
             animation: "fadeInOverlay 0.3s ease-out",
           }}
           onClick={closeConfirmModal}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-update-title"
+          aria-describedby="confirm-update-description"
         >
           <div
             className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-lg mx-auto"
@@ -454,10 +461,10 @@ export default function DetailTestOrder() {
             aria-modal
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-2xl text-[#f65f63] font-bold text-center mb-4">
+            <h3 id="confirm-update-title" className="text-2xl text-[#f65f63] font-bold text-center mb-4">
               Confirm Update
             </h3>
-            <p className="text-center text-sm text-gray-600 mb-6">
+            <p id="confirm-update-description" className="text-center text-sm text-gray-600 mb-6">
               Are you sure you want to update patient information?
             </p>
 
@@ -477,6 +484,7 @@ export default function DetailTestOrder() {
                 onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
                 onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 disabled={isUpdating}
+                aria-label="Cancel patient information update"
               >
                 No, cancel
               </button>
@@ -500,6 +508,8 @@ export default function DetailTestOrder() {
                 onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
                 onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 disabled={isUpdating}
+                aria-label="Confirm patient information update"
+                aria-busy={isUpdating ? "true" : "false"}
               >
                 {isUpdating ? "Updating..." : "Yes, update"}
               </button>
