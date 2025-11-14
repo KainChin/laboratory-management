@@ -714,19 +714,19 @@ export default function OrdersTable() {
           </colgroup>
           <thead>
             <tr className="bg-[#FF5A5A] text-white">
-              <th className="py-2 px-3 rounded-tl-lg">
+              <th className="min-h-[40px] py-3 px-3 rounded-tl-lg font-bold text-base">
                 <div className="truncate">Name</div>
               </th>
-              <th className="py-2 px-3">
+              <th className="min-h-[40px] py-3 px-3 font-bold text-base">
                 <div className="truncate">Status</div>
               </th>
-              <th className="py-2 px-3">
+              <th className="min-h-[40px] py-3 px-3 font-bold text-base">
                 <div className="truncate">Date of Birth</div>
               </th>
-              <th className="py-2 px-3">
+              <th className="min-h-[40px] py-3 px-3 font-bold text-base">
                 <div className="truncate">Created By</div>
               </th>
-              <th className="py-2 px-3 rounded-tr-lg text-center">
+              <th className="min-h-[40px] py-3 px-3 rounded-tr-lg text-center font-bold text-base">
                 <div className="truncate">Action</div>
               </th>
             </tr>
@@ -741,7 +741,7 @@ export default function OrdersTable() {
             ) : (
               orders.map((row) => (
                 <tr key={row.id} className="border-b hover:bg-gray-50">
-                  <td className="py-2 px-3">
+                  <td className="min-h-[40px] py-3 px-3">
                     <div
                       className="truncate hover:text-[#FF5A5A] cursor-pointer transition-colors"
                       title={row.name}
@@ -758,7 +758,7 @@ export default function OrdersTable() {
                       {row.name}
                     </div>
                   </td>
-                  <td className="py-2 px-3">
+                  <td className="min-h-[40px] py-3 px-3">
                     <div className="truncate">
                       <span
                         className={`px-2 py-1 text-xs font-semibold rounded-full ${
@@ -769,17 +769,17 @@ export default function OrdersTable() {
                       </span>
                     </div>
                   </td>
-                  <td className="py-2 px-3">
+                  <td className="min-h-[40px] py-3 px-3">
                     <div className="truncate" title={row.dob}>
                       {row.dob || ""}
                     </div>
                   </td>
-                  <td className="py-2 px-3">
+                  <td className="min-h-[40px] py-3 px-3">
                     <div className="truncate" title={row.creator}>
                       {row.creator}
                     </div>
                   </td>
-                  <td className="py-2 px-3">
+                  <td className="min-h-[40px] py-3 px-3">
                     <div className="flex items-center justify-center gap-2">
                       <button
                         className="text-blue-500 hover:text-[#FF3A3A] transition-colors duration-300"
