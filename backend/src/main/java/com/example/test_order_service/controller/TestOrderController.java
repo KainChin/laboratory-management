@@ -97,6 +97,11 @@ public class TestOrderController {
         return testOrderService.getTestOrderStatistics();
     }
 
+    @GetMapping("/daily-statistics")
+    public RestResponse<?> getDailyStatistics() {
+        return testOrderService.getDailyStatistics();
+    }
+
     @PatchMapping("/{orderId}/review")
     public RestResponse<TestOrderResponse> reviewTestOrder(@PathVariable String orderId) {
         return testOrderService.reviewTestOrder(orderId);

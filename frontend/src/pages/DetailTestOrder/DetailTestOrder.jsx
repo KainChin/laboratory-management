@@ -174,14 +174,13 @@ export default function DetailTestOrder(props) {
             <div className="text-sm text-gray-600 mr-4">Welcome, [Lab User]</div>
             {!loading && !error && testOrder && (
               <>
-                <button className="btn-outline">Edit Order</button>
                 <button
                   onClick={handleExportPDF}
                   disabled={isExporting}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FileDown size={18} />
-                  {isExporting ? 'Generating PDF...' : 'Print Result'}
+                  {isExporting ? 'Generating PDF...' : 'Export PDF'}
                 </button>
               </>
             )}

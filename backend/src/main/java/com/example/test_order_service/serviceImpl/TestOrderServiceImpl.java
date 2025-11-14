@@ -20,11 +20,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -249,6 +251,85 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .items(testOrderPage.stream()
                         .map(testOrderMapper::toTestOrderDetailResponse)
                         .toList())
+                .build();
+    }
+
+    @Override
+    public RestResponse<DailyStatisticsResponse> getDailyStatistics() {
+        // Xác định tuần hiện tại (Thứ 2 -> Chủ nhật)
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = startOfWeek.plusDays(7); // Chủ nhật + 1 ngày
+
+        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
+        LocalDateTime endDateTime = endOfWeek.atStartOfDay();
+
+        // Lấy tất cả test orders trong tuần
+        List<TestOrder> weeklyOrders = testOrderRepository.findTestOrdersInCurrentWeek(startDateTime, endDateTime);
+
+        // Khởi tạo map để nhóm theo ngày
+        Map<DayOfWeek, DailyStatisticsResponse.DailyData> dailyMap = new HashMap<>();
+
+        // Khởi tạo tất cả các ngày trong tuần với giá trị 0
+        String[] dayNames = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        for (int i = 0; i < 7; i++) {
+            DayOfWeek dayOfWeek = DayOfWeek.of(i + 1); // MONDAY = 1, SUNDAY = 7
+            dailyMap.put(dayOfWeek, DailyStatisticsResponse.DailyData.builder()
+                    .day(dayNames[i])
+                    .pending(0)
+                    .completed(0)
+                    .reviewed(0)
+                    .build());
+        }
+
+        // Xử lý từng test order
+        for (TestOrder order : weeklyOrders) {
+            // 1. Pending: Đếm orders được tạo trong ngày và vẫn pending (status hiện tại = PENDING)
+            if (order.getCreatedAt() != null && order.getStatus() == TestOrderStatus.PENDING) {
+                DayOfWeek createdDay = order.getCreatedAt().getDayOfWeek();
+                DailyStatisticsResponse.DailyData dailyData = dailyMap.get(createdDay);
+                dailyData.setPending(dailyData.getPending() + 1);
+            }
+
+            // 2. Completed: Đếm orders có test result trong ngày (runAt trong tuần này)
+            // runAt là lúc test được chạy và có kết quả
+            if (order.getRunAt() != null) {
+                LocalDateTime runAtTime = order.getRunAt();
+                // Check if runAt is within current week
+                if (!runAtTime.isBefore(startDateTime) && runAtTime.isBefore(endDateTime)) {
+                    DayOfWeek completedDay = runAtTime.getDayOfWeek();
+                    DailyStatisticsResponse.DailyData dailyData = dailyMap.get(completedDay);
+                    dailyData.setCompleted(dailyData.getCompleted() + 1);
+                }
+            }
+
+            // 3. Reviewed: Đếm orders được review trong ngày (reviewedAt trong tuần này)
+            if (order.getReviewedAt() != null) {
+                LocalDateTime reviewedAtTime = order.getReviewedAt();
+                // Check if reviewedAt is within current week
+                if (!reviewedAtTime.isBefore(startDateTime) && reviewedAtTime.isBefore(endDateTime)) {
+                    DayOfWeek reviewedDay = reviewedAtTime.getDayOfWeek();
+                    DailyStatisticsResponse.DailyData dailyData = dailyMap.get(reviewedDay);
+                    dailyData.setReviewed(dailyData.getReviewed() + 1);
+                }
+            }
+        }
+
+        // Chuyển map thành list theo thứ tự từ Monday -> Sunday
+        List<DailyStatisticsResponse.DailyData> dailyDataList = new ArrayList<>();
+        for (int i = 1; i <= 7; i++) {
+            dailyDataList.add(dailyMap.get(DayOfWeek.of(i)));
+        }
+
+        DailyStatisticsResponse response = DailyStatisticsResponse.builder()
+                .dailyData(dailyDataList)
+                .build();
+
+        return RestResponse.<DailyStatisticsResponse>builder()
+                .statusCode(200)
+                .message("Daily statistics retrieved successfully")
+                .result(response)
+                .timestamp(LocalDateTime.now())
                 .build();
     }
 }

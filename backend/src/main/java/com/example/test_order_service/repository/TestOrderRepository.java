@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +28,7 @@ public interface TestOrderRepository extends JpaRepository<TestOrder, String> {
     long countByDateCode(@Param("dateCode") String dateCode);
 
     @Query("SELECT t FROM TestOrder t where t.deleted = false AND t.email ILIKE CONCAT('%', :email, '%')") Page<TestOrder> findByEmail(Pageable pageable, @Param("email") String email);
+
+    @Query("SELECT t FROM TestOrder t WHERE t.deleted = false AND t.createdAt >= :startOfWeek AND t.createdAt < :endOfWeek")
+    List<TestOrder> findTestOrdersInCurrentWeek(@Param("startOfWeek") LocalDateTime startOfWeek, @Param("endOfWeek") LocalDateTime endOfWeek);
 }
