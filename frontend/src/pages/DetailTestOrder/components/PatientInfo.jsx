@@ -257,7 +257,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 cursor: "pointer",
                 transition: "all 0.2s",
               }}
-              onMouseOver={(e) => e.target.style.background = "#e54e54"}
+              onMouseOver={(e) => e.target.style.background = "#FF3A3A"}
               onMouseOut={(e) => e.target.style.background = "#f65f63"}
               aria-label="Save patient information changes"
             >

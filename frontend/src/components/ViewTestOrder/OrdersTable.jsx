@@ -18,7 +18,32 @@ function Modal({ children, onBackdropClick }) {
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2"
       onClick={onBackdropClick}
+      style={{
+        animation: 'fadeIn 0.3s ease-out',
+      }}
     >
+      <style>
+        {`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+          @keyframes slideUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px) scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+        `}
+      </style>
       {children}
     </div>,
     document.body
@@ -632,7 +657,7 @@ export default function OrdersTable() {
         <div className="flex gap-2">
           <button
             onClick={openCreateModal}
-            className="bg-red-500 text-white px-3 py-1.5 rounded-lg **hover:bg-[#FF3A3A]**"
+            className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
           >
             + New Test Order
           </button>
@@ -757,19 +782,19 @@ export default function OrdersTable() {
                   <td className="py-2 px-3">
                     <div className="flex items-center justify-center gap-2">
                       <button
-                        className="text-blue-500 hover:text-blue-700"
+                        className="text-blue-500 hover:text-[#FF3A3A] transition-colors duration-300"
                         onClick={() => openViewModal(row)}
                       >
                         <Eye size={24} />
                       </button>
                       <button
-                        className="text-orange-500 hover:text-orange-700"
+                        className="text-orange-500 hover:text-[#FF3A3A] transition-colors duration-300"
                         onClick={() => openEditModal(row)}
                       >
                         <Edit size={24} />
                       </button>
                       <button
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-[#FF3A3A] transition-colors duration-300"
                         onClick={() => {
                           setDeleteId(row.id);
                           setShowDeleteModal(true);
@@ -919,6 +944,7 @@ export default function OrdersTable() {
               transform: `scale(${modalScale})`,
               transformOrigin: "center",
               transition: "transform 120ms ease",
+              animation: 'slideUp 0.4s ease-out',
             }}
             className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
             onClick={(e) => e.stopPropagation()}
@@ -1170,21 +1196,21 @@ export default function OrdersTable() {
                   setErrors({});
                   setIsSubmitting(false);
                 }}
-                className="px-4 py-2 border border-gray-200 rounded-lg bg-white"
+                className="px-4 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-100 transition-colors duration-300"
               >
                 Close
               </button>
               {mode === "edit" ? (
                 <button
                   onClick={() => handleUpdate(localForm)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
                 >
                   Save
                 </button>
               ) : mode === "view" ? null : (
                 <button
                   onClick={() => handleCreate(localForm)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#FF3A3A] disabled:hover:bg-red-500 transition-colors duration-300"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Creating..." : "Create"}

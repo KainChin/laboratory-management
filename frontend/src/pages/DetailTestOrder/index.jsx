@@ -321,7 +321,7 @@ export default function DetailTestOrder() {
           <div className="absolute -left-1 -top-1 w-10 h-10 bg-[#fff0f0] rounded-full"></div>
           <button
             onClick={handleGoBack}
-            className="relative z-10 p-2 bg-[#f65f63] text-white rounded-full hover:bg-[#e54e54] transition-all duration-300 transform hover:scale-105 active:scale-95"
+            className="relative z-10 p-2 bg-[#f65f63] text-white rounded-full hover:bg-[#FF3A3A] transition-all duration-300 transform hover:scale-105 active:scale-95"
             aria-label="Go back to test orders list"
           >
             <ArrowLeft size={24} aria-hidden="true" />
@@ -342,7 +342,7 @@ export default function DetailTestOrder() {
           <button
             onClick={handleExportPDF}
             disabled={isExporting}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#f65f63] text-white rounded-lg hover:bg-[#e54e54] transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-sm"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#f65f63] text-white rounded-lg hover:bg-[#FF3A3A] transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-sm"
             style={{ border: "1px solid #CCC" }}
             onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
             onBlur={(e) => e.target.style.borderColor = "#CCC"}

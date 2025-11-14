@@ -190,7 +190,10 @@ export default function TestResult({ tests, onUpdate }) {
               fontWeight: 600,
               opacity: disableNew ? 0.6 : 1,
               cursor: disableNew ? "not-allowed" : "pointer",
+              transition: "background-color 0.3s ease",
             }}
+            onMouseEnter={(e) => !disableNew && (e.target.style.backgroundColor = "#FF3A3A")}
+            onMouseLeave={(e) => !disableNew && (e.target.style.backgroundColor = "#ef4444")}
             aria-label="Add Test Result"
             disabled={disableNew}
             title={disableNew ? "Test results already exist" : "Add new test result"}
@@ -243,7 +246,7 @@ export default function TestResult({ tests, onUpdate }) {
       {isModalOpen && createPortal(
         <div
           className="modal-overlay"
-          style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}
+          style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20, animation: "fadeInOverlay 0.3s ease-out" }}
           onClick={() => setIsModalOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -252,7 +255,7 @@ export default function TestResult({ tests, onUpdate }) {
         >
           <div
             className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
-            style={{ maxHeight: '90vh', overflow: 'auto' }}
+            style={{ maxHeight: '90vh', overflow: 'auto', animation: 'slideUp 0.4s ease-out' }}
             role="dialog" aria-modal
             onClick={(e) => e.stopPropagation()}
           >

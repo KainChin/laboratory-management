@@ -226,7 +226,7 @@ export default function TestOrders() {
           <div className="justify-self-end flex gap-4">
             <button
               onClick={handleExportExcel}
-              className="bg-red-500 text-white px-3 py-1.5 rounded-lg **hover:bg-[#FF3A3A]**"
+              className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
             >
               Export Excel
             </button>
