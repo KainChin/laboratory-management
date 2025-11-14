@@ -1,9 +1,8 @@
 /* Add nice fonts + small typography tuning for the page */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@500;600;700&display=swap');
 
 :root{
-  --ui-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  --heading-font: "Poppins", var(--ui-font);
+  --ui-font: Arial, sans-serif;
+  --heading-font: Arial, sans-serif;
   --muted: #6b7280;
   --base: #111827;
 }
@@ -150,7 +149,7 @@ input, textarea {
 
 .dto-page { 
   padding: 28px 12px; 
-  font-family: Inter, Arial, sans-serif; 
+  font-family: Arial, sans-serif; 
   color:#111827; 
   background:transparent;
   animation: fadeIn 0.4s ease-out;
@@ -418,7 +417,7 @@ input, textarea {
 .order-id {
   display: inline-block;
   margin-top: 8px;
-  font-family: "Poppins", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: Arial, sans-serif;
   font-weight: 700;               /* make bolder */
   font-size: 13px;
   color: #ef4444;                 /* changed to red for visibility */
