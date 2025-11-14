@@ -432,7 +432,7 @@ export default function Comments({
       </div>
 
       {error && (
-        <div style={{ color: "#dc2626", marginBottom: 8 }}>{error}</div>
+        <div style={{ color: "#FF0000", marginBottom: 8 }}>{error}</div>
       )}
 
       <div

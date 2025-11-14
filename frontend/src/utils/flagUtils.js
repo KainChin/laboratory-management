@@ -63,13 +63,13 @@ export function getFlagColor(flag) {
   const colorMap = {
     'N': '#10b981',  // green for Normal
     'H': '#f65f63',  // red for High
-    'HH': '#dc2626', // darker red
+    'HH': '#FF0000', // darker red
     'L': '#f59e0b',  // orange for Low
     'LL': '#d97706', // darker orange
     '>': '#f65f63',  // red (high)
     '<': '#f59e0b',  // orange (low)
     'A': '#f97316',  // orange for Abnormal
-    'AA': '#dc2626', // dark red
+    'AA': '#FF0000', // dark red
     'VS': '#8b5cf6', // purple
     'MS': '#a855f7', // lighter purple
     'I': '#3b82f6',  // blue for Intermediate

@@ -232,7 +232,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 borderRadius: 8,
                 border: "1px solid #e5e7eb",
                 background: "#fff",
-                color: "#374151",
+                color: "#777777",
                 fontSize: 14,
                 fontWeight: 600,
                 cursor: "pointer",
@@ -278,14 +278,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.patientName ? "#f65f63" : "#e5e7eb"
+                    borderColor: errors.patientName ? "#FF0000" : "#e5e7eb"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#f65f63"}
-                  onBlur={(e) => e.target.style.borderColor = errors.patientName ? "#f65f63" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
+                  onBlur={(e) => e.target.style.borderColor = errors.patientName ? "#FF0000" : "#e5e7eb"}
                 />
                 {errors.patientName && (
                   <div style={{
-                    color: "#f65f63",
+                    color: "#FF0000",
                     fontSize: 12,
                     marginTop: 4,
                     fontWeight: 500
@@ -309,10 +309,10 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.select,
-                    borderColor: errors.gender ? "#f65f63" : "#e5e7eb"
+                    borderColor: errors.gender ? "#FF0000" : "#e5e7eb"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#f65f63"}
-                  onBlur={(e) => e.target.style.borderColor = errors.gender ? "#f65f63" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
+                  onBlur={(e) => e.target.style.borderColor = errors.gender ? "#FF0000" : "#e5e7eb"}
                 >
                   <option value="">Select Gender</option>
                   <option value="MALE">Male</option>
@@ -321,7 +321,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 </select>
                 {errors.gender && (
                   <div style={{
-                    color: "#ef4444",
+                    color: "#FF0000",
                     fontSize: 13,
                     marginTop: 4,
                     fontWeight: 500
@@ -346,14 +346,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.phone ? "#f65f63" : "#e5e7eb"
+                    borderColor: errors.phone ? "#FF0000" : "#e5e7eb"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#f65f63"}
-                  onBlur={(e) => e.target.style.borderColor = errors.phone ? "#f65f63" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
+                  onBlur={(e) => e.target.style.borderColor = errors.phone ? "#FF0000" : "#e5e7eb"}
                 />
                 {errors.phone && (
                   <div style={{
-                    color: "#ef4444",
+                    color: "#FF0000",
                     fontSize: 13,
                     marginTop: 4,
                     fontWeight: 500
@@ -376,7 +376,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 value={formData.address}
                 onChange={handleChange}
                 style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#ef4444"}
+                onFocus={(e) => e.target.style.borderColor = "#FF0000"}
                 onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
               />
             ) : (
@@ -393,7 +393,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 value={formData.country}
                 onChange={handleChange}
                 style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#ef4444"}
+                onFocus={(e) => e.target.style.borderColor = "#FF0000"}
                 onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
               />
             ) : (
@@ -414,14 +414,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.dateOfBirth ? "#f65f63" : "#e5e7eb"
+                    borderColor: errors.dateOfBirth ? "#FF0000" : "#e5e7eb"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#f65f63"}
-                  onBlur={(e) => e.target.style.borderColor = errors.dateOfBirth ? "#f65f63" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
+                  onBlur={(e) => e.target.style.borderColor = errors.dateOfBirth ? "#FF0000" : "#e5e7eb"}
                 />
                 {errors.dateOfBirth && (
                   <div style={{
-                    color: "#ef4444",
+                    color: "#FF0000",
                     fontSize: 13,
                     marginTop: 4,
                     fontWeight: 500
@@ -446,14 +446,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.email ? "#f65f63" : "#e5e7eb"
+                    borderColor: errors.email ? "#FF0000" : "#e5e7eb"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#f65f63"}
-                  onBlur={(e) => e.target.style.borderColor = errors.email ? "#f65f63" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
+                  onBlur={(e) => e.target.style.borderColor = errors.email ? "#FF0000" : "#e5e7eb"}
                 />
                 {errors.email && (
                   <div style={{
-                    color: "#ef4444",
+                    color: "#FF0000",
                     fontSize: 13,
                     marginTop: 4,
                     fontWeight: 500
@@ -476,7 +476,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 value={formData.citizenId}
                 onChange={handleChange}
                 style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#ef4444"}
+                onFocus={(e) => e.target.style.borderColor = "#FF0000"}
                 onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
               />
             ) : (

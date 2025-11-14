@@ -932,7 +932,7 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.patientName && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
                       {errors.patientName}
                     </div>
                   )}
@@ -959,7 +959,7 @@ export default function OrdersTable() {
                     />
                   )}
                   {errors.dob && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
                       {errors.dob}
                     </div>
                   )}
@@ -981,7 +981,7 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.phone && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
                       {errors.phone}
                     </div>
                   )}
@@ -1003,7 +1003,7 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.email && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
                       {errors.email}
                     </div>
                   )}
@@ -1041,7 +1041,7 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.gender && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
                       {errors.gender}
                     </div>
                   )}
@@ -1072,7 +1072,7 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.status && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
                       {errors.status}
                     </div>
                   )}
@@ -1124,7 +1124,7 @@ export default function OrdersTable() {
                     className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
                   />
                   {errors.citizenId && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: '#FF0000' }}>
                       {errors.citizenId}
                     </div>
                   )}
