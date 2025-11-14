@@ -34,16 +34,16 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-
-app:
-  events:
-    enabled: false
-    exchange-name: test-order-exchange
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+#
+#app:
+#  events:
+#    enabled: false
+#    exchange-name: test-order-exchange
 
 logging:
   level:

@@ -1,6 +1,5 @@
 package com.example.test_order_service.ingest.listener;
 
-// THAY ĐỔI 1: Đổi import service để dùng Interface thay vì class cụ thể (Good practice)
 import com.example.test_order_service.service.TestResultService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

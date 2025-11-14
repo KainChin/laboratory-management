@@ -1,5 +1,4 @@
 services:
-  # Service "postgres" này có thể giữ lại hoặc xóa đi, nhưng backend sẽ không dùng nó nữa.
   postgres:
     image: postgres:18
     env_file:
@@ -18,53 +17,34 @@ services:
       timeout: 5s
       retries: 10
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    env_file:
-      - .env
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "status"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # zookeeper: ĐÃ BỊ XÓA
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.3
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    ports:
-      - "2181:2181"
-    healthcheck:
-      test: ["CMD-SHELL", "echo ruok | nc -w 2 127.0.0.1 2181 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+  # rabbitmq: ĐÃ BỊ XÓA
 
   kafka:
-    image: confluentinc/cp-kafka:7.3.3
-    depends_on:
-      zookeeper:
-        condition: service_healthy
+    image: confluentinc/cp-kafka:7.6.0
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9093
+      # --- CẤU HÌNH KRAFT ---
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_NODE_ID: 1
+      # ID NÀY ĐƯỢC TẠO NGẪU NHIÊN, CHỈ CẦN DÙNG NÓ:
+      CLUSTER_ID: 'dukK9ig5SCWCxZD_VoJs_g'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9094'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      # --- CẤU HÌNH LISTENERS ---
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9093,CONTROLLER://kafka:9094
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      # --- CÀI ĐẶT KHÁC ---
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      SPRING_AUTOCONFIGURE_EXCLUDE: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
     ports:
       - "9092:9092"
       - "9093:9093"
     healthcheck:
-      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1"]
+      test: [ "CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -74,25 +54,23 @@ services:
       context: .
       dockerfile: Dockerfile
     image: test_order_service:local
-    # Xóa "postgres" khỏi depends_on để backend không phụ thuộc vào DB container nữa
+    # Xóa "rabbitmq" khỏi depends_on
     depends_on:
       - kafka
-      - rabbitmq
     environment:
-      # QUAN TRỌNG: Kết nối tới DB trên Windows thông qua host.docker.internal
-      # Đặt PG_HOST_PORT trong file .env (vd: 5432)
       SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:${PG_HOST_PORT:-5432}/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
-      # KAFKA/RABBITMQ khi chạy trong Docker
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
-      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+
+      # --- CÁC BIẾN RABBITMQ ĐÃ BỊ XÓA ---
+      # SPRING_RABBITMQ_HOST: rabbitmq
+      # SPRING_RABBITMQ_PORT: 5672
+      # SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      # SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
     ports:
       - "6868:6868"
     healthcheck:
