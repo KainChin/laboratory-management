@@ -220,7 +220,7 @@ export default function TestOrders() {
       <div className="space-y-4">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center">
           <div />
-          <h1 className="justify-self-center text-[28px] leading-none font-extrabold tracking-[0.35em] uppercase text-[#f65f63]">
+          <h1 className="justify-self-center text-[24px] leading-none font-extrabold tracking-[0.35em] uppercase text-[#f65f63]">
             TEST ORDERS
           </h1>
           <div className="justify-self-end flex gap-4">

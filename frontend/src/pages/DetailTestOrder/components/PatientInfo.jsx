@@ -151,7 +151,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     },
     title: {
       color: accent,
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: 700,
       margin: 0,
       lineHeight: 1,
@@ -183,7 +183,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
       padding: "8px 12px",
       border: "1px solid #CCC",
       borderRadius: 6,
-      fontSize: 15,
+      fontSize: 16,
       fontWeight: 600,
       color: "#000",
       outline: "none",
@@ -341,7 +341,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     role="alert"
                     style={{
                       color: "#FF5A5A",
-                      fontSize: 13,
+                      fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
                     }}>
@@ -382,7 +382,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     role="alert"
                     style={{
                       color: "#FF5A5A",
-                      fontSize: 13,
+                      fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
                     }}>
@@ -466,7 +466,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     role="alert"
                     style={{
                       color: "#FF5A5A",
-                      fontSize: 13,
+                      fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
                     }}>
@@ -507,7 +507,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     role="alert"
                     style={{
                       color: "#FF5A5A",
-                      fontSize: 13,
+                      fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
                     }}>

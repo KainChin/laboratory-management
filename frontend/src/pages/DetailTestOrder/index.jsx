@@ -329,7 +329,7 @@ export default function DetailTestOrder() {
         </div>
 
         <div>
-          <h1 className="text-[28px] font-bold text-[#f65f63] tracking-[0.35em] leading-tight">
+          <h1 className="text-[24px] font-bold text-[#f65f63] tracking-[0.35em] leading-tight">
             TEST ORDER DETAIL
           </h1>
           <div className="text-sm">

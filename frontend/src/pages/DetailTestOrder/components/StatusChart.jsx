@@ -146,15 +146,15 @@ export default function StatusChart({ orderId: propOrderId = null }) {
         </svg>
 
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, textAlign: 'center' }}>Overview</div>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8, textAlign: 'center' }}>Overview</div>
           {loading ? (
             <div style={{ color: "#6b7280", textAlign: 'center' }}>Loading…</div>
           ) : error ? (
-            <div style={{ color: "#ef4444", fontSize: 13, textAlign: 'center' }}>{error}</div>
+            <div style={{ color: "#ef4444", fontSize: 14, textAlign: 'center' }}>{error}</div>
           ) : total === 0 ? (
-            <div style={{ color: "#6b7280", fontSize: 13, textAlign: 'center' }}>No results</div>
+            <div style={{ color: "#6b7280", fontSize: 14, textAlign: 'center' }}>No results</div>
           ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 13, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
               {stats.normal > 0 && (
                 <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ display: "inline-block", width:10, height:10, background:"#10b981", borderRadius:3 }} />

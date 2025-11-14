@@ -85,7 +85,7 @@ html, body {
   color: var(--base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
 }
 
@@ -164,8 +164,8 @@ input, textarea {
 }
 .dto-back { width:40px; height:40px; border-radius:50%; background:#fff0f0; border:1px solid #CCC; color:#f65f63; display:flex; align-items:center; justify-content:center; cursor:pointer; }
 .dto-back:focus { border-color:#FF5A5A; outline:none; }
-.dto-title { margin:0; color:#f65f63; font-weight:800; font-size:22px; letter-spacing:1px; }
-.order-id { margin-top:6px; color:#6b7280; font-size:13px; }
+.dto-title { margin:0; color:#f65f63; font-weight:800; font-size:18px; letter-spacing:1px; }
+.order-id { margin-top:6px; color:#6b7280; font-size:14px; }
 .dto-header-actions { margin-left:auto; display:flex; gap:10px; }
 .btn-outline { background:#ffb6b6; color:#fff; padding:8px 12px; border-radius:8px; border:1px solid #CCC; cursor:pointer; box-shadow:0 2px 0 rgba(0,0,0,0.03); transition: background-color 0.3s ease; }
 .btn-outline:focus { border-color:#FF5A5A; outline:none; }
@@ -211,11 +211,11 @@ input, textarea {
 .icon-sq { width:34px; height:34px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; background:#fff0f0; border:1px solid #CCC; color:#f65f63; }
 .icon-sq:focus { border-color:#FF5A5A; outline:none; }
 .icon-sq.small { width:28px; height:28px; }
-.card h3, .card h4 { margin:0; color:#f65f63; font-size:16px; font-weight:800; letter-spacing:0.6px; }
+.card h3, .card h4 { margin:0; color:#f65f63; font-size:18px; font-weight:800; letter-spacing:0.6px; }
 
 /* patient card */
 .patient-grid { display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:6px; }
-.patient-col .muted { color:#6b7280; font-size:13px; margin-top:10px; }
+.patient-col .muted { color:#6b7280; font-size:14px; margin-top:10px; }
 .bold { font-weight:700; color:#111827; margin-bottom:6px; }
 
 /* meta */
@@ -229,14 +229,14 @@ input, textarea {
 .status-left { display:flex; align-items:center; gap:8px; }
 
 /* badges */
-.badge { padding:8px 12px; border-radius:999px; font-size:13px; color:#fff; display:inline-block; min-width:72px; text-align:center; }
+.badge { padding:8px 12px; border-radius:999px; font-size:14px; color:#fff; display:inline-block; min-width:72px; text-align:center; }
 .badge.green { background:#10b981; }
 .badge.yellow { background:#f59e0b; }
 .badge.red { background:#f65f63; }
 
 /* result table */
 .result-table { width:100%; border-collapse:collapse; margin-top:8px; font-size:14px; }
-.result-table th { text-align:left; color:#6b7280; padding:10px 8px; font-weight:700; font-size:13px; text-transform:none; border:1px solid #CCC; }
+.result-table th { text-align:left; color:#6b7280; padding:10px 8px; font-weight:700; font-size:14px; text-transform:none; border:1px solid #CCC; }
 .result-table td { padding:12px 8px; border:1px solid #CCC; color:#111827; vertical-align:middle; }
 .icon-col { width:40px; text-align:center; }
 .icon-success { color:#10b981; }
@@ -248,7 +248,7 @@ input, textarea {
 .flag { background:#fde68a; color:#92400e; padding:8px 12px; border-radius:999px; font-size:12px; }
 
 /* comments */
-.small-desc { color:#6b7280; font-size:13px; margin-bottom:8px; }
+.small-desc { color:#6b7280; font-size:14px; margin-bottom:8px; }
 .comments-list { display:flex; flex-direction:column; gap:12px; margin-top:8px; }
 .comment { background:#fff; border:1px solid #CCC; border-left:3px solid #CCC; padding:14px; border-radius:6px; position:relative; }
 .comment:focus-within { border-color:#FF5A5A; border-left-color:#FF5A5A; }
@@ -345,7 +345,7 @@ input, textarea {
 
 /* Header */
 .dto-th {
-  text-align:center; padding:12px 10px; color:#000000; font-weight:700; font-size:15px;
+  text-align:center; padding:12px 10px; color:#000000; font-weight:700; font-size:16px;
   vertical-align:middle;
 }
 

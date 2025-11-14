@@ -173,7 +173,7 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
             <div role="status" style={{ color: "#6b7280", fontSize: 13, textAlign: 'center' }}>No results</div>
           ) : (
             <ul 
-              style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 13, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}
+              style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}
               role="list"
               aria-label="Flag distribution legend"
             >
