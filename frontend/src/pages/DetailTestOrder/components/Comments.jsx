@@ -461,6 +461,7 @@ export default function Comments({
                   borderRadius: 8,
                   marginBottom: 10,
                   background: "#fff",
+                  border: "1px solid #CCC",
                   boxShadow: "0 6px 14px rgba(12,18,26,0.04)",
                 }}
               >
@@ -566,11 +567,13 @@ export default function Comments({
                           disabled={editingSaving || deletingId === cid}
                           style={{
                             background: "#fff",
-                            border: "1px solid #eef2f7",
+                            border: "1px solid #CCC",
                             padding: 8,
                             borderRadius: 8,
                             cursor: "pointer",
                           }}
+                          onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                          onBlur={(e) => e.target.style.borderColor = "#CCC"}
                         >
                           <Edit2 size={24} />
                         </button>
@@ -586,12 +589,14 @@ export default function Comments({
                           aria-disabled={deletingId === cid}
                           style={{
                             background: "#fff",
-                            border: "1px solid #ffe8ea",
+                            border: "1px solid #CCC",
                             padding: 8,
                             borderRadius: 8,
                             cursor: "pointer",
                             color: "#f65f63",
                           }}
+                          onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                          onBlur={(e) => e.target.style.borderColor = "#CCC"}
                         >
                           <Trash2 size={24} />
                         </button>
@@ -656,7 +661,7 @@ export default function Comments({
                 borderRadius: 10,
                 boxShadow: "0 12px 40px rgba(2,6,23,0.12)",
                 padding: 12,
-                border: "1px solid #eef2f7",
+                border: "1px solid #CCC",
                 height: confirmPortal.height,
                 display: "flex",
                 flexDirection: "column",
@@ -673,7 +678,7 @@ export default function Comments({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    border: "1px solid #ffdde0",
+                    border: "1px solid #CCC",
                     color: "#ef4444",
                   }}
                 >
@@ -699,10 +704,12 @@ export default function Comments({
                   style={{
                     padding: "8px 12px",
                     borderRadius: 8,
-                    border: "1px solid #e6e9ef",
+                    border: "1px solid #CCC",
                     background: "#fff",
                     cursor: "pointer",
                   }}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 >
                   Cancel
                 </button>
@@ -712,11 +719,13 @@ export default function Comments({
                   style={{
                     padding: "8px 12px",
                     borderRadius: 8,
-                    border: "none",
+                    border: "1px solid #CCC",
                     background: "#f65f63",
                     color: "#fff",
                     fontWeight: 800,
                   }}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 >
                   {deletingId === confirmPortal.commentId
                     ? "Deleting..."

@@ -149,12 +149,14 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
                 className="px-4 py-2 rounded-lg"
                 style={{ 
                   background: "#f3f4f6",
-                  border: "none",
+                  border: "1px solid #CCC",
                   cursor: "pointer",
                   transition: "all 0.2s ease",
                 }}
                 onMouseOver={(e) => e.target.style.background = "#e5e7eb"}
                 onMouseOut={(e) => e.target.style.background = "#f3f4f6"}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
               >
                 Cancel
               </button>
@@ -170,11 +172,13 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
                   gap: 8,
                   opacity: isReviewing ? 0.6 : 1,
                   cursor: isReviewing ? "not-allowed" : "pointer",
-                  border: "none",
+                  border: "1px solid #CCC",
                   transition: "all 0.2s ease",
                 }}
                 onMouseOver={(e) => !isReviewing && (e.target.style.background = "#059669")}
                 onMouseOut={(e) => (e.target.style.background = "#10b981")}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 disabled={isReviewing}
               >
                 {isReviewing ? "Processing..." : "Yes, mark as reviewed"}

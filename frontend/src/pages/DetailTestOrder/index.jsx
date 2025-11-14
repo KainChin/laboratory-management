@@ -342,6 +342,9 @@ export default function DetailTestOrder() {
             onClick={handleExportPDF}
             disabled={isExporting}
             className="flex items-center gap-2 px-6 py-2.5 bg-[#f65f63] text-white rounded-lg hover:bg-[#e54e54] transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-sm"
+            style={{ border: "1px solid #CCC" }}
+            onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+            onBlur={(e) => e.target.style.borderColor = "#CCC"}
           >
             {isExporting ? "Generating PDF..." : "Export PDF"}
           </button>
@@ -467,10 +470,12 @@ export default function DetailTestOrder() {
                   cursor: isUpdating ? "not-allowed" : "pointer",
                   opacity: isUpdating ? 0.6 : 1,
                   transition: "all 0.2s ease",
-                  border: "none",
+                  border: "1px solid #CCC",
                 }}
                 onMouseOver={(e) => !isUpdating && (e.target.style.background = "#e5e7eb")}
                 onMouseOut={(e) => (e.target.style.background = "#f3f4f6")}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 disabled={isUpdating}
               >
                 No, cancel
@@ -488,10 +493,12 @@ export default function DetailTestOrder() {
                   opacity: isUpdating ? 0.6 : 1,
                   cursor: isUpdating ? "not-allowed" : "pointer",
                   transition: "all 0.2s ease",
-                  border: "none",
+                  border: "1px solid #CCC",
                 }}
                 onMouseOver={(e) => !isUpdating && (e.target.style.background = "#e54e54")}
                 onMouseOut={(e) => (e.target.style.background = "#f65f63")}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 disabled={isUpdating}
               >
                 {isUpdating ? "Updating..." : "Yes, update"}

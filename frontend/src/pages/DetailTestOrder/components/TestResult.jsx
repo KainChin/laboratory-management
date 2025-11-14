@@ -257,17 +257,19 @@ export default function TestResult({ tests, onUpdate }) {
               value={hl7Text}
               onChange={(e) => setHl7Text(e.target.value)}
               placeholder="Paste HL7 message here"
-              style={{ width: "100%", minHeight: 220, padding: 10, borderRadius: 6, border: "1px solid #e5e7eb", fontFamily: "monospace" }}
+              style={{ width: "100%", minHeight: 220, padding: 10, borderRadius: 6, border: "1px solid #CCC", fontFamily: "monospace" }}
+              onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+              onBlur={(e) => e.target.style.borderColor = "#CCC"}
             />
 
             {postError && <div style={{ color: "#e11d48", marginTop: 8 }}>{postError}</div>}
 
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
-              <button onClick={closeModal} className="px-4 py-2 rounded-lg" style={{ background: "#f3f4f6" }}>Cancel</button>
+              <button onClick={closeModal} className="px-4 py-2 rounded-lg" style={{ background: "#f3f4f6", border: "1px solid #CCC" }}>Cancel</button>
               <button
                 onClick={submitHl7}
                 className="px-4 py-2 rounded-lg"
-                style={{ background: "#ef4444", color: "#fff", fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                style={{ background: "#ef4444", color: "#fff", fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 8, border: "1px solid #CCC" }}
                 disabled={posting}
                 title={posting ? "Sending HL7..." : "Send HL7"}
               >

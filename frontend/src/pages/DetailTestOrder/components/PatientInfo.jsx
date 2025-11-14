@@ -116,7 +116,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     }
   };
   const accent = "#ff6b6b";
-  const border = "#e6eef3";
+  const border = "#CCC";
   const muted = "#000000ff";
 
   const styles = {
@@ -181,7 +181,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     input: {
       width: "100%",
       padding: "8px 12px",
-      border: "1px solid #e5e7eb",
+      border: "1px solid #CCC",
       borderRadius: 6,
       fontSize: 15,
       fontWeight: 600,
@@ -192,7 +192,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     select: {
       width: "100%",
       padding: "8px 12px",
-      border: "1px solid #e5e7eb",
+      border: "1px solid #CCC",
       borderRadius: 6,
       fontSize: 15,
       fontWeight: 600,
@@ -230,7 +230,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
               style={{
                 padding: "8px 16px",
                 borderRadius: 8,
-                border: "1px solid #e5e7eb",
+                border: "1px solid #CCC",
                 background: "#fff",
                 color: "#777777",
                 fontSize: 14,
@@ -248,7 +248,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
               style={{
                 padding: "8px 16px",
                 borderRadius: 8,
-                border: "none",
+                border: "1px solid #CCC",
                 background: "#f65f63",
                 color: "#fff",
                 fontSize: 14,
@@ -278,14 +278,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.patientName ? "#FF0000" : "#e5e7eb"
+                    borderColor: errors.patientName ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
-                  onBlur={(e) => e.target.style.borderColor = errors.patientName ? "#FF0000" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.patientName ? "#FF5A5A" : "#CCC"}
                 />
                 {errors.patientName && (
                   <div style={{
-                    color: "#FF0000",
+                    color: "#FF5A5A",
                     fontSize: 12,
                     marginTop: 8,
                     fontWeight: 500
@@ -309,10 +309,10 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.select,
-                    borderColor: errors.gender ? "#FF0000" : "#e5e7eb"
+                    borderColor: errors.gender ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
-                  onBlur={(e) => e.target.style.borderColor = errors.gender ? "#FF0000" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.gender ? "#FF5A5A" : "#CCC"}
                 >
                   <option value="">Select Gender</option>
                   <option value="MALE">Male</option>
@@ -321,7 +321,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 </select>
                 {errors.gender && (
                   <div style={{
-                    color: "#FF0000",
+                    color: "#FF5A5A",
                     fontSize: 13,
                     marginTop: 8,
                     fontWeight: 500
@@ -346,14 +346,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.phone ? "#FF0000" : "#e5e7eb"
+                    borderColor: errors.phone ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
-                  onBlur={(e) => e.target.style.borderColor = errors.phone ? "#FF0000" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.phone ? "#FF5A5A" : "#CCC"}
                 />
                 {errors.phone && (
                   <div style={{
-                    color: "#FF0000",
+                    color: "#FF5A5A",
                     fontSize: 13,
                     marginTop: 8,
                     fontWeight: 500
@@ -376,8 +376,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 value={formData.address}
                 onChange={handleChange}
                 style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#FF0000"}
-                onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
               />
             ) : (
               <div style={styles.pairValue}>{patient.address}</div>
@@ -393,8 +393,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 value={formData.country}
                 onChange={handleChange}
                 style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#FF0000"}
-                onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
               />
             ) : (
               <div style={styles.pairValue}>{patient.country}</div>
@@ -414,14 +414,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.dateOfBirth ? "#FF0000" : "#e5e7eb"
+                    borderColor: errors.dateOfBirth ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
-                  onBlur={(e) => e.target.style.borderColor = errors.dateOfBirth ? "#FF0000" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.dateOfBirth ? "#FF5A5A" : "#CCC"}
                 />
                 {errors.dateOfBirth && (
                   <div style={{
-                    color: "#FF0000",
+                    color: "#FF5A5A",
                     fontSize: 13,
                     marginTop: 8,
                     fontWeight: 500
@@ -446,14 +446,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.email ? "#FF0000" : "#e5e7eb"
+                    borderColor: errors.email ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#FF0000"}
-                  onBlur={(e) => e.target.style.borderColor = errors.email ? "#FF0000" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.email ? "#FF5A5A" : "#CCC"}
                 />
                 {errors.email && (
                   <div style={{
-                    color: "#FF0000",
+                    color: "#FF5A5A",
                     fontSize: 13,
                     marginTop: 8,
                     fontWeight: 500
@@ -476,8 +476,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 value={formData.citizenId}
                 onChange={handleChange}
                 style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#FF0000"}
-                onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
               />
             ) : (
               <div style={styles.pairValue}>{patient.citizenId}</div>
