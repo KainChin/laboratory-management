@@ -67,7 +67,7 @@ export default function DetailTestOrder() {
   useEffect(() => {
     async function fetchTestOrder() {
       try {
-        const res = await fetch(`http://localhost:6868/api/test-orders/${id}`);
+        const res = await fetch(`/api/test-orders/${id}`);
         const payload = await res.json();
         console.log("[DetailTestOrder index.jsx] raw payload:", payload);
 
@@ -245,14 +245,14 @@ export default function DetailTestOrder() {
 
       // Gửi PUT request
       const response = await axios.put(`/api/test-orders/${id}`, payload);
-      
+
       // Cập nhật order state với dữ liệu mới từ response
       const updated = response?.data?.result || response?.data || {};
-      
+
       // Calculate new age from updated date of birth
       const newDob = updated.dateOfBirth || payload.dateOfBirth || order.dob;
       const newAge = calculateAge(newDob);
-      
+
       setOrder(prev => ({
         ...prev,
         name: updated.patientName || payload.patientName || prev.name,
@@ -274,19 +274,19 @@ export default function DetailTestOrder() {
       setPendingUpdate(null);
 
       // Hiển thị thông báo thành công
-      showToast({ 
-        type: "success", 
-        title: "Success", 
-        message: "Patient information updated successfully" 
+      showToast({
+        type: "success",
+        title: "Success",
+        message: "Patient information updated successfully"
       });
 
     } catch (error) {
       console.error("Error updating patient info:", error);
       console.error("Error response:", error.response?.data);
-      showToast({ 
-        type: "error", 
-        title: "Update Failed", 
-        message: error.response?.data?.message || error.message || "Failed to update patient information" 
+      showToast({
+        type: "error",
+        title: "Update Failed",
+        message: error.response?.data?.message || error.message || "Failed to update patient information"
       });
     } finally {
       setIsUpdating(false);
@@ -350,14 +350,14 @@ export default function DetailTestOrder() {
 
       <div className="dto-grid">
         <div className="dto-left-col">
-          <PatientInfo 
-            patient={order} 
+          <PatientInfo
+            patient={order}
             isEditing={isEditingPatient}
             onSave={handleSavePatient}
             onCancel={handleCancelEdit}
           />
-          <TestResult 
-            tests={order.testResults} 
+          <TestResult
+            tests={order.testResults}
             onUpdate={(updates = {}) => {
               if (updates.testResults) {
                 setTestResults(updates.testResults);
@@ -413,9 +413,9 @@ export default function DetailTestOrder() {
           </div>
 
           {/* Flag Chart component */}
-          <FlagChart 
-            orderId={id} 
-            testResults={testResults} 
+          <FlagChart
+            orderId={id}
+            testResults={testResults}
           />
         </div>
       </div>
@@ -442,8 +442,8 @@ export default function DetailTestOrder() {
         >
           <div
             className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-lg mx-auto"
-            style={{ 
-              maxHeight: "90vh", 
+            style={{
+              maxHeight: "90vh",
               overflow: "auto",
               animation: "slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
             }}
@@ -462,7 +462,7 @@ export default function DetailTestOrder() {
               <button
                 onClick={closeConfirmModal}
                 className="px-4 py-2 rounded-lg"
-                style={{ 
+                style={{
                   background: "#f3f4f6",
                   cursor: isUpdating ? "not-allowed" : "pointer",
                   opacity: isUpdating ? 0.6 : 1,

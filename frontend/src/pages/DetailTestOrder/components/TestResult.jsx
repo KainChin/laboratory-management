@@ -106,7 +106,7 @@ export default function TestResult({ tests, onUpdate }) {
     setPosting(true);
     setPostError(null);
     try {
-      const res = await fetch("http://localhost:6868/api/test-results/hl7", {
+      const res = await fetch("/api/test-results/hl7", {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
         body: hl7Text,
@@ -160,7 +160,7 @@ export default function TestResult({ tests, onUpdate }) {
       }
 
       showToast({ type: "success", title: "HL7 Imported", message: data?.message || "Retrieved test result successfully" });
-      
+
       // close modal on success
       setIsModalOpen(false);
     } catch (err) {
@@ -224,7 +224,7 @@ export default function TestResult({ tests, onUpdate }) {
                   <td className="dto-td">{param.value}{param.unit ? ` ${param.unit}` : ""}</td>
                   <td className="dto-td">{param.refRange}</td>
                   <td className="dto-td flag-col">
-                    <span 
+                    <span
                       className={`dto-flag ${flagClass}`}
                       style={{ color: flagColor }}
                     >

@@ -25,9 +25,9 @@ export default function StatusChart({ orderId: propOrderId = null }) {
       setError(null);
 
       try {
-        const res = await fetch(`http://localhost:6868/api/test-orders/${propOrderId}`);
+        const res = await fetch(`/api/test-orders/${propOrderId}`);
         if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
-        
+
         const data = await res.json();
         const testResults = data?.result?.testResults;
         const resultStats = calculateTestResultStats(testResults);
@@ -114,7 +114,7 @@ export default function StatusChart({ orderId: propOrderId = null }) {
         <div className="card-header-left">
           <div className="icon-sq">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M3 12h18M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M3 12h18M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <h4>Status Chart</h4>
@@ -157,25 +157,25 @@ export default function StatusChart({ orderId: propOrderId = null }) {
             <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 13, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
               {stats.normal > 0 && (
                 <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width:10, height:10, background:"#10b981", borderRadius:3 }} />
+                  <span style={{ display: "inline-block", width: 10, height: 10, background: "#10b981", borderRadius: 3 }} />
                   <span>Normal {pct(stats.normal)}%</span>
                 </li>
               )}
               {stats.high > 0 && (
                 <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width:10, height:10, background:"#ef4444", borderRadius:3 }} />
+                  <span style={{ display: "inline-block", width: 10, height: 10, background: "#ef4444", borderRadius: 3 }} />
                   <span>High {pct(stats.high)}%</span>
                 </li>
               )}
               {stats.low > 0 && (
                 <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width:10, height:10, background:"#f59e0b", borderRadius:3 }} />
+                  <span style={{ display: "inline-block", width: 10, height: 10, background: "#f59e0b", borderRadius: 3 }} />
                   <span>Low {pct(stats.low)}%</span>
                 </li>
               )}
               {stats.other > 0 && (
                 <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width:10, height:10, background:"#9ca3af", borderRadius:3 }} />
+                  <span style={{ display: "inline-block", width: 10, height: 10, background: "#9ca3af", borderRadius: 3 }} />
                   <span>Other {pct(stats.other)}%</span>
                 </li>
               )}
