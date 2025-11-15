@@ -33,7 +33,6 @@ public class CommentEventPayload {
     // --- Dữ liệu của Comment ---
     private String commentId;
     private String testOrderId;
-    private String patientId;
     private String email;
     private String commentText;
     private String createdBy;

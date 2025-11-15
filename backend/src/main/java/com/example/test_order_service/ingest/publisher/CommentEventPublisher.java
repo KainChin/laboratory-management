@@ -40,7 +40,6 @@ public class CommentEventPublisher {
                     .eventType(eventType)
                     .commentId(comment.getCommentId())
                     .testOrderId(testOrderId)
-                    .patientId(testOrder.getPatientId()) // <-- LẤY PATIENT ID
                     .email(testOrder.getEmail())
                     .commentText(comment.getCommentText())
                     .createdBy(comment.getCreatedBy())
