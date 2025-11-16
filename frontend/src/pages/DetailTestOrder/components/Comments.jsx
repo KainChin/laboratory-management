@@ -65,7 +65,7 @@ export default function Comments({
           if (typeof v === "string" && v.trim()) return v.trim();
         }
       }
-    } catch (_) {}
+    } catch (_) { }
     return "System";
   };
 
@@ -88,7 +88,7 @@ export default function Comments({
         const id = getOrderId();
         if (!id) throw new Error("Missing orderId");
         const res = await fetch(
-          `http://localhost:6868/api/test-orders/${encodeURIComponent(id)}`
+          `/api/test-orders/${encodeURIComponent(id)}`
         );
         if (!res.ok) throw new Error(`Failed to load (${res.status})`);
         const payload = extractPayload(await safeJson(res));
@@ -168,7 +168,7 @@ export default function Comments({
       if (createdBy) payloadBody.createdBy = createdBy;
 
       const res = await fetch(
-        `http://localhost:6868/api/test-orders/${encodeURIComponent(
+        `/api/test-orders/${encodeURIComponent(
           id
         )}/comments`,
         {
@@ -196,7 +196,7 @@ export default function Comments({
         setComments((s) => [payload, ...s].slice(0, 100));
       } else {
         const r2 = await fetch(
-          `http://localhost:6868/api/test-orders/${encodeURIComponent(id)}`
+          `/api/test-orders/${encodeURIComponent(id)}`
         );
         if (r2.ok) {
           const p2 = extractPayload(await safeJson(r2));
@@ -227,7 +227,7 @@ export default function Comments({
     try {
       const id = getOrderId();
       if (!id) throw new Error("Missing orderId");
-      const url = `http://localhost:6868/api/test-orders/${encodeURIComponent(
+      const url = `/api/test-orders/${encodeURIComponent(
         id
       )}/comments/${encodeURIComponent(commentId)}`;
       const res = await fetch(url, {
@@ -284,7 +284,7 @@ export default function Comments({
     try {
       const id = getOrderId();
       if (!id) throw new Error("Missing orderId");
-      const url = `http://localhost:6868/api/test-orders/${encodeURIComponent(
+      const url = `/api/test-orders/${encodeURIComponent(
         id
       )}/comments/${encodeURIComponent(commentId)}`;
       const res = await fetch(url, {
@@ -397,7 +397,7 @@ export default function Comments({
       const MAX_H = 240;
       const newH = Math.min(el.scrollHeight, MAX_H);
       el.style.height = `${newH}px`;
-    } catch (e) {}
+    } catch (e) { }
   };
 
   useEffect(() => {
@@ -411,7 +411,7 @@ export default function Comments({
       const len = el.value?.length ?? 0;
       try {
         el.setSelectionRange(len, len);
-      } catch (_) {}
+      } catch (_) { }
       resizeEditingInput();
     }
   }, [editingId]);

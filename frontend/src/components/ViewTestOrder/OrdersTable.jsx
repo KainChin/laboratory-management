@@ -56,7 +56,7 @@ export default function OrdersTable() {
             sortDir,
           });
           const res = await fetch(
-            `http://localhost:6868/api/test-orders?${params}`
+            `/api/test-orders?${params}`
           );
           if (!res.ok) throw new Error("Failed to fetch orders");
           const result = await res.json();
@@ -386,7 +386,7 @@ export default function OrdersTable() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("http://localhost:6868/api/test-orders", {
+      const res = await fetch("/api/test-orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -477,7 +477,7 @@ export default function OrdersTable() {
     (async () => {
       try {
         const res = await fetch(
-          `http://localhost:6868/api/test-orders/${editingId}`,
+          `/api/test-orders/${editingId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -1172,7 +1172,7 @@ export default function OrdersTable() {
         onConfirm={async () => {
           try {
             const res = await fetch(
-              `http://localhost:6868/api/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=patientName&sortDir=${sortDir}`,
+              `/api/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=patientName&sortDir=${sortDir}`,
               { method: "DELETE" }
             );
             if (!res.ok) {

@@ -52,7 +52,7 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
 
     const totalCount = parameters.length;
     const topN = 5;
-    
+
     // Take top 5 (or all if fewer than 5)
     const topFlagsList = flagArray.slice(0, topN).map(item => ({
       ...item,
@@ -77,7 +77,7 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
         setLoading(true);
         setError(null);
         try {
-          const res = await fetch(`http://localhost:6868/api/test-orders/${propOrderId}`);
+          const res = await fetch(`/api/test-orders/${propOrderId}`);
           if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
           const data = await res.json();
           processTestResults(data?.result?.testResults);
@@ -125,7 +125,7 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
         <div className="card-header-left">
           <div className="icon-sq">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M3 12h18M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M3 12h18M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <h4>Flag Chart</h4>
@@ -170,14 +170,14 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
                 const flagMeaning = getFlagMeaning(flagData.flag);
                 return (
                   <li key={flagData.flag} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ display: "inline-block", width:10, height:10, background: getFlagColor(flagData.flag), borderRadius:3 }} />
+                    <span style={{ display: "inline-block", width: 10, height: 10, background: getFlagColor(flagData.flag), borderRadius: 3 }} />
                     <span>{flagMeaning} {flagData.percentage}%</span>
                   </li>
                 );
               })}
               {otherCount > 0 && (
                 <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width:10, height:10, background:"#9ca3af", borderRadius:3 }} />
+                  <span style={{ display: "inline-block", width: 10, height: 10, background: "#9ca3af", borderRadius: 3 }} />
                   <span>{getFlagMeaning('OTHER')} {pct(otherCount)}%</span>
                 </li>
               )}

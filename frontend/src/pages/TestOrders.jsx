@@ -25,7 +25,7 @@ export default function TestOrders() {
 
     async function fetchStatistics() {
       try {
-        const res = await fetch("http://localhost:6868/api/test-orders/statistics");
+        const res = await fetch("/api/test-orders/statistics");
         if (!res.ok) throw new Error("Failed to fetch statistics");
         const json = await res.json();
         const stats = json.result || json.data || {};
@@ -99,7 +99,7 @@ export default function TestOrders() {
         sortDir: "desc",
       });
 
-      const response = await fetch(`http://localhost:6868/api/test-orders?${queryParams}`);
+      const response = await fetch(`/api/test-orders?${queryParams}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const result = await response.json();
