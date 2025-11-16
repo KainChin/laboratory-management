@@ -119,7 +119,7 @@ export default function ChartSection({ activityTotals = null }) {
             dataKey="day" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: "#777777", fontSize: 13 }} 
+            tick={{ fill: "#777777", fontSize: 14 }} 
             height={48} 
           />
           <YAxis 
@@ -127,7 +127,7 @@ export default function ChartSection({ activityTotals = null }) {
             tickLine={false} 
             allowDecimals={false}
             domain={[0, 'auto']} 
-            tick={{ fill: "#777777", fontSize: 13 }} 
+            tick={{ fill: "#777777", fontSize: 14 }} 
           />
           <Tooltip
             cursor={{ fill: "#f9fafb" }}
@@ -143,6 +143,7 @@ export default function ChartSection({ activityTotals = null }) {
             verticalAlign="top" 
             align="right" 
             iconType="rect" 
+            iconSize={27}
             wrapperStyle={{ top: -10, fontSize: 14 }} 
           />
 
