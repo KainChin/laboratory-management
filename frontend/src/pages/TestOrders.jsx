@@ -7,6 +7,7 @@ import { BarChart3, Clock3, CheckCircle2, CheckCheck } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import axios from "../api/axios";
 
 export default function TestOrders() {
   const [orderStats, setOrderStats] = useState({
@@ -25,11 +26,8 @@ export default function TestOrders() {
 
     async function fetchStatistics() {
       try {
-        const res = await fetch(
-          "http://localhost:6868/api/test-orders/statistics"
-        );
-        if (!res.ok) throw new Error("Failed to fetch statistics");
-        const json = await res.json();
+        const res = await axios.get("/test-orders/statistics");
+        const json = res.data;
         const stats = json.result || json.data || {};
 
         const total = Number(stats.total ?? stats.count ?? 0);
@@ -101,13 +99,8 @@ export default function TestOrders() {
         sortDir: "desc",
       });
 
-      const response = await fetch(
-        `http://localhost:6868/api/test-orders?${queryParams}`
-      );
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-
-      const result = await response.json();
+      const response = await axios.get(`/test-orders?${queryParams}`);
+      const result = response.data;
       const orders = result.result?.items || [];
 
       if (orders.length === 0) {
@@ -218,12 +211,16 @@ export default function TestOrders() {
     <div className="space-y-12 max-w-[1920px] mx-auto px-6">
       {/* HEADER */}
       <div className="space-y-4">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center">
-          <div />
-          <h1 className="justify-self-center text-[24px] leading-none font-extrabold tracking-[0.35em] uppercase text-[#FF5A5A]">
-            TEST ORDERS
-          </h1>
-          <div className="justify-self-end flex gap-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-[24px] leading-none font-extrabold tracking-[0.35em] uppercase text-[#FF5A5A]">
+              TEST ORDERS
+            </h1>
+            <p className="italic text-[20px] text-gray-700 mt-2">
+              Manage patient test orders and view laboratory results
+            </p>
+          </div>
+          <div className="flex gap-4">
             <button
               onClick={handleExportExcel}
               className="bg-[#FF5A5A] text-white px-3 min-h-[40px] py-2 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
@@ -232,9 +229,6 @@ export default function TestOrders() {
             </button>
           </div>
         </div>
-        <p className="text-center italic text-[20px] text-gray-700">
-          Manage patient test orders and view laboratory results
-        </p>
       </div>
 
       {/* SUMMARY CARDS */}

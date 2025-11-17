@@ -40,7 +40,7 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
     console.log("Current id from useParams:", id);
     try {
       setIsReviewing(true);
-      const response = await axios.patch(`/api/test-orders/${id}/review`);
+      const response = await axios.patch(`/test-orders/${id}/review`);
       console.log("Review API response:", response);
       const nextStatus =
         response?.data?.result?.status ??
@@ -103,12 +103,6 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
           aria-label="AI Auto Review - Automatically review test results"
         >
           AI Auto Review
-        </button>
-        <button 
-          className="btn-orange full"
-          aria-label="Generate PDF report for this test order"
-        >
-          Generate Report
         </button>
         <button 
           className="btn-red full"

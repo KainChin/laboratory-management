@@ -83,12 +83,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     // Validate Phone
     if (!formData.phone || !formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
-    } else if (!/^[0-9()+\-\s]{7,20}$/.test(formData.phone)) {
-      newErrors.phone = "Invalid phone number format";
+    } else if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = "Phone number is invalid. Must be 10 digits with optional country code (e.g., +84 or +1)";
     }
     
     // Validate Email
-    if (formData.email && formData.email.trim()) {
+    if (!formData.email || !formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email)) {
         newErrors.email = "Invalid email format";
@@ -98,6 +100,21 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     // Validate Gender
     if (!formData.gender) {
       newErrors.gender = "Gender is required";
+    }
+    
+    // Validate Citizen ID
+    if (!formData.citizenId || !formData.citizenId.trim()) {
+      newErrors.citizenId = "Citizen ID is required";
+    }
+    
+    // Validate Address
+    if (!formData.address || !formData.address.trim()) {
+      newErrors.address = "Address is required";
+    }
+    
+    // Validate Country
+    if (!formData.country || !formData.country.trim()) {
+      newErrors.country = "Country is required";
     }
     
     return newErrors;
@@ -115,7 +132,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
       onSave(formData);
     }
   };
-  const accent = "#ff6b6b";
+  const accent = "#FF5A5A";
   const border = "#CCC";
   const muted = "#000000ff";
 
@@ -152,9 +169,10 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     title: {
       color: accent,
       fontSize: 18,
-      fontWeight: 700,
+      fontWeight: 800,
       margin: 0,
       lineHeight: 1,
+      letterSpacing: '0.6px',
     },
     grid: {
       display: "grid",
@@ -402,19 +420,39 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
           <div>
             <div style={styles.pairLabel}>Address</div>
             {isEditing ? (
-              <input
-                type="text"
-                name="address"
-                id="address-input"
-                value={formData.address}
-                onChange={handleChange}
-                style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
-                onBlur={(e) => e.target.style.borderColor = "#CCC"}
-                aria-label="Address"
-                aria-required="false"
-                placeholder="Enter full address"
-              />
+              <div>
+                <input
+                  type="text"
+                  name="address"
+                  id="address-input"
+                  value={formData.address}
+                  onChange={handleChange}
+                  style={{
+                    ...styles.input,
+                    borderColor: errors.address ? "#FF5A5A" : "#CCC"
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.address ? "#FF5A5A" : "#CCC"}
+                  aria-label="Address"
+                  aria-required="true"
+                  aria-invalid={errors.address ? "true" : "false"}
+                  aria-describedby={errors.address ? "address-error" : undefined}
+                  placeholder="Enter full address"
+                />
+                {errors.address && (
+                  <div 
+                    id="address-error"
+                    role="alert"
+                    style={{
+                      color: "#FF5A5A",
+                      fontSize: 12,
+                      marginTop: 8,
+                      fontWeight: 500
+                    }}>
+                    {errors.address}
+                  </div>
+                )}
+              </div>
             ) : (
               <div style={styles.pairValue}>{patient.address}</div>
             )}
@@ -423,19 +461,39 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
           <div>
             <div style={styles.pairLabel}>Country</div>
             {isEditing ? (
-              <input
-                type="text"
-                name="country"
-                id="country-input"
-                value={formData.country}
-                onChange={handleChange}
-                style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
-                onBlur={(e) => e.target.style.borderColor = "#CCC"}
-                aria-label="Country"
-                aria-required="false"
-                placeholder="Enter country name"
-              />
+              <div>
+                <input
+                  type="text"
+                  name="country"
+                  id="country-input"
+                  value={formData.country}
+                  onChange={handleChange}
+                  style={{
+                    ...styles.input,
+                    borderColor: errors.country ? "#FF5A5A" : "#CCC"
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.country ? "#FF5A5A" : "#CCC"}
+                  aria-label="Country"
+                  aria-required="true"
+                  aria-invalid={errors.country ? "true" : "false"}
+                  aria-describedby={errors.country ? "country-error" : undefined}
+                  placeholder="Enter country name"
+                />
+                {errors.country && (
+                  <div 
+                    id="country-error"
+                    role="alert"
+                    style={{
+                      color: "#FF5A5A",
+                      fontSize: 12,
+                      marginTop: 8,
+                      fontWeight: 500
+                    }}>
+                    {errors.country}
+                  </div>
+                )}
+              </div>
             ) : (
               <div style={styles.pairValue}>{patient.country}</div>
             )}
@@ -527,19 +585,39 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
           <div>
             <div style={styles.pairLabel}>Citizen ID</div>
             {isEditing ? (
-              <input
-                type="text"
-                name="citizenId"
-                id="citizen-id-input"
-                value={formData.citizenId}
-                onChange={handleChange}
-                style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
-                onBlur={(e) => e.target.style.borderColor = "#CCC"}
-                aria-label="Citizen ID"
-                aria-required="false"
-                placeholder="Enter citizen ID or passport number"
-              />
+              <div>
+                <input
+                  type="text"
+                  name="citizenId"
+                  id="citizen-id-input"
+                  value={formData.citizenId}
+                  onChange={handleChange}
+                  style={{
+                    ...styles.input,
+                    borderColor: errors.citizenId ? "#FF5A5A" : "#CCC"
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.citizenId ? "#FF5A5A" : "#CCC"}
+                  aria-label="Citizen ID"
+                  aria-required="true"
+                  aria-invalid={errors.citizenId ? "true" : "false"}
+                  aria-describedby={errors.citizenId ? "citizen-id-error" : undefined}
+                  placeholder="Enter citizen ID or passport number"
+                />
+                {errors.citizenId && (
+                  <div 
+                    id="citizen-id-error"
+                    role="alert"
+                    style={{
+                      color: "#FF5A5A",
+                      fontSize: 12,
+                      marginTop: 8,
+                      fontWeight: 500
+                    }}>
+                    {errors.citizenId}
+                  </div>
+                )}
+              </div>
             ) : (
               <div style={styles.pairValue}>{patient.citizenId}</div>
             )}

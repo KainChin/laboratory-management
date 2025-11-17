@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { MessageSquare, Edit2, Trash2 } from "lucide-react";
+import axios from "../../../api/axios";
 import { showToast } from "../../../components/Toast";
 import "../DetailTestOrder.css";
 
@@ -69,14 +70,7 @@ export default function Comments({
     return "System";
   };
 
-  // small helpers
-  const safeJson = async (res) => {
-    try {
-      return await res.json();
-    } catch (_) {
-      return null;
-    }
-  };
+  // small helper
   const extractPayload = (j) => j?.result ?? j ?? null;
 
   useEffect(() => {
@@ -87,11 +81,10 @@ export default function Comments({
       try {
         const id = getOrderId();
         if (!id) throw new Error("Missing orderId");
-        const res = await fetch(
-          `/api/test-orders/${encodeURIComponent(id)}`
+        const res = await axios.get(
+          `/test-orders/${encodeURIComponent(id)}`
         );
-        if (!res.ok) throw new Error(`Failed to load (${res.status})`);
-        const payload = extractPayload(await safeJson(res));
+        const payload = extractPayload(res.data);
         if (!mounted) return;
 
         let list = Array.isArray(payload?.comments)
@@ -167,42 +160,21 @@ export default function Comments({
       const createdBy = getCreatedBy();
       if (createdBy) payloadBody.createdBy = createdBy;
 
-      const res = await fetch(
-        `/api/test-orders/${encodeURIComponent(
-          id
-        )}/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(payloadBody),
-        }
+      const res = await axios.post(
+        `/test-orders/${encodeURIComponent(id)}/comments`,
+        payloadBody
       );
 
-      if (!res.ok) {
-        let errMsg = `Save failed: ${res.status}`;
-        const j = await safeJson(res);
-        if (j?.message)
-          errMsg = Array.isArray(j.message)
-            ? j.message.join(", ")
-            : String(j.message);
-        throw new Error(errMsg);
-      }
-
-      const payload = extractPayload(await safeJson(res));
+      const payload = extractPayload(res.data);
       if (payload && (payload.commentId || payload.commentId === "")) {
         setComments((s) => [payload, ...s].slice(0, 100));
       } else {
-        const r2 = await fetch(
-          `/api/test-orders/${encodeURIComponent(id)}`
+        const r2 = await axios.get(
+          `/test-orders/${encodeURIComponent(id)}`
         );
-        if (r2.ok) {
-          const p2 = extractPayload(await safeJson(r2));
-          const list2 = Array.isArray(p2?.comments) ? p2.comments : [];
-          setComments(list2.slice(0, 100));
-        }
+        const p2 = extractPayload(r2.data);
+        const list2 = Array.isArray(p2?.comments) ? p2.comments : [];
+        setComments(list2.slice(0, 100));
       }
 
       setText("");
@@ -227,22 +199,10 @@ export default function Comments({
     try {
       const id = getOrderId();
       if (!id) throw new Error("Missing orderId");
-      const url = `/api/test-orders/${encodeURIComponent(
+      const url = `/test-orders/${encodeURIComponent(
         id
       )}/comments/${encodeURIComponent(commentId)}`;
-      const res = await fetch(url, {
-        method: "DELETE",
-        headers: { Accept: "application/json" },
-      });
-      if (!res.ok) {
-        let errMsg = `Delete failed: ${res.status}`;
-        const j = await safeJson(res);
-        if (j?.message)
-          errMsg = Array.isArray(j.message)
-            ? j.message.join(", ")
-            : String(j.message);
-        throw new Error(errMsg);
-      }
+      await axios.delete(url);
       setComments((prev) =>
         prev
           .filter((c) => (c.commentId ?? c.id ?? "") !== commentId)
@@ -284,24 +244,11 @@ export default function Comments({
     try {
       const id = getOrderId();
       if (!id) throw new Error("Missing orderId");
-      const url = `/api/test-orders/${encodeURIComponent(
+      const url = `/test-orders/${encodeURIComponent(
         id
       )}/comments/${encodeURIComponent(commentId)}`;
-      const res = await fetch(url, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ commentText: trimmed }),
-      });
-      if (!res.ok) {
-        let errMsg = `Update failed: ${res.status}`;
-        const j = await safeJson(res);
-        if (j?.message)
-          errMsg = Array.isArray(j.message)
-            ? j.message.join(", ")
-            : String(j.message);
-        throw new Error(errMsg);
-      }
-      const payload = extractPayload(await safeJson(res));
+      const res = await axios.put(url, { commentText: trimmed });
+      const payload = extractPayload(res.data);
       const updated = payload;
 
       setComments((prev) =>
@@ -423,7 +370,7 @@ export default function Comments({
           <div className="icon-sq" aria-hidden="true">
             <MessageSquare size={24} />
           </div>
-          <h3 id="comments-section-title">Comments</h3>
+          <h3 id="comments-section-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800, letterSpacing: '0.6px', margin: 0 }}>Comments</h3>
         </div>
       </div>
 

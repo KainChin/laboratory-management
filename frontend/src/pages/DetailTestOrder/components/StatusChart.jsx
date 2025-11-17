@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "../../../api/axios";
 import { calculateTestResultStats, getFlagMeaning } from "../../../utils/flagUtils";
 
 export default function StatusChart({ orderId: propOrderId = null }) {
@@ -25,10 +26,8 @@ export default function StatusChart({ orderId: propOrderId = null }) {
       setError(null);
 
       try {
-        const res = await fetch(`/api/test-orders/${propOrderId}`);
-        if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
-
-        const data = await res.json();
+        const res = await axios.get(`/test-orders/${propOrderId}`);
+        const data = res.data;
         const testResults = data?.result?.testResults;
         const resultStats = calculateTestResultStats(testResults);
 

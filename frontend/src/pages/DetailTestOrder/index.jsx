@@ -67,8 +67,8 @@ export default function DetailTestOrder() {
   useEffect(() => {
     async function fetchTestOrder() {
       try {
-        const res = await fetch(`/api/test-orders/${id}`);
-        const payload = await res.json();
+        const res = await axios.get(`/test-orders/${id}`);
+        const payload = res.data;
         console.log("[DetailTestOrder index.jsx] raw payload:", payload);
 
         const src = payload?.result ?? payload;
@@ -231,20 +231,22 @@ export default function DetailTestOrder() {
 
       // Chuẩn bị payload theo format API yêu cầu
       const payload = {
-        patientName: pendingUpdate.patientName || undefined,
+        patientName: pendingUpdate.patientName?.trim() || undefined,
         dateOfBirth: pendingUpdate.dateOfBirth ? formatDateForBackend(pendingUpdate.dateOfBirth) : undefined,
-        citizenId: pendingUpdate.citizenId || undefined,
-        country: pendingUpdate.country || undefined,
+        citizenId: pendingUpdate.citizenId?.trim() || undefined,
+        country: pendingUpdate.country?.trim() || undefined,
         gender: pendingUpdate.gender || undefined,
-        phone: pendingUpdate.phone || undefined,
-        address: pendingUpdate.address || undefined,
-        email: pendingUpdate.email || undefined,
+        phone: pendingUpdate.phone?.trim() || undefined,
+        address: pendingUpdate.address?.trim() || undefined,
+        email: pendingUpdate.email?.trim() || undefined,
       };
 
+      console.log("Order ID:", id);
+      console.log("PendingUpdate received:", pendingUpdate);
       console.log("Payload being sent:", payload);
 
       // Gửi PUT request
-      const response = await axios.put(`/api/test-orders/${id}`, payload);
+      const response = await axios.put(`/test-orders/${id}`, payload);
 
       // Cập nhật order state với dữ liệu mới từ response
       const updated = response?.data?.result || response?.data || {};
@@ -283,10 +285,37 @@ export default function DetailTestOrder() {
     } catch (error) {
       console.error("Error updating patient info:", error);
       console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      console.error("Request URL:", error.config?.url);
+      
+      let errorMessage = "Failed to update patient information";
+      
+      if (error.response) {
+        // Server responded with error
+        const status = error.response.status;
+        const data = error.response.data;
+        
+        if (status === 404) {
+          errorMessage = `Test order not found (ID: ${id})`;
+        } else if (status === 400) {
+          errorMessage = data?.message || "Invalid data provided";
+        } else if (data?.message) {
+          errorMessage = Array.isArray(data.message) 
+            ? data.message.join(", ") 
+            : data.message;
+        }
+      } else if (error.request) {
+        // Request made but no response
+        errorMessage = "No response from server. Please check your connection.";
+      } else {
+        // Something else happened
+        errorMessage = error.message;
+      }
+      
       showToast({
         type: "error",
         title: "Update Failed",
-        message: error.response?.data?.message || error.message || "Failed to update patient information"
+        message: errorMessage
       });
     } finally {
       setIsUpdating(false);
