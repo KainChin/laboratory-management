@@ -7,7 +7,7 @@ export default function InfoCard({ title, value, color, icon, border }) {
         <h3 className={`font-semibold ${color}`}>{title}</h3>
         {icon}
       </div>
-      <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+      <p className="text-2xl font-bold text-gray-900 mt-1 text-center">{value}</p>
     </div>
   );
 }

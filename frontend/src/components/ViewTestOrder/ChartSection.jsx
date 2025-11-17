@@ -97,15 +97,15 @@ export default function ChartSection({ activityTotals = null }) {
         </div>
 
         <div className="flex items-start gap-8">
-          <div className="text-right">
+          <div className="text-center">
             <div className="text-sm text-gray-500">Pending</div>
             <div className="text-2xl font-bold text-blue-600">{totals.Pending}</div>
           </div>
-          <div className="text-right">
+          <div className="text-center">
             <div className="text-sm text-gray-500">Completed</div>
             <div className="text-2xl font-bold text-green-600">{totals.Completed}</div>
           </div>
-          <div className="text-right">
+          <div className="text-center">
             <div className="text-sm text-gray-500">Reviewed</div>
             <div className="text-2xl font-bold text-purple-600">{totals.Reviewed}</div>
           </div>
@@ -115,19 +115,19 @@ export default function ChartSection({ activityTotals = null }) {
       <ResponsiveContainer width="100%" height={360}>
         <BarChart data={weekData} margin={{ top: 12, right: 24, left: 24, bottom: 8 }}>
           <CartesianGrid stroke="#f3f4f6" vertical={false} />
-          <XAxis
-            dataKey="day"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "#374151", fontSize: 13 }}
-            height={48}
+          <XAxis 
+            dataKey="day" 
+            axisLine={false} 
+            tickLine={false} 
+            tick={{ fill: "#777777", fontSize: 14 }} 
+            height={48} 
           />
-          <YAxis
-            axisLine={false}
-            tickLine={false}
-            tickCount={6}
-            domain={[0, Math.ceil(maxValue * 1.1)]}
-            tick={{ fill: "#374151", fontSize: 13 }}
+          <YAxis 
+            axisLine={false} 
+            tickLine={false} 
+            allowDecimals={false}
+            domain={[0, 'auto']} 
+            tick={{ fill: "#777777", fontSize: 14 }} 
           />
           <Tooltip
             cursor={{ fill: "#f9fafb" }}
@@ -139,11 +139,12 @@ export default function ChartSection({ activityTotals = null }) {
             }}
             labelStyle={{ fontWeight: 700, marginBottom: 8 }}
           />
-          <Legend
-            verticalAlign="top"
-            align="right"
-            iconType="rect"
-            wrapperStyle={{ top: -10, fontSize: 14 }}
+          <Legend 
+            verticalAlign="top" 
+            align="right" 
+            iconType="rect" 
+            iconSize={27}
+            wrapperStyle={{ top: -10, fontSize: 14 }} 
           />
 
           <Bar dataKey="Pending" stackId="a" fill="#2563eb" radius={[0, 0, 0, 0]} />

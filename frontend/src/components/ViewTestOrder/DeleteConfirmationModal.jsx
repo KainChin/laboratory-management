@@ -27,13 +27,13 @@ function DeleteConfirmationModal({ open, onConfirm, onCancel }) {
           <div className="mt-6 flex justify-end gap-2">
             <button
               onClick={onCancel}
-              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              className="px-4 min-h-[40px] py-2 bg-gray-200 rounded hover:bg-gray-300"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              className="px-4 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded hover:bg-[#FF3A3A] transition-colors duration-300"
             >
               Delete
             </button>

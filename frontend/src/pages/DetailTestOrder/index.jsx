@@ -303,7 +303,7 @@ export default function DetailTestOrder() {
     return <Loading />;
   }
   if (error) {
-    return <div className="text-center py-8 text-red-500">{error}</div>;
+    return <div className="text-center py-8 text-[#FF5A5A]">{error}</div>;
   }
   if (!order) {
     return <div className="text-center py-8">No test order found</div>;
@@ -318,21 +318,22 @@ export default function DetailTestOrder() {
       {/* ++ SỬA: Thêm class "no-print" để ẩn toàn bộ header khi in */}
       <div className="dto-page-header no-print">
         <div className="relative">
-          <div className="absolute -left-1 -top-1 w-10 h-10 bg-red-50 rounded-full"></div>
+          <div className="absolute -left-1 -top-1 w-10 h-10 bg-[#fff0f0] rounded-full"></div>
           <button
             onClick={handleGoBack}
-            className="relative z-10 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all duration-300 transform hover:scale-105 active:scale-95"
+            className="relative z-10 p-2 bg-[#FF5A5A] text-white rounded-full hover:bg-[#FF3A3A] transition-all duration-300 transform hover:scale-105 active:scale-95"
+            aria-label="Go back to test orders list"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={24} aria-hidden="true" />
           </button>
         </div>
 
         <div>
-          <h1 className="text-[28px] font-bold text-[#f65f63] tracking-[0.35em] leading-tight">
+          <h1 className="text-[24px] font-bold text-[#FF5A5A] tracking-[0.35em] leading-tight">
             TEST ORDER DETAIL
           </h1>
-          <div className="text-gray-600 text-sm">
-            ORDER ID: <span className="font-medium">{order.testOrderId}</span>
+          <div className="text-sm">
+            <span className="text-[#FF5A5A] font-medium">ORDER ID:</span> <span className="font-medium text-black">{order.testOrderId}</span>
           </div>
         </div>
 
@@ -341,17 +342,22 @@ export default function DetailTestOrder() {
           <button
             onClick={handleExportPDF}
             disabled={isExporting}
-            className="flex items-center gap-2 px-6 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-sm"
+            className="flex items-center gap-2 px-6 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded-lg hover:bg-[#FF3A3A] transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-sm"
+            style={{ border: "1px solid #CCC" }}
+            onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+            onBlur={(e) => e.target.style.borderColor = "#CCC"}
+            aria-label={isExporting ? "Generating PDF file" : "Export test order as PDF"}
+            aria-busy={isExporting ? "true" : "false"}
           >
             {isExporting ? "Generating PDF..." : "Export PDF"}
           </button>
         </div>
       </div>
 
-      <div className="dto-grid">
-        <div className="dto-left-col">
-          <PatientInfo
-            patient={order}
+      <div className="dto-grid" role="main" aria-label="Test order details">
+        <div className="dto-left-col" role="region" aria-label="Patient and test information">
+          <PatientInfo 
+            patient={order} 
             isEditing={isEditingPatient}
             onSave={handleSavePatient}
             onCancel={handleCancelEdit}
@@ -396,7 +402,7 @@ export default function DetailTestOrder() {
           </div>
         </div>
 
-        <div className="dto-right-col">
+        <div className="dto-right-col" role="complementary" aria-label="Order metadata and actions">
           <OrderMeta order={order} />
 
           {/* ++ SỬA: Bọc QuickActions trong div "no-print" để ẩn */}
@@ -439,6 +445,10 @@ export default function DetailTestOrder() {
             animation: "fadeInOverlay 0.3s ease-out",
           }}
           onClick={closeConfirmModal}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-update-title"
+          aria-describedby="confirm-update-description"
         >
           <div
             className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-lg mx-auto"
@@ -451,35 +461,38 @@ export default function DetailTestOrder() {
             aria-modal
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-2xl text-red-500 font-bold text-center mb-4">
+            <h3 id="confirm-update-title" className="text-2xl text-[#FF5A5A] font-bold text-center mb-4">
               Confirm Update
             </h3>
-            <p className="text-center text-sm text-gray-600 mb-6">
+            <p id="confirm-update-description" className="text-center text-sm text-gray-600 mb-6">
               Are you sure you want to update patient information?
             </p>
 
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
               <button
                 onClick={closeConfirmModal}
-                className="px-4 py-2 rounded-lg"
-                style={{
+                className="px-4 min-h-[40px] py-2 rounded-lg"
+                style={{ 
                   background: "#f3f4f6",
                   cursor: isUpdating ? "not-allowed" : "pointer",
                   opacity: isUpdating ? 0.6 : 1,
                   transition: "all 0.2s ease",
-                  border: "none",
+                  border: "1px solid #CCC",
                 }}
                 onMouseOver={(e) => !isUpdating && (e.target.style.background = "#e5e7eb")}
                 onMouseOut={(e) => (e.target.style.background = "#f3f4f6")}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 disabled={isUpdating}
+                aria-label="Cancel patient information update"
               >
                 No, cancel
               </button>
               <button
                 onClick={confirmUpdate}
-                className="px-4 py-2 rounded-lg"
+                className="px-4 min-h-[40px] py-2 rounded-lg"
                 style={{
-                  background: "#ef4444",
+                  background: "#FF5A5A",
                   color: "#fff",
                   fontWeight: 600,
                   display: "inline-flex",
@@ -488,11 +501,15 @@ export default function DetailTestOrder() {
                   opacity: isUpdating ? 0.6 : 1,
                   cursor: isUpdating ? "not-allowed" : "pointer",
                   transition: "all 0.2s ease",
-                  border: "none",
+                  border: "1px solid #CCC",
                 }}
-                onMouseOver={(e) => !isUpdating && (e.target.style.background = "#dc2626")}
-                onMouseOut={(e) => (e.target.style.background = "#ef4444")}
+                onMouseOver={(e) => !isUpdating && (e.target.style.background = "#e54e54")}
+                onMouseOut={(e) => (e.target.style.background = "#FF5A5A")}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 disabled={isUpdating}
+                aria-label="Confirm patient information update"
+                aria-busy={isUpdating ? "true" : "false"}
               >
                 {isUpdating ? "Updating..." : "Yes, update"}
               </button>
