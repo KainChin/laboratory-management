@@ -76,31 +76,44 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
   };
 
   return (
-    <aside className="card quick-actions">
+    <aside className="card quick-actions" role="complementary" aria-labelledby="quick-actions-title">
       <div className="card-header">
         <div className="card-header-left">
-          <div className="icon-sq">
-            <List size={14} />
+          <div className="icon-sq" aria-hidden="true">
+            <List size={24} />
           </div>
-          <h4>Quick Action</h4>
+          <h4 id="quick-actions-title">Quick Action</h4>
         </div>
       </div>
 
-      <div className="actions-list">
+      <div className="actions-list" role="group" aria-label="Available actions for test order">
         {(status || "").toString().toUpperCase() === "COMPLETED" && (
           <button 
             className="btn-green full" 
             onClick={handleMarkAsReviewed}
             disabled={isReviewing}
+            aria-label="Mark test order as reviewed"
+            aria-busy={isReviewing ? "true" : "false"}
           >
             {isReviewing ? "Processing..." : "Mark as Reviewed"}
           </button>
         )}
-        <button className="btn-purple full">AI Auto Review</button>
-        <button className="btn-orange full">Generate Report</button>
+        <button 
+          className="btn-purple full"
+          aria-label="AI Auto Review - Automatically review test results"
+        >
+          AI Auto Review
+        </button>
+        <button 
+          className="btn-orange full"
+          aria-label="Generate PDF report for this test order"
+        >
+          Generate Report
+        </button>
         <button 
           className="btn-red full"
           onClick={onEditOrder}
+          aria-label="Edit patient information and test order details"
         >
           Edit Order
         </button>
@@ -124,6 +137,10 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
             animation: "fadeInOverlay 0.3s ease-out",
           }}
           onClick={closeConfirm}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-review-title"
+          aria-describedby="confirm-review-description"
         >
           <div
             className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-lg mx-auto"
@@ -136,10 +153,10 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
             aria-modal
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-2xl text-red-500 font-bold text-center mb-4">
+            <h3 id="confirm-review-title" className="text-2xl text-red-500 font-bold text-center mb-4">
               Confirm Review
             </h3>
-            <p className="text-center text-sm text-gray-600 mb-6">
+            <p id="confirm-review-description" className="text-center text-sm text-gray-600 mb-6">
               Are you sure you want to mark this order as reviewed?
             </p>
 
@@ -149,12 +166,15 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
                 className="px-4 py-2 rounded-lg"
                 style={{ 
                   background: "#f3f4f6",
-                  border: "none",
+                  border: "1px solid #CCC",
                   cursor: "pointer",
                   transition: "all 0.2s ease",
                 }}
                 onMouseOver={(e) => e.target.style.background = "#e5e7eb"}
                 onMouseOut={(e) => e.target.style.background = "#f3f4f6"}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                aria-label="Cancel marking as reviewed"
               >
                 Cancel
               </button>
@@ -170,12 +190,16 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
                   gap: 8,
                   opacity: isReviewing ? 0.6 : 1,
                   cursor: isReviewing ? "not-allowed" : "pointer",
-                  border: "none",
+                  border: "1px solid #CCC",
                   transition: "all 0.2s ease",
                 }}
                 onMouseOver={(e) => !isReviewing && (e.target.style.background = "#059669")}
                 onMouseOut={(e) => (e.target.style.background = "#10b981")}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
                 disabled={isReviewing}
+                aria-label="Confirm mark test order as reviewed"
+                aria-busy={isReviewing ? "true" : "false"}
               >
                 {isReviewing ? "Processing..." : "Yes, mark as reviewed"}
               </button>

@@ -146,36 +146,36 @@ export default function StatusChart({ orderId: propOrderId = null }) {
         </svg>
 
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, textAlign: 'center' }}>Overview</div>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8, textAlign: 'center' }}>Overview</div>
           {loading ? (
             <div style={{ color: "#6b7280", textAlign: 'center' }}>Loading…</div>
           ) : error ? (
-            <div style={{ color: "#ef4444", fontSize: 13, textAlign: 'center' }}>{error}</div>
+            <div style={{ color: "#ef4444", fontSize: 14, textAlign: 'center' }}>{error}</div>
           ) : total === 0 ? (
-            <div style={{ color: "#6b7280", fontSize: 13, textAlign: 'center' }}>No results</div>
+            <div style={{ color: "#6b7280", fontSize: 14, textAlign: 'center' }}>No results</div>
           ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 13, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
               {stats.normal > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width: 10, height: 10, background: "#10b981", borderRadius: 3 }} />
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ display: "inline-block", width:10, height:10, background:"#10b981", borderRadius:3 }} />
                   <span>Normal {pct(stats.normal)}%</span>
                 </li>
               )}
               {stats.high > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width: 10, height: 10, background: "#ef4444", borderRadius: 3 }} />
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ display: "inline-block", width:10, height:10, background:"#ef4444", borderRadius:3 }} />
                   <span>High {pct(stats.high)}%</span>
                 </li>
               )}
               {stats.low > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width: 10, height: 10, background: "#f59e0b", borderRadius: 3 }} />
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ display: "inline-block", width:10, height:10, background:"#f59e0b", borderRadius:3 }} />
                   <span>Low {pct(stats.low)}%</span>
                 </li>
               )}
               {stats.other > 0 && (
-                <li style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ display: "inline-block", width: 10, height: 10, background: "#9ca3af", borderRadius: 3 }} />
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ display: "inline-block", width:10, height:10, background:"#9ca3af", borderRadius:3 }} />
                   <span>Other {pct(stats.other)}%</span>
                 </li>
               )}

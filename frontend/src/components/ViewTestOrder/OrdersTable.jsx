@@ -1,4 +1,3 @@
-
 import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
 import {
   useState,
@@ -14,13 +13,79 @@ import Loading from "../Loading";
 import { showToast } from "../Toast";
 
 // Modal portal so the overlay covers the whole viewport
-function Modal({ children, onBackdropClick }) {
+function Modal({ children, onBackdropClick, contentRef }) {
+  // Logic Focus Trapping & Escape key
+  useEffect(() => {
+    const modal = contentRef.current;
+    if (!modal) return;
+
+    // Tìm tất cả các phần tử có thể focus được
+    const focusableElements = modal.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+
+    // !!! ĐÃ LOẠI BỎ LOGIC TỰ ĐỘNG FOCUS Ở ĐÂY.
+    // Việc focus ban đầu được thực hiện trong OrdersTable bằng patientNameRef.
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Tab") {
+        if (e.shiftKey) {
+          if (document.activeElement === firstFocusable) {
+            e.preventDefault();
+            lastFocusable.focus();
+          }
+        } else {
+          if (document.activeElement === lastFocusable) {
+            e.preventDefault();
+            firstFocusable.focus();
+          }
+        }
+      }
+      if (e.key === "Escape" && onBackdropClick) {
+        onBackdropClick(e);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [onBackdropClick, contentRef]);
+
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2"
       onClick={onBackdropClick}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      style={{
+        animation: "fadeIn 0.3s ease-out",
+      }}
     >
-      {children}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+        `}
+      </style>
+      <div
+        ref={contentRef} // Áp dụng ref cho container nội dung
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
     </div>,
     document.body
   );
@@ -29,7 +94,6 @@ function Modal({ children, onBackdropClick }) {
 export default function OrdersTable() {
   const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
-  // const PAGE_SIZE and page/setPage are now declared above for backend pagination
   const [totalPages, setTotalPages] = useState(1);
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -38,7 +102,6 @@ export default function OrdersTable() {
   const PAGE_SIZE = 5;
   const [page, setPage] = useState(1);
   const [jumpInput, setJumpInput] = useState("");
-  // Đổi mảng data sang orders (state), để bảng tự động cập nhật khi thao tác
   const [orders, setOrders] = useState([]);
   const [deleteId, setDeleteId] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -62,7 +125,6 @@ export default function OrdersTable() {
           const result = await res.json();
           const items = result.result?.items || [];
           setTotalPages(result.result?.totalPages || 1);
-          // Format date from backend (assuming it's in dd/MM/yyyy format)
           setOrders(
             items.map((order) => ({
               id: order.testOrderId,
@@ -70,7 +132,6 @@ export default function OrdersTable() {
               status: order.status || "Pending",
               date: order.dateOfBirth,
               creator: order.createdBy || "Unknown",
-              // Preserve the original date format for display
               dob: order.dateOfBirth || "",
               phone: order.phone,
               email: order.email,
@@ -80,12 +141,10 @@ export default function OrdersTable() {
               citizenId: order.citizenId,
             }))
           );
-          // notify other components (ChartSection) that orders changed
           try {
             const mapped = items.map((order) => ({
               id: order.testOrderId,
               status: order.status || "Pending",
-              // prefer createdAt / createdDate / date fields if backend provides them
               date:
                 order.createdAt ||
                 order.createdDate ||
@@ -96,7 +155,6 @@ export default function OrdersTable() {
               new CustomEvent("orders:updated", { detail: { orders: mapped } })
             );
           } catch (err) {
-            // log dispatch errors for debugging
             console.error("Failed to dispatch orders:updated event:", err);
           }
         } catch (err) {
@@ -111,32 +169,28 @@ export default function OrdersTable() {
   useEffect(() => {
     fetchOrdersWrapper();
 
-    // Check if we should scroll to table (coming from detail page)
-    if (localStorage.getItem('scrollToTable')) {
-      // Remove the flag
-      localStorage.removeItem('scrollToTable');
+    if (localStorage.getItem("scrollToTable")) {
+      localStorage.removeItem("scrollToTable");
 
-      // Wait for data to load and component to render
       setTimeout(() => {
-        // Tìm vị trí của bảng và header
-        const tableSection = document.querySelector('table');
-        const headerSection = document.querySelector('.flex.justify-between.items-center.mb-3');
+        const tableSection = document.querySelector("table");
+        const headerSection = document.querySelector(
+          ".flex.justify-between.items-center.mb-3"
+        );
 
         if (tableSection && headerSection) {
-          // Lấy vị trí của header của bảng
-          const headerOffset = headerSection.getBoundingClientRect().top + window.pageYOffset;
+          const headerOffset =
+            headerSection.getBoundingClientRect().top + window.pageYOffset;
 
-          // Cuộn đến vị trí của header bảng, thêm offset 100px để header bảng nằm đẹp trên màn hình
           window.scrollTo({
             top: headerOffset - 100,
-            behavior: 'smooth'
+            behavior: "smooth",
           });
         }
       }, 100);
     }
   }, [fetchOrdersWrapper]);
 
-  // Debounce search input: update keyword after user stops typing
   useEffect(() => {
     const h = setTimeout(() => {
       setDebouncedKeyword(searchInput.trim());
@@ -144,7 +198,6 @@ export default function OrdersTable() {
     return () => clearTimeout(h);
   }, [searchInput]);
 
-  // When debounced keyword changes, apply it and reset to page 1
   useEffect(() => {
     if (debouncedKeyword !== keyword) {
       setKeyword(debouncedKeyword);
@@ -168,6 +221,7 @@ export default function OrdersTable() {
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const modalRef = useRef(null);
+  const patientNameRef = useRef(null); // REF MỚI CHO INPUT PATIENT NAME
   const lastScaleRef = useRef(1);
   const [modalScale, setModalScale] = useState(1);
   const [mode, setMode] = useState("create");
@@ -182,22 +236,21 @@ export default function OrdersTable() {
     country: "",
     citizenId: "",
   });
-  // local form inside modal to avoid parent re-renders clobbering input while typing
   const [localForm, setLocalForm] = useState(form);
-  // validation errors for form fields
   const [errors, setErrors] = useState({});
-  // Lưu id đang edit để update đúng đơn hàng
   const [editingId, setEditingId] = useState(null);
 
-  // initialize modal local form only when modal opens / mode or editingId changes
   useEffect(() => {
-    // chỉ reset khi vừa mở modal hoặc đổi mode / editingId để tránh ghi đè khi đang gõ
-    if (showModal && (mode === "create" || editingId)) {
+    if (showModal && (mode === "create" || mode === "edit")) {
       setLocalForm(form);
       setErrors({});
+      // Lệnh focus trực tiếp vào input Patient Name
+      if (patientNameRef.current) {
+        setTimeout(() => patientNameRef.current.focus(), 0);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showModal, mode, editingId]);
+  }, [showModal, mode, editingId]); // Chạy khi Modal mở ở chế độ Create/Edit
 
   function resetForm() {
     setForm({
@@ -213,7 +266,6 @@ export default function OrdersTable() {
     });
   }
 
-  // reusable date formatter to yyyy-MM-dd (phù hợp input[type=date]); không phá nếu date invalid
   function formatDate(dateStr) {
     if (!dateStr) return "";
     const d = new Date(dateStr);
@@ -224,16 +276,14 @@ export default function OrdersTable() {
     return `${year}-${month}-${day}`;
   }
 
-  // convert yyyy-MM-dd from date input to dd/MM/yyyy for backend
   function formatDateForBackend(dateStr) {
     if (!dateStr) return "";
     const parts = dateStr.split("-");
-    if (parts.length !== 3) return dateStr; // return original if not yyyy-MM-dd
+    if (parts.length !== 3) return dateStr;
     const [yyyy, mm, dd] = parts;
     return `${dd}/${mm}/${yyyy}`;
   }
 
-  // gender mapping helpers
   function enumToSelectGender(g) {
     if (!g) return "";
     if (g === "MALE") return "Male";
@@ -247,11 +297,9 @@ export default function OrdersTable() {
     if (g === "Male") return "MALE";
     if (g === "Female") return "FEMALE";
     if (g === "Other") return "OTHER";
-    // if already enum
     return String(g).toUpperCase();
   }
 
-  // status mapping between backend enums and select labels
   function enumToSelectStatus(s) {
     if (!s) return "";
     if (s === "PENDING" || s === "Pending") return "Pending";
@@ -268,7 +316,6 @@ export default function OrdersTable() {
     return String(s).toUpperCase();
   }
 
-  // convert backend dd/MM/yyyy -> yyyy-MM-dd for input[type=date]
   function parseBackendDateToInput(dateStr) {
     if (!dateStr) return "";
     const parts = dateStr.split("/");
@@ -277,8 +324,6 @@ export default function OrdersTable() {
     return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
   }
 
-  // validate form fields; return an object of errors (field -> message)
-  // accepts a form object so we can validate localForm without relying on parent `form`
   function validateForm(f = form) {
     const e = {};
     if (!f.patientName || !String(f.patientName).trim()) {
@@ -331,7 +376,6 @@ export default function OrdersTable() {
       dob: order.dob ? parseBackendDateToInput(order.dob) : "",
       phone: order.phone || "",
       email: order.email || "",
-      // map backend enum (MALE/FEMALE) to select values (Male/Female)
       gender: enumToSelectGender(order.gender),
       status: enumToSelectStatus(order.status),
       address: order.address || "",
@@ -358,19 +402,16 @@ export default function OrdersTable() {
     setShowModal(true);
   }
 
-  // handleCreate accepts optional form object (use localForm when provided)
   async function handleCreate(currentForm) {
     if (isSubmitting) return;
 
     const f = currentForm || localForm;
-    // validate
     const validation = validateForm(f);
     if (Object.keys(validation).length > 0) {
       setErrors(validation);
       return;
     }
 
-    // Build payload for backend
     const payload = {
       patientName: f.patientName,
       dateOfBirth: f.dob ? formatDateForBackend(f.dob) : "",
@@ -403,7 +444,6 @@ export default function OrdersTable() {
         throw new Error(msg);
       }
       const result = await res.json();
-      // result.result is the created order (from RestResponse)
       const created = result.result || {};
       setOrders([
         ...orders,
@@ -424,7 +464,11 @@ export default function OrdersTable() {
         },
       ]);
       setShowModal(false);
-      showToast({ type: "success", title: "Success", message: "Create test order successfully" });
+      showToast({
+        type: "success",
+        title: "Success",
+        message: "Create test order successfully",
+      });
       resetForm();
       setLocalForm({
         patientName: "",
@@ -438,25 +482,25 @@ export default function OrdersTable() {
         citizenId: "",
       });
       setErrors({});
-      // REFRESH danh sách sau khi thêm
-      fetchOrdersWrapper(1); // về trang 1 sau khi thêm mới
+      fetchOrdersWrapper(1);
       setPage(1);
     } catch (err) {
-      showToast({ type: "error", title: "Create Failed", message: err.message || "Failed to create test order" });
+      showToast({
+        type: "error",
+        title: "Create Failed",
+        message: err.message || "Failed to create test order",
+      });
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  // handleUpdate accepts optional form object (use localForm when provided)
   function handleUpdate(currentForm) {
-    // Send update to backend
     if (!editingId) {
       alert("No order selected to edit");
       return;
     }
     const f = currentForm || localForm;
-    // validate
     const validation = validateForm(f);
     if (Object.keys(validation).length > 0) {
       setErrors(validation);
@@ -494,23 +538,28 @@ export default function OrdersTable() {
           orders.map((o) =>
             o.id === editingId
               ? {
-                ...o,
-                name: updated.patientName || f.patientName || o.name,
-                dob: updated.dateOfBirth || f.dob || o.dob,
-                status: updated.status || f.status || o.status,
-                phone: updated.phone || f.phone || o.phone,
-                email: updated.email || f.email || o.email,
-                gender: updated.gender || f.gender || o.gender,
-                address: updated.address || f.address || o.address,
-                citizenId: updated.citizenId || f.citizenId || o.citizenId,
-              }
+                  ...o,
+                  name: updated.patientName || f.patientName || o.name,
+                  dob: updated.dateOfBirth || f.dob || o.dob,
+                  status: updated.status || f.status || o.status,
+                  phone: updated.phone || f.phone || o.phone,
+                  email: updated.email || f.email || o.email,
+                  gender: updated.gender || f.gender || o.gender,
+                  address: updated.address || f.address || o.address,
+                  country: updated.country || f.country || o.country,
+                  citizenId: updated.citizenId || f.citizenId || o.citizenId,
+                }
               : o
           )
         );
 
         setShowModal(false);
         setEditingId(null);
-        showToast({ type: "success", title: "Success", message: "Test order updated successfully" });
+        showToast({
+          type: "success",
+          title: "Success",
+          message: "Test order updated successfully",
+        });
         resetForm();
         setLocalForm({
           patientName: "",
@@ -530,10 +579,6 @@ export default function OrdersTable() {
     })();
   }
 
-  // No local pagination, backend handles it
-
-  // auto scale modal so it fits the viewport without scrollbars
-  // NOTE: do NOT depend on `form` to avoid rerunning measurement on every keystroke.
   useLayoutEffect(() => {
     let rafId;
 
@@ -546,10 +591,6 @@ export default function OrdersTable() {
       return;
     }
 
-    // prevent background scrolling while modal open
-    document.body.style.overflow = "hidden";
-
-    // measure natural size by cloning modal into an off-screen node to avoid touching real element
     function measureNaturalRect() {
       const el = modalRef.current;
       if (!el) return null;
@@ -590,7 +631,6 @@ export default function OrdersTable() {
       const scaleX = (vw - marginX) / Math.max(1, w);
       const newScale = Math.min(1, scaleX, scaleY);
 
-      // only update when difference is noticeable to avoid re-renders while typing
       if (Math.abs(newScale - lastScaleRef.current) > 0.005) {
         lastScaleRef.current = newScale;
         setModalScale(newScale);
@@ -614,11 +654,13 @@ export default function OrdersTable() {
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative">
       {isNavigating && <Loading />}
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-red-500 font-semibold">Test Order Lists</h2>
+        <h2 className="text-lg text-[#FF5A5A] font-semibold">
+          Test Order Lists
+        </h2>
         <div className="flex gap-2">
           <button
             onClick={openCreateModal}
-            className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600"
+            className="bg-[#FF5A5A] text-white px-3 min-h-[40px] py-2 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
           >
             + New Test Order
           </button>
@@ -627,7 +669,7 @@ export default function OrdersTable() {
 
       <div className="flex items-center gap-2 mb-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-2 top-2 text-gray-400" />
+          <Search size={24} className="absolute left-2 top-2 text-gray-400" />
           <input
             type="text"
             value={searchInput}
@@ -638,19 +680,19 @@ export default function OrdersTable() {
               }
             }}
             placeholder="Search patient name..."
-            className="w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
+            className="w-full pl-8 pr-3 min-h-[40px] py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
           />
         </div>
         <button
-          className="bg-red-100 text-red-500 px-3 py-1.5 rounded-lg flex items-center gap-1"
+          className="bg-red-100 text-[#FF5A5A] px-3 min-h-[40px] py-2 rounded-lg flex items-center gap-1 hover:bg-red-200 hover:text-[#FF3A3A] transition-colors duration-300 text-sm"
           onClick={() => {
             setDebouncedKeyword(searchInput.trim());
           }}
         >
-          <Filter size={14} /> Search
+          <Filter size={24} /> Search
         </button>
         <button
-          className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg ml-2 border"
+          className="bg-gray-100 text-gray-700 px-3 min-h-[40px] py-2 rounded-lg ml-2 border text-sm"
           onClick={() => {
             setSortDir(sortDir === "asc" ? "desc" : "asc");
             setPage(1);
@@ -661,7 +703,6 @@ export default function OrdersTable() {
       </div>
 
       <div className="overflow-x-auto">
-        {/* fixed table layout + colgroup to keep columns stable; truncate long content */}
         <table
           className="w-full text-sm text-left border-collapse"
           style={{ tableLayout: "fixed" }}
@@ -674,20 +715,20 @@ export default function OrdersTable() {
             <col style={{ width: "10%" }} />
           </colgroup>
           <thead>
-            <tr className="bg-red-500 text-white">
-              <th className="py-2 px-3 rounded-tl-lg">
+            <tr className="bg-[#FF5A5A] text-white">
+              <th className="min-h-[40px] py-3 px-3 rounded-tl-lg font-bold text-base">
                 <div className="truncate">Name</div>
               </th>
-              <th className="py-2 px-3">
+              <th className="min-h-[40px] py-3 px-3 font-bold text-base">
                 <div className="truncate">Status</div>
               </th>
-              <th className="py-2 px-3">
+              <th className="min-h-[40px] py-3 px-3 font-bold text-base">
                 <div className="truncate">Date of Birth</div>
               </th>
-              <th className="py-2 px-3">
+              <th className="min-h-[40px] py-3 px-3 font-bold text-base">
                 <div className="truncate">Created By</div>
               </th>
-              <th className="py-2 px-3 rounded-tr-lg text-center">
+              <th className="min-h-[40px] py-3 px-3 rounded-tr-lg text-center font-bold text-base">
                 <div className="truncate">Action</div>
               </th>
             </tr>
@@ -702,15 +743,24 @@ export default function OrdersTable() {
             ) : (
               orders.map((row) => (
                 <tr key={row.id} className="border-b hover:bg-gray-50">
-                  <td className="py-2 px-3">
+                  <td className="min-h-[40px] py-3 px-3">
                     <div
-                      className="truncate hover:text-red-500 cursor-pointer transition-colors"
+                      className="truncate hover:text-[#FF5A5A] cursor-pointer transition-colors"
                       title={row.name}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          setIsNavigating(true);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                          setTimeout(() => {
+                            navigate(`/test-orders/detail/${row.id}`);
+                          }, 500);
+                        }
+                      }}
                       onClick={() => {
                         setIsNavigating(true);
-                        // Cuộn lên đầu trang với animation mượt mà
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        // Đợi animation cuộn hoàn thành (500ms) trước khi chuyển trang
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                         setTimeout(() => {
                           navigate(`/test-orders/detail/${row.id}`);
                         }, 500);
@@ -719,48 +769,54 @@ export default function OrdersTable() {
                       {row.name}
                     </div>
                   </td>
-                  <td className="py-2 px-3">
+                  <td className="min-h-[40px] py-3 px-3">
                     <div className="truncate">
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColor[row.status]
-                          }`}
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          statusColor[row.status]
+                        }`}
                       >
                         {row.status}
                       </span>
                     </div>
                   </td>
-                  <td className="py-2 px-3">
+                  <td className="min-h-[40px] py-3 px-3">
                     <div className="truncate" title={row.dob}>
                       {row.dob || ""}
                     </div>
                   </td>
-                  <td className="py-2 px-3">
+                  <td className="min-h-[40px] py-3 px-3">
                     <div className="truncate" title={row.creator}>
                       {row.creator}
                     </div>
                   </td>
-                  <td className="py-2 px-3 text-center space-x-2">
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => openViewModal(row)}
-                    >
-                      <Eye size={15} />
-                    </button>
-                    <button
-                      className="text-orange-500 hover:text-orange-700"
-                      onClick={() => openEditModal(row)}
-                    >
-                      <Edit size={15} />
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => {
-                        setDeleteId(row.id);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                  <td className="min-h-[40px] py-3 px-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        className="text-blue-500 hover:text-[#FF3A3A] transition-colors duration-300"
+                        onClick={() => openViewModal(row)}
+                        aria-label="View Order Details"
+                      >
+                        <Eye size={24} />
+                      </button>
+                      <button
+                        className="text-orange-500 hover:text-[#FF3A3A] transition-colors duration-300"
+                        onClick={() => openEditModal(row)}
+                        aria-label="Edit Order"
+                      >
+                        <Edit size={24} />
+                      </button>
+                      <button
+                        className="text-[#FF5A5A] hover:text-[#FF3A3A] transition-colors duration-300"
+                        onClick={() => {
+                          setDeleteId(row.id);
+                          setShowDeleteModal(true);
+                        }}
+                        aria-label={`Delete Order ${row.id}`}
+                      >
+                        <Trash2 size={24} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -774,7 +830,7 @@ export default function OrdersTable() {
         <div className="flex justify-center items-center mt-4 gap-2">
           {page > 1 && (
             <button
-              className="px-3 py-1 rounded border bg-gray-100 text-gray-700"
+              className="px-3 min-h-[40px] py-2 rounded border bg-gray-100 text-gray-700 hover:bg-gray-200 hover:border-[#FF3A3A]"
               onClick={() => setPage(page - 1)}
             >
               Prev
@@ -818,7 +874,6 @@ export default function OrdersTable() {
 
               items.push(last);
 
-              // remove duplicates while keeping order
               return items.filter((value, index, self) => {
                 return index === 0 || value !== self[index - 1];
               });
@@ -826,13 +881,19 @@ export default function OrdersTable() {
             const items = getItems(page, totalPages);
             return items.map((it, idx) =>
               it === "..." ? (
-                <span key={`el-${idx}`} className="px-2 text-gray-500">…</span>
+                <span key={`el-${idx}`} className="px-2 text-gray-500">
+                  …
+                </span>
               ) : (
                 <button
                   key={it}
-                  className={`px-3 py-1 rounded border ${page === it ? "bg-red-500 text-white" : "bg-gray-100 text-gray-700"
-                    }`}
+                  className={`px-3 min-h-[40px] py-2 rounded border ${
+                    page === it
+                      ? "bg-[#FF5A5A] text-white"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
                   onClick={() => setPage(it)}
+                  aria-label={`Go to page ${it}`}
                 >
                   {it}
                 </button>
@@ -841,7 +902,7 @@ export default function OrdersTable() {
           })()}
           {page < totalPages && (
             <button
-              className="px-3 py-1 rounded border bg-gray-100 text-gray-700"
+              className="px-3 min-h-[40px] py-2 rounded border bg-gray-100 text-gray-700 hover:bg-gray-200 hover:border-[#FF3A3A]"
               onClick={() => setPage(page + 1)}
             >
               Next
@@ -864,10 +925,10 @@ export default function OrdersTable() {
                 }
               }}
               placeholder="Page"
-              className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
+              className="w-20 px-2 min-h-[40px] py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
             />
             <button
-              className="px-2 py-1.5 rounded-lg border bg-gray-100 text-gray-700"
+              className="px-3 min-h-[40px] py-2 rounded border bg-gray-100 text-gray-700 hover:bg-gray-200 hover:border-[#FF3A3A]"
               onClick={() => {
                 const num = parseInt(jumpInput || "", 10);
                 if (!isNaN(num)) {
@@ -884,43 +945,55 @@ export default function OrdersTable() {
 
       {/* Modal */}
       {showModal && (
-        <Modal onBackdropClick={() => {
-          setShowModal(false);
-          setMode("create");
-          setErrors({});
-        }}>
+        <Modal
+          onBackdropClick={() => {
+            setShowModal(false);
+            setMode("create");
+            setErrors({});
+          }}
+          contentRef={modalRef}
+        >
           <div
             ref={modalRef}
             style={{
               transform: `scale(${modalScale})`,
               transformOrigin: "center",
               transition: "transform 120ms ease",
+              animation: "slideUp 0.4s ease-out",
             }}
             className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-2xl text-red-500 font-bold text-center">
+            <h3
+              id="modal-title"
+              className="text-2xl text-[#FF5A5A] font-bold text-center"
+            >
               {mode === "view"
                 ? "Detail Test Order Information"
                 : mode === "edit"
-                  ? "UPDATE TEST ORDER"
-                  : "NEW TEST ORDER"}
+                ? "UPDATE TEST ORDER"
+                : "NEW TEST ORDER"}
             </h3>
             <p className="text-center text-sm text-gray-500 mb-6">
               {mode === "view"
                 ? "View patient information for this test order"
                 : mode === "edit"
-                  ? "Update patient information for this test order"
-                  : "Enter patient information to create a new test order"}
+                ? "Update patient information for this test order"
+                : "Enter patient information to create a new test order"}
             </p>
 
             <div className="border rounded-lg p-6 bg-gray-50">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label
+                    htmlFor="patientName"
+                    className="text-[#FF5A5A] font-semibold text-sm"
+                  >
                     Patient Name
                   </label>
                   <input
+                    ref={patientNameRef} // ÁP DỤNG REF CHO INPUT ĐẦU TIÊN
+                    id="patientName"
                     name="patientName"
                     value={localForm.patientName}
                     onChange={(e) => {
@@ -929,24 +1002,29 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter patient's full name (e.g., John Doe)"
                   />
                   {errors.patientName && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.patientName}
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label
+                    htmlFor="dob"
+                    className="text-[#FF5A5A] font-semibold text-sm"
+                  >
                     Date of Birth
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white">
+                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white">
                       {form.dob}
                     </div>
                   ) : (
                     <input
+                      id="dob"
                       name="dob"
                       value={localForm.dob}
                       onChange={(e) => {
@@ -955,21 +1033,25 @@ export default function OrdersTable() {
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
                       type="date"
-                      className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
+                      className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
                     />
                   )}
                   {errors.dob && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.dob}
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label
+                    htmlFor="phone"
+                    className="text-[#FF5A5A] font-semibold text-sm"
+                  >
                     Phone Number
                   </label>
                   <input
+                    id="phone"
                     name="phone"
                     value={localForm.phone}
                     onChange={(e) => {
@@ -978,19 +1060,24 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter phone number (e.g., +84 123 456 789)"
                   />
                   {errors.phone && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.phone}
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label
+                    htmlFor="email"
+                    className="text-[#FF5A5A] font-semibold text-sm"
+                  >
                     Email
                   </label>
                   <input
+                    id="email"
                     name="email"
                     value={localForm.email}
                     onChange={(e) => {
@@ -1000,31 +1087,36 @@ export default function OrdersTable() {
                     }}
                     type="email"
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter email address (e.g., patient@example.com)"
                   />
                   {errors.email && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.email}
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label
+                    htmlFor="gender"
+                    className="text-[#FF5A5A] font-semibold text-sm"
+                  >
                     Gender
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white">
+                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white">
                       {form.gender
                         ? form.gender === "MALE"
                           ? "Male"
                           : form.gender === "FEMALE"
-                            ? "Female"
-                            : form.gender
+                          ? "Female"
+                          : form.gender
                         : ""}
                     </div>
                   ) : (
                     <select
+                      id="gender"
                       name="gender"
                       value={localForm.gender}
                       onChange={(e) => {
@@ -1032,7 +1124,7 @@ export default function OrdersTable() {
                         setLocalForm((s) => ({ ...s, [name]: value }));
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
-                      className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
+                      className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
                       <option value="Male">Male</option>
@@ -1041,21 +1133,25 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.gender && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.gender}
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label
+                    htmlFor="status"
+                    className="text-[#FF5A5A] font-semibold text-sm"
+                  >
                     Status
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white">
+                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white">
                       {form.status || ""}
                     </div>
                   ) : (
                     <select
+                      id="status"
                       name="status"
                       value={localForm.status}
                       onChange={(e) => {
@@ -1063,7 +1159,7 @@ export default function OrdersTable() {
                         setLocalForm((s) => ({ ...s, [name]: value }));
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
-                      className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm"
+                      className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
                       <option value="Pending">Pending</option>
@@ -1072,16 +1168,20 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.status && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.status}
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label
+                    htmlFor="address"
+                    className="text-[#FF5A5A] font-semibold text-sm"
+                  >
                     Address
                   </label>
                   <input
+                    id="address"
                     name="address"
                     value={localForm.address}
                     onChange={(e) => {
@@ -1089,15 +1189,20 @@ export default function OrdersTable() {
                       setLocalForm((s) => ({ ...s, [name]: value }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter full address (e.g., 123 Main St, District 1)"
                   />
                 </div>
 
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label
+                    htmlFor="country"
+                    className="text-[#FF5A5A] font-semibold text-sm"
+                  >
                     Country
                   </label>
                   <input
+                    id="country"
                     name="country"
                     value={localForm.country}
                     onChange={(e) => {
@@ -1105,14 +1210,19 @@ export default function OrdersTable() {
                       setLocalForm((s) => ({ ...s, [name]: value }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter country (e.g., Vietnam)"
                   />
                 </div>
                 <div>
-                  <label className="text-red-500 font-semibold text-sm">
+                  <label
+                    htmlFor="citizenId"
+                    className="text-[#FF5A5A] font-semibold text-sm"
+                  >
                     Citizen ID
                   </label>
                   <input
+                    id="citizenId"
                     name="citizenId"
                     value={localForm.citizenId}
                     onChange={(e) => {
@@ -1121,10 +1231,11 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    placeholder="Enter citizen ID or passport number"
                   />
                   {errors.citizenId && (
-                    <div className="text-sm text-red-600 mt-1">
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
                       {errors.citizenId}
                     </div>
                   )}
@@ -1140,21 +1251,21 @@ export default function OrdersTable() {
                   setErrors({});
                   setIsSubmitting(false);
                 }}
-                className="px-4 py-2 border border-gray-200 rounded-lg bg-white"
+                className="px-4 min-h-[40px] py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-100 transition-colors duration-300"
               >
                 Close
               </button>
               {mode === "edit" ? (
                 <button
                   onClick={() => handleUpdate(localForm)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                  className="px-4 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
                 >
                   Save
                 </button>
               ) : mode === "view" ? null : (
                 <button
                   onClick={() => handleCreate(localForm)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="px-4 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#FF3A3A] disabled:hover:bg-[#FF5A5A] transition-colors duration-300"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Creating..." : "Create"}
@@ -1188,7 +1299,6 @@ export default function OrdersTable() {
               if (data?.result) {
                 const items = data.result.items || [];
 
-                // Nếu có items trong response, cập nhật danh sách
                 if (items.length > 0) {
                   setTotalPages(data.result.totalPages || 1);
                   setOrders(
@@ -1208,15 +1318,17 @@ export default function OrdersTable() {
                     }))
                   );
                 } else {
-                  // Nếu result trả về mảng rỗng và không phải trang 1, gọi lại API với page nhỏ hơn 1 đơn vị
                   if (page > 1) {
                     setPage(page - 1);
                     fetchOrdersWrapper(page - 1);
                   }
-                  // Nếu đang ở trang 1 và không có test order nào thì không cần gọi lại API
                 }
               }
-              showToast({ type: "success", title: "Success", message: "Test order deleted successfully" });
+              showToast({
+                type: "success",
+                title: "Success",
+                message: "Test order deleted successfully",
+              });
               setDeleteError("");
               setShowDeleteModal(false);
               setDeleteId(null);
@@ -1225,7 +1337,11 @@ export default function OrdersTable() {
             console.warn("Delete failed", err);
             const errorMsg = err.message || "Network error or server error!";
             setDeleteError(errorMsg);
-            showToast({ type: "error", title: "Delete Failed", message: errorMsg });
+            showToast({
+              type: "error",
+              title: "Delete Failed",
+              message: errorMsg,
+            });
             setDeleteMsg("");
             setTimeout(() => {
               setDeleteError("");
@@ -1241,7 +1357,7 @@ export default function OrdersTable() {
         </div>
       )}
       {deleteError && (
-        <div className="fixed left-1/2 top-5 -translate-x-1/2 bg-red-100 text-red-600 px-6 py-2 shadow-lg rounded-lg z-50 font-semibold">
+        <div className="fixed left-1/2 top-5 -translate-x-1/2 bg-red-100 text-[#FF5A5A] px-6 py-2 shadow-lg rounded-lg z-50 font-semibold">
           {deleteError}
         </div>
       )}

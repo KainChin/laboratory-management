@@ -116,8 +116,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     }
   };
   const accent = "#ff6b6b";
-  const border = "#e6eef3";
-  const muted = "#555";
+  const border = "#CCC";
+  const muted = "#000000ff";
 
   const styles = {
     card: {
@@ -151,7 +151,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     },
     title: {
       color: accent,
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: 700,
       margin: 0,
       lineHeight: 1,
@@ -180,10 +180,11 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     },
     input: {
       width: "100%",
-      padding: "8px 12px",
-      border: "1px solid #e5e7eb",
+      minHeight: "40px",
+      padding: "10px 12px",
+      border: "1px solid #CCC",
       borderRadius: 6,
-      fontSize: 15,
+      fontSize: 16,
       fontWeight: 600,
       color: "#000",
       outline: "none",
@@ -191,8 +192,9 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     },
     select: {
       width: "100%",
-      padding: "8px 12px",
-      border: "1px solid #e5e7eb",
+      minHeight: "40px",
+      padding: "10px 12px",
+      border: "1px solid #CCC",
       borderRadius: 6,
       fontSize: 15,
       fontWeight: 600,
@@ -204,7 +206,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     buttonGroup: {
       display: "flex",
       gap: 8,
-      marginTop: 4,
+      marginTop: 8,
     },
   };
 
@@ -219,7 +221,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
       <div style={styles.header}>
         <div style={styles.headerLeft}>
           <div style={styles.iconSq}>
-            <User size={16} />
+            <User size={24} />
           </div>
           <h3 style={styles.title}>Patient Information</h3>
         </div>
@@ -228,11 +230,12 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
             <button
               onClick={onCancel}
               style={{
-                padding: "8px 16px",
+                padding: "10px 16px",
+                minHeight: "40px",
                 borderRadius: 8,
-                border: "1px solid #e5e7eb",
+                border: "1px solid #CCC",
                 background: "#fff",
-                color: "#374151",
+                color: "#777777",
                 fontSize: 14,
                 fontWeight: 600,
                 cursor: "pointer",
@@ -240,24 +243,27 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
               }}
               onMouseOver={(e) => e.target.style.background = "#f9fafb"}
               onMouseOut={(e) => e.target.style.background = "#fff"}
+              aria-label="Cancel editing patient information"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               style={{
-                padding: "8px 16px",
+                padding: "10px 16px",
+                minHeight: "40px",
                 borderRadius: 8,
-                border: "none",
-                background: "#ef4444",
+                border: "1px solid #CCC",
+                background: "#FF5A5A",
                 color: "#fff",
                 fontSize: 14,
                 fontWeight: 600,
                 cursor: "pointer",
                 transition: "all 0.2s",
               }}
-              onMouseOver={(e) => e.target.style.background = "#dc2626"}
-              onMouseOut={(e) => e.target.style.background = "#ef4444"}
+              onMouseOver={(e) => e.target.style.background = "#FF3A3A"}
+              onMouseOut={(e) => e.target.style.background = "#FF5A5A"}
+              aria-label="Save patient information changes"
             >
               Change
             </button>
@@ -274,22 +280,31 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 <input
                   type="text"
                   name="patientName"
+                  id="patient-name-input"
                   value={formData.patientName}
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.patientName ? "#ef4444" : "#e5e7eb"
+                    borderColor: errors.patientName ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#ef4444"}
-                  onBlur={(e) => e.target.style.borderColor = errors.patientName ? "#ef4444" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.patientName ? "#FF5A5A" : "#CCC"}
+                  aria-label="Patient Name"
+                  aria-required="true"
+                  aria-invalid={errors.patientName ? "true" : "false"}
+                  aria-describedby={errors.patientName ? "patient-name-error" : undefined}
+                  placeholder="Enter patient's full name"
                 />
                 {errors.patientName && (
-                  <div style={{
-                    color: "#ef4444",
-                    fontSize: 13,
-                    marginTop: 4,
-                    fontWeight: 500
-                  }}>
+                  <div 
+                    id="patient-name-error"
+                    role="alert"
+                    style={{
+                      color: "#FF5A5A",
+                      fontSize: 12,
+                      marginTop: 8,
+                      fontWeight: 500
+                    }}>
                     {errors.patientName}
                   </div>
                 )}
@@ -305,14 +320,19 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
               <div>
                 <select
                   name="gender"
+                  id="gender-select"
                   value={formData.gender}
                   onChange={handleChange}
                   style={{
                     ...styles.select,
-                    borderColor: errors.gender ? "#ef4444" : "#e5e7eb"
+                    borderColor: errors.gender ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#ef4444"}
-                  onBlur={(e) => e.target.style.borderColor = errors.gender ? "#ef4444" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.gender ? "#FF5A5A" : "#CCC"}
+                  aria-label="Gender"
+                  aria-required="true"
+                  aria-invalid={errors.gender ? "true" : "false"}
+                  aria-describedby={errors.gender ? "gender-error" : undefined}
                 >
                   <option value="">Select Gender</option>
                   <option value="MALE">Male</option>
@@ -320,12 +340,15 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   <option value="OTHER">Other</option>
                 </select>
                 {errors.gender && (
-                  <div style={{
-                    color: "#ef4444",
-                    fontSize: 13,
-                    marginTop: 4,
-                    fontWeight: 500
-                  }}>
+                  <div 
+                    id="gender-error"
+                    role="alert"
+                    style={{
+                      color: "#FF5A5A",
+                      fontSize: 14,
+                      marginTop: 8,
+                      fontWeight: 500
+                    }}>
                     {errors.gender}
                   </div>
                 )}
@@ -342,22 +365,31 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 <input
                   type="tel"
                   name="phone"
+                  id="phone-input"
                   value={formData.phone}
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.phone ? "#ef4444" : "#e5e7eb"
+                    borderColor: errors.phone ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#ef4444"}
-                  onBlur={(e) => e.target.style.borderColor = errors.phone ? "#ef4444" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.phone ? "#FF5A5A" : "#CCC"}
+                  aria-label="Phone Number"
+                  aria-required="true"
+                  aria-invalid={errors.phone ? "true" : "false"}
+                  aria-describedby={errors.phone ? "phone-error" : undefined}
+                  placeholder="Enter phone number (e.g., +84 123 456 789)"
                 />
                 {errors.phone && (
-                  <div style={{
-                    color: "#ef4444",
-                    fontSize: 13,
-                    marginTop: 4,
-                    fontWeight: 500
-                  }}>
+                  <div 
+                    id="phone-error"
+                    role="alert"
+                    style={{
+                      color: "#FF5A5A",
+                      fontSize: 14,
+                      marginTop: 8,
+                      fontWeight: 500
+                    }}>
                     {errors.phone}
                   </div>
                 )}
@@ -373,11 +405,15 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
               <input
                 type="text"
                 name="address"
+                id="address-input"
                 value={formData.address}
                 onChange={handleChange}
                 style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#ef4444"}
-                onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                aria-label="Address"
+                aria-required="false"
+                placeholder="Enter full address"
               />
             ) : (
               <div style={styles.pairValue}>{patient.address}</div>
@@ -390,11 +426,15 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
               <input
                 type="text"
                 name="country"
+                id="country-input"
                 value={formData.country}
                 onChange={handleChange}
                 style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#ef4444"}
-                onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                aria-label="Country"
+                aria-required="false"
+                placeholder="Enter country name"
               />
             ) : (
               <div style={styles.pairValue}>{patient.country}</div>
@@ -410,22 +450,30 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 <input
                   type="date"
                   name="dateOfBirth"
+                  id="dob-input"
                   value={formData.dateOfBirth}
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.dateOfBirth ? "#ef4444" : "#e5e7eb"
+                    borderColor: errors.dateOfBirth ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#ef4444"}
-                  onBlur={(e) => e.target.style.borderColor = errors.dateOfBirth ? "#ef4444" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.dateOfBirth ? "#FF5A5A" : "#CCC"}
+                  aria-label="Date of Birth"
+                  aria-required="true"
+                  aria-invalid={errors.dateOfBirth ? "true" : "false"}
+                  aria-describedby={errors.dateOfBirth ? "dob-error" : undefined}
                 />
                 {errors.dateOfBirth && (
-                  <div style={{
-                    color: "#ef4444",
-                    fontSize: 13,
-                    marginTop: 4,
-                    fontWeight: 500
-                  }}>
+                  <div 
+                    id="dob-error"
+                    role="alert"
+                    style={{
+                      color: "#FF5A5A",
+                      fontSize: 14,
+                      marginTop: 8,
+                      fontWeight: 500
+                    }}>
                     {errors.dateOfBirth}
                   </div>
                 )}
@@ -442,22 +490,31 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                 <input
                   type="email"
                   name="email"
+                  id="email-input"
                   value={formData.email}
                   onChange={handleChange}
                   style={{
                     ...styles.input,
-                    borderColor: errors.email ? "#ef4444" : "#e5e7eb"
+                    borderColor: errors.email ? "#FF5A5A" : "#CCC"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#ef4444"}
-                  onBlur={(e) => e.target.style.borderColor = errors.email ? "#ef4444" : "#e5e7eb"}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = errors.email ? "#FF5A5A" : "#CCC"}
+                  aria-label="Email Address"
+                  aria-required="false"
+                  aria-invalid={errors.email ? "true" : "false"}
+                  aria-describedby={errors.email ? "email-error" : undefined}
+                  placeholder="Enter email address (e.g., patient@example.com)"
                 />
                 {errors.email && (
-                  <div style={{
-                    color: "#ef4444",
-                    fontSize: 13,
-                    marginTop: 4,
-                    fontWeight: 500
-                  }}>
+                  <div 
+                    id="email-error"
+                    role="alert"
+                    style={{
+                      color: "#FF5A5A",
+                      fontSize: 14,
+                      marginTop: 8,
+                      fontWeight: 500
+                    }}>
                     {errors.email}
                   </div>
                 )}
@@ -473,11 +530,15 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
               <input
                 type="text"
                 name="citizenId"
+                id="citizen-id-input"
                 value={formData.citizenId}
                 onChange={handleChange}
                 style={styles.input}
-                onFocus={(e) => e.target.style.borderColor = "#ef4444"}
-                onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                aria-label="Citizen ID"
+                aria-required="false"
+                placeholder="Enter citizen ID or passport number"
               />
             ) : (
               <div style={styles.pairValue}>{patient.citizenId}</div>

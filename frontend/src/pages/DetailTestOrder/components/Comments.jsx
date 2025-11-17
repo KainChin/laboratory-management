@@ -417,13 +417,13 @@ export default function Comments({
   }, [editingId]);
 
   return (
-    <section className="card">
+    <section className="card" role="region" aria-labelledby="comments-section-title">
       <div className="card-header">
         <div className="card-header-left">
-          <div className="icon-sq">
-            <MessageSquare size={14} />
+          <div className="icon-sq" aria-hidden="true">
+            <MessageSquare size={24} />
           </div>
-          <h3>Comments</h3>
+          <h3 id="comments-section-title">Comments</h3>
         </div>
       </div>
 
@@ -432,13 +432,17 @@ export default function Comments({
       </div>
 
       {error && (
-        <div style={{ color: "#dc2626", marginBottom: 8 }}>{error}</div>
+        <div role="alert" aria-live="assertive" style={{ color: "#FF0000", marginBottom: 8 }}>{error}</div>
       )}
 
       <div
         ref={commentsListRef}
         className="comments-list"
         style={{ maxHeight: 260, overflowY: "auto", paddingRight: 8 }}
+        role="list"
+        aria-label="Comments list"
+        aria-live="polite"
+        aria-atomic="false"
       >
         {loading ? (
           <div className="dto-empty">Loading comments...</div>
@@ -461,8 +465,11 @@ export default function Comments({
                   borderRadius: 8,
                   marginBottom: 10,
                   background: "#fff",
+                  border: "1px solid #CCC",
                   boxShadow: "0 6px 14px rgba(12,18,26,0.04)",
                 }}
+                role="listitem"
+                aria-label={`Comment by ${c.createdBy ?? c.author ?? "Unknown"}`}
               >
                 <div
                   style={{
@@ -501,6 +508,9 @@ export default function Comments({
                           disabled={editingSaving}
                           rows={6}
                           style={{ width: "100%", boxSizing: "border-box" }} // <-- ensure full width
+                          id={`edit-comment-${cid}`}
+                          aria-label="Edit comment text"
+                          aria-required="true"
                         />
                         <div
                           style={{
@@ -524,6 +534,8 @@ export default function Comments({
                                 cursor: "pointer",
                               }}
                               title="Save (Ctrl+Enter)"
+                              aria-label="Save comment changes"
+                              aria-busy={editingSaving ? "true" : "false"}
                             >
                               {editingSaving ? "Saving..." : "Save"}
                             </button>
@@ -536,6 +548,7 @@ export default function Comments({
                                 borderRadius: 8,
                                 cursor: "pointer",
                               }}
+                              aria-label="Cancel editing"
                             >
                               Cancel
                             </button>
@@ -566,13 +579,16 @@ export default function Comments({
                           disabled={editingSaving || deletingId === cid}
                           style={{
                             background: "#fff",
-                            border: "1px solid #eef2f7",
+                            border: "1px solid #CCC",
                             padding: 8,
                             borderRadius: 8,
                             cursor: "pointer",
                           }}
+                          onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                          onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                          aria-label={`Edit comment by ${c.createdBy ?? c.author ?? "Unknown"}`}
                         >
-                          <Edit2 size={14} />
+                          <Edit2 size={24} aria-hidden="true" />
                         </button>
                       )}
                       {!isEditing && (
@@ -586,14 +602,17 @@ export default function Comments({
                           aria-disabled={deletingId === cid}
                           style={{
                             background: "#fff",
-                            border: "1px solid #ffe8ea",
+                            border: "1px solid #CCC",
                             padding: 8,
                             borderRadius: 8,
                             cursor: "pointer",
-                            color: "#ef4444",
+                            color: "#FF5A5A",
                           }}
+                          onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                          onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                          aria-label={`Delete comment by ${c.createdBy ?? c.author ?? "Unknown"}`}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={24} aria-hidden="true" />
                         </button>
                       )}
                     </div>
@@ -655,12 +674,12 @@ export default function Comments({
                 background: "#fff",
                 borderRadius: 10,
                 boxShadow: "0 12px 40px rgba(2,6,23,0.12)",
-                padding: 12,
-                border: "1px solid #eef2f7",
-                height: confirmPortal.height,
+                padding: 20,
+                border: "1px solid #CCC",
+                minWidth: 360,
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between",
+                gap: 20,
               }}
             >
               <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
@@ -673,11 +692,11 @@ export default function Comments({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    border: "1px solid #ffdde0",
+                    border: "1px solid #CCC",
                     color: "#ef4444",
                   }}
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={24} />
                 </div>
                 <div>
                   <div
@@ -685,7 +704,7 @@ export default function Comments({
                   >
                     Delete comment
                   </div>
-                  <div style={{ color: "#6b7280", fontSize: 13, marginTop: 4 }}>
+                  <div style={{ color: "#6b7280", fontSize: 13, marginTop: 8 }}>
                     This action cannot be undone. Are you sure?
                   </div>
                 </div>
@@ -697,12 +716,16 @@ export default function Comments({
                 <button
                   onClick={() => setConfirmPortal(null)}
                   style={{
-                    padding: "8px 12px",
+                    minHeight: "40px",
+                    padding: "10px 16px",
                     borderRadius: 8,
-                    border: "1px solid #e6e9ef",
+                    border: "1px solid #CCC",
                     background: "#fff",
                     cursor: "pointer",
                   }}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                  aria-label="Cancel delete comment"
                 >
                   Cancel
                 </button>
@@ -710,13 +733,18 @@ export default function Comments({
                   onClick={() => doDelete(confirmPortal.commentId)}
                   disabled={deletingId === confirmPortal.commentId}
                   style={{
-                    padding: "8px 12px",
+                    minHeight: "40px",
+                    padding: "10px 16px",
                     borderRadius: 8,
-                    border: "none",
-                    background: "#ef4444",
+                    border: "1px solid #CCC",
+                    background: "#FF5A5A",
                     color: "#fff",
                     fontWeight: 800,
                   }}
+                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
+                  onBlur={(e) => e.target.style.borderColor = "#CCC"}
+                  aria-label="Confirm delete comment"
+                  aria-busy={deletingId === confirmPortal.commentId ? "true" : "false"}
                 >
                   {deletingId === confirmPortal.commentId
                     ? "Deleting..."
@@ -738,8 +766,17 @@ export default function Comments({
             if (e.key === "Enter") handleAdd();
           }}
           className="input-field"
+          id="new-comment-input"
+          aria-label="New comment text"
+          aria-required="false"
         />
-        <button className="btn-primary" onClick={handleAdd} disabled={saving}>
+        <button 
+          className="btn-primary" 
+          onClick={handleAdd} 
+          disabled={saving}
+          aria-label="Add new comment"
+          aria-busy={saving ? "true" : "false"}
+        >
           {saving ? "Saving..." : "Add Comment"}
         </button>
       </div>
