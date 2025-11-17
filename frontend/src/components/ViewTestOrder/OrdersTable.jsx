@@ -119,16 +119,10 @@ export default function OrdersTable() {
             size: PAGE_SIZE.toString(),
             sortDir,
           });
-<<<<<<< HEAD
           const res = await axios.get(
             `/test-orders?${params}`
           );
           const result = res.data;
-=======
-          const res = await fetch(`/api/test-orders?${params}`);
-          if (!res.ok) throw new Error("Failed to fetch orders");
-          const result = await res.json();
->>>>>>> develop
           const items = result.result?.items || [];
           setTotalPages(result.result?.totalPages || 1);
           setOrders(
@@ -768,24 +762,11 @@ export default function OrdersTable() {
 
     (async () => {
       try {
-<<<<<<< HEAD
         const res = await axios.put(
           `/test-orders/${editingId}`,
           payload
         );
         const result = res.data;
-=======
-        const res = await fetch(`/api/test-orders/${editingId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(text || "Failed to update test order");
-        }
-        const result = await res.json();
->>>>>>> develop
         const updated = result.result || {};
         setOrders(
           orders.map((o) =>
