@@ -8,6 +8,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
+import axios from "../../api/axios";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import Loading from "../Loading";
 import { showToast } from "../Toast";
@@ -118,11 +119,10 @@ export default function OrdersTable() {
             size: PAGE_SIZE.toString(),
             sortDir,
           });
-          const res = await fetch(
-            `/api/test-orders?${params}`
+          const res = await axios.get(
+            `/test-orders?${params}`
           );
-          if (!res.ok) throw new Error("Failed to fetch orders");
-          const result = await res.json();
+          const result = res.data;
           const items = result.result?.items || [];
           setTotalPages(result.result?.totalPages || 1);
           setOrders(
@@ -241,16 +241,16 @@ export default function OrdersTable() {
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
-    if (showModal && (mode === "create" || mode === "edit")) {
+    if (showModal) {
       setLocalForm(form);
       setErrors({});
-      // Lệnh focus trực tiếp vào input Patient Name
-      if (patientNameRef.current) {
+      // Lệnh focus trực tiếp vào input Patient Name (chỉ khi create/edit)
+      if ((mode === "create" || mode === "edit") && patientNameRef.current) {
         setTimeout(() => patientNameRef.current.focus(), 0);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showModal, mode, editingId]); // Chạy khi Modal mở ở chế độ Create/Edit
+  }, [showModal, mode, editingId]); // Chạy khi Modal mở
 
   function resetForm() {
     setForm({
@@ -359,6 +359,12 @@ export default function OrdersTable() {
     if (!f.citizenId || !String(f.citizenId).trim()) {
       e.citizenId = "Citizen ID is required";
     }
+    if (!f.address || !String(f.address).trim()) {
+      e.address = "Address is required";
+    }
+    if (!f.country || !String(f.country).trim()) {
+      e.country = "Country is required";
+    }
     return e;
   }
 
@@ -427,23 +433,8 @@ export default function OrdersTable() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/test-orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        let msg = "Failed to create test order";
-        try {
-          const data = await res.json();
-          msg = data?.message?.[0] || data?.message || msg;
-        } catch {
-          const txt = await res.text();
-          if (txt) msg = txt;
-        }
-        throw new Error(msg);
-      }
-      const result = await res.json();
+      const res = await axios.post("/test-orders", payload);
+      const result = res.data;
       const created = result.result || {};
       setOrders([
         ...orders,
@@ -520,19 +511,11 @@ export default function OrdersTable() {
 
     (async () => {
       try {
-        const res = await fetch(
-          `/api/test-orders/${editingId}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
+        const res = await axios.put(
+          `/test-orders/${editingId}`,
+          payload
         );
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(text || "Failed to update test order");
-        }
-        const result = await res.json();
+        const result = res.data;
         const updated = result.result || {};
         setOrders(
           orders.map((o) =>
@@ -1019,8 +1002,8 @@ export default function OrdersTable() {
                     Date of Birth
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white">
-                      {form.dob}
+                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
+                      {localForm.dob}
                     </div>
                   ) : (
                     <input
@@ -1105,13 +1088,13 @@ export default function OrdersTable() {
                     Gender
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white">
-                      {form.gender
-                        ? form.gender === "MALE"
+                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
+                      {localForm.gender
+                        ? localForm.gender === "MALE" || localForm.gender === "Male"
                           ? "Male"
-                          : form.gender === "FEMALE"
+                          : localForm.gender === "FEMALE" || localForm.gender === "Female"
                           ? "Female"
-                          : form.gender
+                          : localForm.gender
                         : ""}
                     </div>
                   ) : (
@@ -1146,8 +1129,8 @@ export default function OrdersTable() {
                     Status
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white">
-                      {form.status || ""}
+                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
+                      {localForm.status || ""}
                     </div>
                   ) : (
                     <select
@@ -1187,11 +1170,17 @@ export default function OrdersTable() {
                     onChange={(e) => {
                       const { name, value } = e.target;
                       setLocalForm((s) => ({ ...s, [name]: value }));
+                      setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter full address (e.g., 123 Main St, District 1)"
                   />
+                  {errors.address && (
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                      {errors.address}
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -1208,11 +1197,17 @@ export default function OrdersTable() {
                     onChange={(e) => {
                       const { name, value } = e.target;
                       setLocalForm((s) => ({ ...s, [name]: value }));
+                      setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter country (e.g., Vietnam)"
                   />
+                  {errors.country && (
+                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                      {errors.country}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label
@@ -1282,57 +1277,46 @@ export default function OrdersTable() {
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           try {
-            const res = await fetch(
-              `/api/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=patientName&sortDir=${sortDir}`,
-              { method: "DELETE" }
+            const res = await axios.delete(
+              `/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=patientName&sortDir=${sortDir}`
             );
-            if (!res.ok) {
-              const text = await res.text();
-              setDeleteError(text || "Failed to remove test order!");
-              setDeleteMsg("");
-              setTimeout(() => {
-                setDeleteError("");
-                setDeleteId(null);
-              }, 3000);
-            } else {
-              const data = await res.json();
-              if (data?.result) {
-                const items = data.result.items || [];
+            const data = res.data;
+            if (data?.result) {
+              const items = data.result.items || [];
 
-                if (items.length > 0) {
-                  setTotalPages(data.result.totalPages || 1);
-                  setOrders(
-                    items.map((order) => ({
-                      id: order.testOrderId,
-                      name: order.patientName,
-                      status: order.status || "Pending",
-                      date: order.dateOfBirth,
-                      creator: order.createdBy || "Unknown",
-                      dob: order.dateOfBirth,
-                      phone: order.phone,
-                      email: order.email,
-                      gender: order.gender,
-                      address: order.address,
-                      country: order.country,
-                      citizenId: order.citizenId,
-                    }))
-                  );
-                } else {
-                  if (page > 1) {
-                    setPage(page - 1);
-                    fetchOrdersWrapper(page - 1);
-                  }
+              if (items.length > 0) {
+                setTotalPages(data.result.totalPages || 1);
+                setOrders(
+                  items.map((order) => ({
+                    id: order.testOrderId,
+                    name: order.patientName,
+                    status: order.status || "Pending",
+                    date: order.dateOfBirth,
+                    creator: order.createdBy || "Unknown",
+                    dob: order.dateOfBirth,
+                    phone: order.phone,
+                    email: order.email,
+                    gender: order.gender,
+                    address: order.address,
+                    country: order.country,
+                    citizenId: order.citizenId,
+                  }))
+                );
+              } else {
+                if (page > 1) {
+                  setPage(page - 1);
+                  fetchOrdersWrapper(page - 1);
                 }
               }
-              showToast({
-                type: "success",
-                title: "Success",
-                message: "Test order deleted successfully",
-              });
-              setDeleteError("");
-              setShowDeleteModal(false);
-              setDeleteId(null);
             }
+            showToast({
+              type: "success",
+              title: "Success",
+              message: "Test order deleted successfully",
+            });
+            setDeleteError("");
+            setShowDeleteModal(false);
+            setDeleteId(null);
           } catch (err) {
             console.warn("Delete failed", err);
             const errorMsg = err.message || "Network error or server error!";

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from "react";
 import { Link, useNavigate, useParams, Routes, Route } from "react-router-dom";
 import { ArrowLeft, FileDown } from "lucide-react";
 import html2pdf from 'html2pdf.js';
+import axios from "../../api/axios";
 import Loading from "../../components/Loading";
 import TestOrders from "../TestOrders"; // Import TestOrders component
 import PatientInfo from "./components/PatientInfo"; // Import PatientInfo component
@@ -68,8 +69,8 @@ export default function DetailTestOrder(props) {
       try {
         // adjust URL if different; keep same host/port you use
         const id = props?.match?.params?.id ?? props?.id ?? (window.location.pathname.split("/").pop());
-        const res = await fetch(`/api/test-orders/${id}`);
-        const payload = await res.json();
+        const res = await axios.get(`/test-orders/${id}`);
+        const payload = res.data;
         console.log("[DetailTestOrder] raw payload:", payload);
 
         const src = payload?.result ?? payload ?? {};
@@ -104,9 +105,8 @@ export default function DetailTestOrder(props) {
     const orderId = id;
     const timer = setInterval(async () => {
       try {
-        const res = await fetch(`/api/test-orders/${orderId}`);
-        if (!res.ok) return;
-        const payload = await res.json();
+        const res = await axios.get(`/test-orders/${orderId}`);
+        const payload = res.data;
         const src = payload?.result ?? payload ?? {};
         const normalized = {
           ...src,
@@ -228,9 +228,8 @@ export default function DetailTestOrder(props) {
                 // try to refresh authoritative testOrder from server after HL7 POST
                 try {
                   const orderId = id ?? (window.location.pathname.split("/").pop());
-                  const res = await fetch(`/api/test-orders/${orderId}`);
-                  if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
-                  const payload = await res.json();
+                  const res = await axios.get(`/test-orders/${orderId}`);
+                  const payload = res.data;
                   const src = payload?.result ?? payload ?? {};
                   const normalized = {
                     ...src,

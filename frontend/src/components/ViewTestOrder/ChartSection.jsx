@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "../../api/axios";
 import {
   BarChart,
   Bar,
@@ -19,10 +20,8 @@ export default function ChartSection({ activityTotals = null }) {
   useEffect(() => {
     const fetchWeekData = async () => {
       try {
-        const response = await fetch(`/api/test-orders/daily-statistics`);
-        if (!response.ok) throw new Error("Failed to fetch daily statistics");
-
-        const json = await response.json();
+        const response = await axios.get(`/test-orders/daily-statistics`);
+        const json = response.data;
 
         // Handle the API response format
         if (json.statusCode !== 200 || !json.result) {

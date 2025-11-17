@@ -7,6 +7,7 @@ import { BarChart3, Clock3, CheckCircle2, CheckCheck } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import axios from "../api/axios";
 
 export default function TestOrders() {
   const [orderStats, setOrderStats] = useState({
@@ -25,11 +26,8 @@ export default function TestOrders() {
 
     async function fetchStatistics() {
       try {
-        const res = await fetch(
-          "http://localhost:6868/api/test-orders/statistics"
-        );
-        if (!res.ok) throw new Error("Failed to fetch statistics");
-        const json = await res.json();
+        const res = await axios.get("/test-orders/statistics");
+        const json = res.data;
         const stats = json.result || json.data || {};
 
         const total = Number(stats.total ?? stats.count ?? 0);
@@ -101,13 +99,8 @@ export default function TestOrders() {
         sortDir: "desc",
       });
 
-      const response = await fetch(
-        `http://localhost:6868/api/test-orders?${queryParams}`
-      );
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-
-      const result = await response.json();
+      const response = await axios.get(`/test-orders?${queryParams}`);
+      const result = response.data;
       const orders = result.result?.items || [];
 
       if (orders.length === 0) {

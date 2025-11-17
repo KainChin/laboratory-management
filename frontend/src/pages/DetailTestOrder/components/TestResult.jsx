@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ClipboardList } from "lucide-react";
+import axios from "../../../api/axios";
 import "../DetailTestOrder.css";
 import { showToast } from "../../../components/Toast";
 import { getFlagColor } from "../../../utils/flagUtils";
@@ -106,23 +107,10 @@ export default function TestResult({ tests, onUpdate }) {
     setPosting(true);
     setPostError(null);
     try {
-      const res = await fetch("/api/test-results/hl7", {
-        method: "POST",
+      const res = await axios.post("/test-results/hl7", hl7Text, {
         headers: { "Content-Type": "text/plain" },
-        body: hl7Text,
       });
-      if (!res.ok) {
-        let msg = `Server responded ${res.status}`;
-        try {
-          const errData = await res.json();
-          msg = errData?.message?.[0] || errData?.message || msg;
-        } catch {
-          const txt = await res.text();
-          if (txt) msg = txt;
-        }
-        throw new Error(msg);
-      }
-      const data = await res.json();
+      const data = res.data;
       const resultPayload = data?.result ?? {};
       const extractedParams = extractParameters(resultPayload);
       const newParams = extractedParams.length ? extractedParams : [];
