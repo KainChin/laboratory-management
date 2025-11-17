@@ -165,7 +165,7 @@ export default function TestResult({ tests, onUpdate }) {
       <div className="dto-card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div className="dto-icon"><ClipboardList size={24} /></div>
-          <h3 className="dto-title">Test Result</h3>
+          <h3 className="dto-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800, letterSpacing: '0.6px' }}>Test Result</h3>
         </div>
 
         <div>
@@ -173,7 +173,7 @@ export default function TestResult({ tests, onUpdate }) {
             onClick={openModal}
             className="inline-flex items-center px-4 py-2 rounded-lg shadow"
             style={{
-              backgroundColor: "#ef4444",
+              backgroundColor: "#FF5A5A",
               color: "#fff",
               fontWeight: 600,
               opacity: disableNew ? 0.6 : 1,
@@ -181,7 +181,7 @@ export default function TestResult({ tests, onUpdate }) {
               transition: "background-color 0.3s ease",
             }}
             onMouseEnter={(e) => !disableNew && (e.target.style.backgroundColor = "#FF3A3A")}
-            onMouseLeave={(e) => !disableNew && (e.target.style.backgroundColor = "#ef4444")}
+            onMouseLeave={(e) => !disableNew && (e.target.style.backgroundColor = "#FF5A5A")}
             aria-label="Add Test Result"
             disabled={disableNew}
             title={disableNew ? "Test results already exist" : "Add new test result"}

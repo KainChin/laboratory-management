@@ -370,7 +370,7 @@ export default function Comments({
           <div className="icon-sq" aria-hidden="true">
             <MessageSquare size={24} />
           </div>
-          <h3 id="comments-section-title">Comments</h3>
+          <h3 id="comments-section-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800, letterSpacing: '0.6px', margin: 0 }}>Comments</h3>
         </div>
       </div>
 

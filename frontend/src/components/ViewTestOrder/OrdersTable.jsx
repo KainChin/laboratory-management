@@ -342,8 +342,8 @@ export default function OrdersTable() {
     }
     if (!f.phone || !String(f.phone).trim()) {
       e.phone = "Phone number is required";
-    } else if (!/^[0-9()+\-\s]{7,20}$/.test(f.phone)) {
-      e.phone = "Phone number looks invalid";
+    } else if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(f.phone.replace(/\s/g, ''))) {
+      e.phone = "Phone number is invalid. Must be 10 digits with optional country code (e.g., +84 or +1)";
     }
     if (!f.email || !String(f.email).trim()) {
       e.email = "Email is required";
@@ -505,6 +505,7 @@ export default function OrdersTable() {
       status: f.status ? selectToEnumStatus(f.status) : undefined,
       phone: f.phone || undefined,
       address: f.address || undefined,
+      country: f.country || undefined,
       email: f.email || undefined,
       citizenId: f.citizenId || undefined,
     };
