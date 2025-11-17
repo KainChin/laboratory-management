@@ -25,9 +25,9 @@ export default function StatusChart({ orderId: propOrderId = null }) {
       setError(null);
 
       try {
-        const res = await fetch(`http://localhost:6868/api/test-orders/${propOrderId}`);
+        const res = await fetch(`/api/test-orders/${propOrderId}`);
         if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
-        
+
         const data = await res.json();
         const testResults = data?.result?.testResults;
         const resultStats = calculateTestResultStats(testResults);
@@ -114,7 +114,7 @@ export default function StatusChart({ orderId: propOrderId = null }) {
         <div className="card-header-left">
           <div className="icon-sq">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M3 12h18M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M3 12h18M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <h4>Status Chart</h4>

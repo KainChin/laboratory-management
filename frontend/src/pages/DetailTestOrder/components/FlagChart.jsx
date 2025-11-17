@@ -52,7 +52,7 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
 
     const totalCount = parameters.length;
     const topN = 5;
-    
+
     // Take top 5 (or all if fewer than 5)
     const topFlagsList = flagArray.slice(0, topN).map(item => ({
       ...item,
@@ -77,7 +77,7 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
         setLoading(true);
         setError(null);
         try {
-          const res = await fetch(`http://localhost:6868/api/test-orders/${propOrderId}`);
+          const res = await fetch(`/api/test-orders/${propOrderId}`);
           if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
           const data = await res.json();
           processTestResults(data?.result?.testResults);

@@ -19,18 +19,18 @@ export default function ChartSection({ activityTotals = null }) {
   useEffect(() => {
     const fetchWeekData = async () => {
       try {
-        const response = await fetch(`http://localhost:6868/api/test-orders/daily-statistics`);
+        const response = await fetch(`/api/test-orders/daily-statistics`);
         if (!response.ok) throw new Error("Failed to fetch daily statistics");
-        
+
         const json = await response.json();
-        
+
         // Handle the API response format
         if (json.statusCode !== 200 || !json.result) {
           throw new Error(json.message || "Failed to fetch statistics");
         }
-        
+
         const data = json.result;
-        
+
         // Process daily data
         const dailyData = data.dailyData || [];
         const processedData = dailyData.map(day => ({
@@ -39,10 +39,10 @@ export default function ChartSection({ activityTotals = null }) {
           Completed: Number(day.completed || 0),
           Reviewed: Number(day.reviewed || 0),
         }));
-        
+
         setWeekData(processedData);
         setWeekLabel("Current Week");
-        
+
         // Calculate totals from the weekly data only
         const calculatedTotals = processedData.reduce(
           (acc, cur) => ({
@@ -52,7 +52,7 @@ export default function ChartSection({ activityTotals = null }) {
           }),
           { Pending: 0, Completed: 0, Reviewed: 0 }
         );
-        
+
         setTotals(calculatedTotals);
       } catch (error) {
         console.error("Error fetching week data:", error);
@@ -68,7 +68,7 @@ export default function ChartSection({ activityTotals = null }) {
         ];
         setWeekData(demoData);
         setWeekLabel("Current Week");
-        
+
         const demoTotals = demoData.reduce(
           (acc, cur) => ({
             Pending: acc.Pending + cur.Pending,
@@ -131,11 +131,11 @@ export default function ChartSection({ activityTotals = null }) {
           />
           <Tooltip
             cursor={{ fill: "#f9fafb" }}
-            contentStyle={{ 
-              background: "#fff", 
-              border: "1px solid #e6eef8", 
-              borderRadius: 8, 
-              boxShadow: "0 6px 20px rgba(15,23,42,0.08)" 
+            contentStyle={{
+              background: "#fff",
+              border: "1px solid #e6eef8",
+              borderRadius: 8,
+              boxShadow: "0 6px 20px rgba(15,23,42,0.08)"
             }}
             labelStyle={{ fontWeight: 700, marginBottom: 8 }}
           />

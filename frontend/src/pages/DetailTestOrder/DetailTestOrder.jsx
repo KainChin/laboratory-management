@@ -18,7 +18,7 @@ export default function DetailTestOrder(props) {
   const handleExportPDF = async () => {
     try {
       setIsExporting(true);
-      
+
       // Get the content element
       const element = contentRef.current;
       if (!element) return;
@@ -28,24 +28,24 @@ export default function DetailTestOrder(props) {
         margin: 10,
         filename: `test-order-${id}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
+        html2canvas: {
           scale: 2,
           useCORS: true,
           logging: false
         },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait' 
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
         }
       };
 
       // Before export: Add print class
       element.classList.add('printing');
-      
+
       // Generate PDF
       await html2pdf().set(options).from(element).save();
-      
+
       // After export: Remove print class
       element.classList.remove('printing');
     } catch (error) {
@@ -68,7 +68,7 @@ export default function DetailTestOrder(props) {
       try {
         // adjust URL if different; keep same host/port you use
         const id = props?.match?.params?.id ?? props?.id ?? (window.location.pathname.split("/").pop());
-        const res = await fetch(`http://localhost:6868/api/test-orders/${id}`);
+        const res = await fetch(`/api/test-orders/${id}`);
         const payload = await res.json();
         console.log("[DetailTestOrder] raw payload:", payload);
 
@@ -80,7 +80,7 @@ export default function DetailTestOrder(props) {
         };
 
         if (!mounted) return;
-  setTestOrder(normalized);
+        setTestOrder(normalized);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -104,7 +104,7 @@ export default function DetailTestOrder(props) {
     const orderId = id;
     const timer = setInterval(async () => {
       try {
-        const res = await fetch(`http://localhost:6868/api/test-orders/${orderId}`);
+        const res = await fetch(`/api/test-orders/${orderId}`);
         if (!res.ok) return;
         const payload = await res.json();
         const src = payload?.result ?? payload ?? {};
@@ -113,8 +113,8 @@ export default function DetailTestOrder(props) {
           patientName: src.patientName ?? src.name ?? src.patient?.name ?? "",
           dateOfBirth: src.dateOfBirth ?? src.dob ?? src.patient?.dateOfBirth ?? "",
         };
-  setTestOrder(normalized);
-  } catch (err) { console.error(err); }
+        setTestOrder(normalized);
+      } catch (err) { console.error(err); }
     }, 5000);
     return () => clearInterval(timer);
   }, [id, testOrder]);
@@ -190,7 +190,7 @@ export default function DetailTestOrder(props) {
         <div className="mt-6">
           <div className="bg-white rounded-2xl p-6 shadow-sm" ref={contentRef}>
             <h1 className="text-xl font-semibold mb-2">Test Order Detail</h1>
-            {testOrder && waitingStatuses.includes((testOrder.status||"").toString().toUpperCase()) && (
+            {testOrder && waitingStatuses.includes((testOrder.status || "").toString().toUpperCase()) && (
               <div className="mb-4 rounded border border-blue-200 bg-blue-50 text-blue-700 px-4 py-3">
                 Waiting for Instrument Service response. System will automatically update when results are available...
               </div>
@@ -228,7 +228,7 @@ export default function DetailTestOrder(props) {
                 // try to refresh authoritative testOrder from server after HL7 POST
                 try {
                   const orderId = id ?? (window.location.pathname.split("/").pop());
-                  const res = await fetch(`http://localhost:6868/api/test-orders/${orderId}`);
+                  const res = await fetch(`/api/test-orders/${orderId}`);
                   if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
                   const payload = await res.json();
                   const src = payload?.result ?? payload ?? {};
