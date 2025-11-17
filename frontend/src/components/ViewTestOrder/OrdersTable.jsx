@@ -119,10 +119,16 @@ export default function OrdersTable() {
             size: PAGE_SIZE.toString(),
             sortDir,
           });
+<<<<<<< HEAD
           const res = await axios.get(
             `/test-orders?${params}`
           );
           const result = res.data;
+=======
+          const res = await fetch(`/api/test-orders?${params}`);
+          if (!res.ok) throw new Error("Failed to fetch orders");
+          const result = await res.json();
+>>>>>>> develop
           const items = result.result?.items || [];
           setTotalPages(result.result?.totalPages || 1);
           setOrders(
@@ -191,6 +197,11 @@ export default function OrdersTable() {
     }
   }, [fetchOrdersWrapper]);
 
+  // Reset selectedIndex khi orders thay đổi
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [orders.length, page]);
+
   useEffect(() => {
     const h = setTimeout(() => {
       setDebouncedKeyword(searchInput.trim());
@@ -203,6 +214,7 @@ export default function OrdersTable() {
       setKeyword(debouncedKeyword);
       setPage(1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedKeyword]);
 
   const statusColor = {
@@ -222,6 +234,17 @@ export default function OrdersTable() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const modalRef = useRef(null);
   const patientNameRef = useRef(null); // REF MỚI CHO INPUT PATIENT NAME
+  const dobRef = useRef(null);
+  const phoneRef = useRef(null);
+  const emailRef = useRef(null);
+  const genderRef = useRef(null);
+  const statusRef = useRef(null);
+  const addressRef = useRef(null);
+  const countryRef = useRef(null);
+  const citizenIdRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const createButtonRef = useRef(null);
+  const saveButtonRef = useRef(null);
   const lastScaleRef = useRef(1);
   const [modalScale, setModalScale] = useState(1);
   const [mode, setMode] = useState("create");
@@ -251,6 +274,238 @@ export default function OrdersTable() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showModal, mode, editingId]); // Chạy khi Modal mở
+
+  // Keyboard navigation trong modal
+  useEffect(() => {
+    if (!showModal || mode === "view") return;
+
+    // Mảng các refs theo thứ tự trong form (grid 2 cột)
+    const formFields = [
+      patientNameRef, // Cột 1, hàng 1
+      dobRef, // Cột 2, hàng 1
+      phoneRef, // Cột 1, hàng 2
+      emailRef, // Cột 2, hàng 2
+      genderRef, // Cột 1, hàng 3
+      statusRef, // Cột 2, hàng 3
+      addressRef, // Cột 1, hàng 4
+      countryRef, // Cột 2, hàng 4
+      citizenIdRef, // Cột 1, hàng 5 (full width)
+    ];
+
+    function handleModalKeyDown(e) {
+      const activeElement = document.activeElement;
+      const isTextarea = activeElement?.tagName === "TEXTAREA";
+      const isInput = activeElement?.tagName === "INPUT";
+      const isSelect = activeElement?.tagName === "SELECT";
+
+      // Escape → Đóng modal (Close)
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (closeButtonRef.current) {
+          closeButtonRef.current.click();
+        }
+        return;
+      }
+
+      // ArrowDown → Chuyển sang input tiếp theo
+      // Chỉ với text/email inputs (không phải date, không phải select)
+      // Hoặc dùng Alt+Arrow để điều hướng trong date/select
+      if (
+        e.key === "ArrowDown" &&
+        isInput &&
+        (activeElement?.type === "text" || activeElement?.type === "email")
+      ) {
+        e.preventDefault();
+        const currentIndex = formFields.findIndex(
+          (ref) => ref.current === activeElement
+        );
+        if (currentIndex >= 0 && currentIndex < formFields.length - 1) {
+          const nextRef = formFields[currentIndex + 1];
+          if (nextRef.current) {
+            nextRef.current.focus();
+          }
+        }
+        return;
+      }
+      // Alt+ArrowDown → Điều hướng với date/select/email
+      if (
+        (e.altKey || e.metaKey) &&
+        e.key === "ArrowDown" &&
+        (isInput || isSelect)
+      ) {
+        e.preventDefault();
+        const currentIndex = formFields.findIndex(
+          (ref) => ref.current === activeElement
+        );
+        if (currentIndex >= 0 && currentIndex < formFields.length - 1) {
+          const nextRef = formFields[currentIndex + 1];
+          if (nextRef.current) {
+            nextRef.current.focus();
+          }
+        }
+        return;
+      }
+
+      // ArrowUp → Chuyển về input trước
+      // Chỉ với text/email inputs
+      if (
+        e.key === "ArrowUp" &&
+        isInput &&
+        (activeElement?.type === "text" || activeElement?.type === "email")
+      ) {
+        e.preventDefault();
+        const currentIndex = formFields.findIndex(
+          (ref) => ref.current === activeElement
+        );
+        if (currentIndex > 0) {
+          const prevRef = formFields[currentIndex - 1];
+          if (prevRef.current) {
+            prevRef.current.focus();
+          }
+        }
+        return;
+      }
+      // Alt+ArrowUp → Điều hướng với date/select/email
+      if (
+        (e.altKey || e.metaKey) &&
+        e.key === "ArrowUp" &&
+        (isInput || isSelect)
+      ) {
+        e.preventDefault();
+        const currentIndex = formFields.findIndex(
+          (ref) => ref.current === activeElement
+        );
+        if (currentIndex > 0) {
+          const prevRef = formFields[currentIndex - 1];
+          if (prevRef.current) {
+            prevRef.current.focus();
+          }
+        }
+        return;
+      }
+
+      // ArrowRight → Chuyển sang input bên phải (trong cùng hàng)
+      // Chỉ với text/email inputs
+      if (
+        e.key === "ArrowRight" &&
+        isInput &&
+        (activeElement?.type === "text" || activeElement?.type === "email")
+      ) {
+        e.preventDefault();
+        const currentIndex = formFields.findIndex(
+          (ref) => ref.current === activeElement
+        );
+        // Trong grid 2 cột, input bên phải là index + 1 (nếu không phải cột cuối của hàng)
+        // Logic: hàng 1 (0,1), hàng 2 (2,3), hàng 3 (4,5), hàng 4 (6,7), hàng 5 (8)
+        if (currentIndex >= 0) {
+          // Nếu là cột đầu tiên của hàng (index chẵn và không phải 8)
+          if (currentIndex % 2 === 0 && currentIndex < 8) {
+            const rightRef = formFields[currentIndex + 1];
+            if (rightRef.current) {
+              rightRef.current.focus();
+            }
+          }
+        }
+        return;
+      }
+      // Alt+ArrowRight → Điều hướng với date/select/email
+      if (
+        (e.altKey || e.metaKey) &&
+        e.key === "ArrowRight" &&
+        (isInput || isSelect)
+      ) {
+        e.preventDefault();
+        const currentIndex = formFields.findIndex(
+          (ref) => ref.current === activeElement
+        );
+        if (currentIndex >= 0 && currentIndex % 2 === 0 && currentIndex < 8) {
+          const rightRef = formFields[currentIndex + 1];
+          if (rightRef.current) {
+            rightRef.current.focus();
+          }
+        }
+        return;
+      }
+
+      // ArrowLeft → Chuyển sang input bên trái (trong cùng hàng)
+      // Chỉ với text/email inputs
+      if (
+        e.key === "ArrowLeft" &&
+        isInput &&
+        (activeElement?.type === "text" || activeElement?.type === "email")
+      ) {
+        e.preventDefault();
+        const currentIndex = formFields.findIndex(
+          (ref) => ref.current === activeElement
+        );
+        // Nếu là cột thứ 2 của hàng (index lẻ)
+        if (currentIndex > 0 && currentIndex % 2 === 1) {
+          const leftRef = formFields[currentIndex - 1];
+          if (leftRef.current) {
+            leftRef.current.focus();
+          }
+        }
+        return;
+      }
+      // Alt+ArrowLeft → Điều hướng với date/select/email
+      if (
+        (e.altKey || e.metaKey) &&
+        e.key === "ArrowLeft" &&
+        (isInput || isSelect)
+      ) {
+        e.preventDefault();
+        const currentIndex = formFields.findIndex(
+          (ref) => ref.current === activeElement
+        );
+        if (currentIndex > 0 && currentIndex % 2 === 1) {
+          const leftRef = formFields[currentIndex - 1];
+          if (leftRef.current) {
+            leftRef.current.focus();
+          }
+        }
+        return;
+      }
+
+      // Enter → Submit form (Create/Save) - chỉ khi focus vào button
+      // (Input fields sẽ xử lý Enter riêng, đặc biệt là citizenId input)
+      if (e.key === "Enter" && !e.shiftKey && !isTextarea) {
+        // Chỉ submit khi focus vào button (không phải input/select)
+        if (activeElement?.tagName === "BUTTON") {
+          e.preventDefault();
+          if (mode === "edit" && saveButtonRef.current && !isSubmitting) {
+            saveButtonRef.current.click();
+          } else if (
+            mode === "create" &&
+            createButtonRef.current &&
+            !isSubmitting
+          ) {
+            createButtonRef.current.click();
+          }
+        }
+        return;
+      }
+
+      // Ctrl+Enter hoặc Cmd+Enter → Luôn submit (bỏ qua focus check)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key === "Enter" &&
+        !isSubmitting
+      ) {
+        e.preventDefault();
+        if (mode === "edit" && saveButtonRef.current) {
+          saveButtonRef.current.click();
+        } else if (mode === "create" && createButtonRef.current) {
+          createButtonRef.current.click();
+        }
+        return;
+      }
+    }
+
+    window.addEventListener("keydown", handleModalKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleModalKeyDown);
+    };
+  }, [showModal, mode, isSubmitting]);
 
   function resetForm() {
     setForm({
@@ -368,13 +623,14 @@ export default function OrdersTable() {
     return e;
   }
 
-  function openCreateModal() {
+  const openCreateModal = useCallback(() => {
     setMode("create");
     setEditingId(null);
     resetForm();
     setShowModal(true);
-  }
-  function openEditModal(order) {
+  }, []);
+
+  const openEditModal = useCallback((order) => {
     setMode("edit");
     setEditingId(order.id);
     setForm({
@@ -389,9 +645,9 @@ export default function OrdersTable() {
       citizenId: order.citizenId || "",
     });
     setShowModal(true);
-  }
+  }, []);
 
-  function openViewModal(order) {
+  const openViewModal = useCallback((order) => {
     setMode("view");
     setEditingId(order.id);
     setForm({
@@ -406,7 +662,7 @@ export default function OrdersTable() {
       citizenId: order.citizenId || "",
     });
     setShowModal(true);
-  }
+  }, []);
 
   async function handleCreate(currentForm) {
     if (isSubmitting) return;
@@ -512,11 +768,24 @@ export default function OrdersTable() {
 
     (async () => {
       try {
+<<<<<<< HEAD
         const res = await axios.put(
           `/test-orders/${editingId}`,
           payload
         );
         const result = res.data;
+=======
+        const res = await fetch(`/api/test-orders/${editingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text || "Failed to update test order");
+        }
+        const result = await res.json();
+>>>>>>> develop
         const updated = result.result || {};
         setOrders(
           orders.map((o) =>
@@ -634,17 +903,186 @@ export default function OrdersTable() {
     };
   }, [showModal, mode, modalScale]);
 
+  // ---- Keyboard Navigation ----
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    function handleKey(e) {
+      // Nếu đang focus vào input/textarea/select → bỏ qua (trừ một số phím đặc biệt)
+      const activeElement = document.activeElement;
+      const isInputFocused =
+        activeElement &&
+        (activeElement.tagName === "INPUT" ||
+          activeElement.tagName === "TEXTAREA" ||
+          activeElement.tagName === "SELECT");
+
+      // Nếu modal đang mở → ưu tiên modal
+      if (showModal) return;
+
+      // Ctrl+N hoặc N → Tạo mới (chỉ khi không focus vào input)
+      if ((e.ctrlKey && e.key === "n") || (e.key === "n" && !isInputFocused)) {
+        e.preventDefault();
+        openCreateModal();
+        return;
+      }
+
+      // Ctrl+F hoặc / → Focus vào search
+      if (
+        (e.ctrlKey && e.key === "f") ||
+        (e.key === "/" && !isInputFocused)
+      ) {
+        e.preventDefault();
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+          searchInputRef.current.select();
+        }
+        return;
+      }
+
+      // Không có dữ liệu → bỏ qua các phím điều hướng
+      if (!orders || orders.length === 0) {
+        // Vẫn cho phép Ctrl+N và Ctrl+F
+        return;
+      }
+
+      // ↓ Move down
+      if (e.key === "ArrowDown" && !isInputFocused) {
+        e.preventDefault();
+        const newIndex = Math.min(selectedIndex + 1, orders.length - 1);
+        setSelectedIndex(newIndex);
+        // Scroll to selected row
+        setTimeout(() => {
+          const rowElement = document.querySelector(
+            `tr[data-row-index="${newIndex}"]`
+          );
+          if (rowElement) {
+            rowElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
+        }, 0);
+        return;
+      }
+
+      // ↑ Move up
+      if (e.key === "ArrowUp" && !isInputFocused) {
+        e.preventDefault();
+        const newIndex = Math.max(selectedIndex - 1, 0);
+        setSelectedIndex(newIndex);
+        // Scroll to selected row
+        setTimeout(() => {
+          const rowElement = document.querySelector(
+            `tr[data-row-index="${newIndex}"]`
+          );
+          if (rowElement) {
+            rowElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
+        }, 0);
+        return;
+      }
+
+      // → Next page
+      if (e.key === "ArrowRight" && !isInputFocused) {
+        e.preventDefault();
+        if (page < totalPages) {
+          setPage(page + 1);
+          setSelectedIndex(-1); // Reset selection khi chuyển trang
+        }
+        return;
+      }
+
+      // ← Previous page
+      if (e.key === "ArrowLeft" && !isInputFocused) {
+        e.preventDefault();
+        if (page > 1) {
+          setPage(page - 1);
+          setSelectedIndex(-1); // Reset selection khi chuyển trang
+        }
+        return;
+      }
+
+      // Enter → view (khi có item được chọn)
+      if (e.key === "Enter" && selectedIndex >= 0 && !isInputFocused) {
+        e.preventDefault();
+        openViewModal(orders[selectedIndex]);
+        return;
+      }
+
+      // E → Edit (khi có item được chọn)
+      if (e.key === "e" && selectedIndex >= 0 && !isInputFocused) {
+        e.preventDefault();
+        openEditModal(orders[selectedIndex]);
+        return;
+      }
+
+      // V → View (khi có item được chọn)
+      if (e.key === "v" && selectedIndex >= 0 && !isInputFocused) {
+        e.preventDefault();
+        openViewModal(orders[selectedIndex]);
+        return;
+      }
+
+      // Delete hoặc D → open delete modal
+      if (
+        (e.key === "Delete" || (e.key === "d" && !isInputFocused)) &&
+        selectedIndex >= 0
+      ) {
+        e.preventDefault();
+        setDeleteId(orders[selectedIndex].id);
+        setShowDeleteModal(true);
+        return;
+      }
+
+      // Esc → clear selection
+      if (e.key === "Escape" && !isInputFocused) {
+        setSelectedIndex(-1);
+        return;
+      }
+
+      // Home → First row
+      if (e.key === "Home" && !isInputFocused) {
+        e.preventDefault();
+        setSelectedIndex(0);
+        return;
+      }
+
+      // End → Last row
+      if (e.key === "End" && !isInputFocused) {
+        e.preventDefault();
+        setSelectedIndex(orders.length - 1);
+        return;
+      }
+    }
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [
+    orders,
+    selectedIndex,
+    showModal,
+    page,
+    totalPages,
+    openCreateModal,
+    openViewModal,
+    openEditModal,
+  ]);
+
   return (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 relative">
       {isNavigating && <Loading />}
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-lg text-[#FF5A5A] font-semibold">
-          Test Order Lists
-        </h2>
+        <div>
+          <h2 className="text-lg text-[#FF5A5A] font-semibold">
+            Test Order Lists
+          </h2>
+          <p className="text-xs text-gray-500 mt-1">
+            Keyboard shortcuts: ↑↓ to navigate, Enter/V to view, E to edit, D/Delete to delete, N to create, / to search
+          </p>
+        </div>
         <div className="flex gap-2">
           <button
             onClick={openCreateModal}
             className="bg-[#FF5A5A] text-white px-3 min-h-[40px] py-2 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
+            title="Create new test order (Press N)"
           >
             + New Test Order
           </button>
@@ -655,6 +1093,7 @@ export default function OrdersTable() {
         <div className="relative flex-1">
           <Search size={24} className="absolute left-2 top-2 text-gray-400" />
           <input
+            ref={searchInputRef}
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -663,7 +1102,7 @@ export default function OrdersTable() {
                 setDebouncedKeyword(searchInput.trim());
               }
             }}
-            placeholder="Search patient name..."
+            placeholder="Search patient name... (Press / to focus)"
             className="w-full pl-8 pr-3 min-h-[40px] py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
           />
         </div>
@@ -725,8 +1164,17 @@ export default function OrdersTable() {
                 </td>
               </tr>
             ) : (
-              orders.map((row) => (
-                <tr key={row.id} className="border-b hover:bg-gray-50">
+              orders.map((row, index) => (
+                <tr
+                  key={row.id}
+                  data-row-index={index}
+                  onClick={() => setSelectedIndex(index)}
+                  className={`border-b hover:bg-gray-50 transition-colors cursor-pointer ${
+                    selectedIndex === index
+                      ? "bg-blue-100 hover:bg-blue-200"
+                      : ""
+                  }`}
+                >
                   <td className="min-h-[40px] py-3 px-3">
                     <div
                       className="truncate font-bold hover:text-[#FF5A5A] cursor-pointer transition-colors"
@@ -1008,6 +1456,7 @@ export default function OrdersTable() {
                     </div>
                   ) : (
                     <input
+                      ref={dobRef}
                       id="dob"
                       name="dob"
                       value={localForm.dob}
@@ -1035,6 +1484,7 @@ export default function OrdersTable() {
                     Phone Number
                   </label>
                   <input
+                    ref={phoneRef}
                     id="phone"
                     name="phone"
                     value={localForm.phone}
@@ -1061,6 +1511,7 @@ export default function OrdersTable() {
                     Email
                   </label>
                   <input
+                    ref={emailRef}
                     id="email"
                     name="email"
                     value={localForm.email}
@@ -1100,6 +1551,7 @@ export default function OrdersTable() {
                     </div>
                   ) : (
                     <select
+                      ref={genderRef}
                       id="gender"
                       name="gender"
                       value={localForm.gender}
@@ -1135,6 +1587,7 @@ export default function OrdersTable() {
                     </div>
                   ) : (
                     <select
+                      ref={statusRef}
                       id="status"
                       name="status"
                       value={localForm.status}
@@ -1165,6 +1618,7 @@ export default function OrdersTable() {
                     Address
                   </label>
                   <input
+                    ref={addressRef}
                     id="address"
                     name="address"
                     value={localForm.address}
@@ -1192,6 +1646,7 @@ export default function OrdersTable() {
                     Country
                   </label>
                   <input
+                    ref={countryRef}
                     id="country"
                     name="country"
                     value={localForm.country}
@@ -1218,6 +1673,7 @@ export default function OrdersTable() {
                     Citizen ID
                   </label>
                   <input
+                    ref={citizenIdRef}
                     id="citizenId"
                     name="citizenId"
                     value={localForm.citizenId}
@@ -1225,6 +1681,21 @@ export default function OrdersTable() {
                       const { name, value } = e.target;
                       setLocalForm((s) => ({ ...s, [name]: value }));
                       setErrors((s) => ({ ...s, [name]: undefined }));
+                    }}
+                    onKeyDown={(e) => {
+                      // Enter trong input cuối cùng → Submit form
+                      if (e.key === "Enter" && !e.shiftKey && mode !== "view") {
+                        e.preventDefault();
+                        if (mode === "edit" && saveButtonRef.current && !isSubmitting) {
+                          saveButtonRef.current.click();
+                        } else if (
+                          mode === "create" &&
+                          createButtonRef.current &&
+                          !isSubmitting
+                        ) {
+                          createButtonRef.current.click();
+                        }
+                      }
                     }}
                     readOnly={mode === "view"}
                     className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
@@ -1241,6 +1712,7 @@ export default function OrdersTable() {
 
             <div className="flex justify-end gap-4 mt-6">
               <button
+                ref={closeButtonRef}
                 onClick={() => {
                   setShowModal(false);
                   setMode("create");
@@ -1248,21 +1720,26 @@ export default function OrdersTable() {
                   setIsSubmitting(false);
                 }}
                 className="px-4 min-h-[40px] py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-100 transition-colors duration-300"
+                title="Close modal (Press Escape)"
               >
                 Close
               </button>
               {mode === "edit" ? (
                 <button
+                  ref={saveButtonRef}
                   onClick={() => handleUpdate(localForm)}
                   className="px-4 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
+                  title="Save changes (Press Enter or Ctrl+Enter)"
                 >
                   Save
                 </button>
               ) : mode === "view" ? null : (
                 <button
+                  ref={createButtonRef}
                   onClick={() => handleCreate(localForm)}
                   className="px-4 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded-lg disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#FF3A3A] disabled:hover:bg-[#FF5A5A] transition-colors duration-300"
                   disabled={isSubmitting}
+                  title="Create order (Press Enter or Ctrl+Enter)"
                 >
                   {isSubmitting ? "Creating..." : "Create"}
                 </button>
