@@ -146,4 +146,9 @@ public class TestOrderController {
                 .result(testOrderPage)
                 .build();
     }
+
+    @GetMapping("/blood-collection/{bloodCollectionId}")
+    public RestResponse<TestOrderResponse> getTestOrderByBloodCollectionId(@PathVariable String bloodCollectionId) {
+        return testOrderService.getTestOrderByBloodCollectionId(bloodCollectionId);
+    }
 }

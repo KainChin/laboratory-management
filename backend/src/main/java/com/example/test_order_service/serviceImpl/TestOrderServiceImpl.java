@@ -332,4 +332,19 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    @Override
+    public RestResponse<TestOrderResponse> getTestOrderByBloodCollectionId(String bloodCollectionId) {
+        TestOrder testOrder = testOrderRepository.findByBloodCollectionId(bloodCollectionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Test order not found with blood collection ID: " + bloodCollectionId));
+
+        TestOrderResponse response = testOrderMapper.toTestOrderResponse(testOrder);
+
+        return RestResponse.<TestOrderResponse>builder()
+                .statusCode(200)
+                .result(response)
+                .message("Test order retrieved successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }
