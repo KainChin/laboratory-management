@@ -83,10 +83,25 @@ wait:
 eureka:
   client:
     service-url:
-      defaultZone: https://discovery-server-zsph.onrender.com/eureka/  # trỏ về Eureka local
+      defaultZone: https://discovery-server-zsph.onrender.com/eureka/
+    registry-fetch-interval-seconds: 30
+
   instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: false
+
+    hostname: 18.141.34.176
+
+    instance-id: ${spring.application.name}:${eureka.instance.hostname}:${server.port}
+
+    non-secure-port: ${server.port}
+    non-secure-port-enabled: true
+
+    health-check-url: http://${eureka.instance.hostname}:${server.port}/actuator/health
+    status-page-url: http://${eureka.instance.hostname}:${server.port}/actuator/info
+    home-page-url: http://${eureka.instance.hostname}:${server.port}/
+
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
 
 management:
   endpoints:
