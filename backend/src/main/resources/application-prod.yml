@@ -10,10 +10,10 @@ spring:
     username: lacdong21
     password: BPIhttA0Z2avq4020SmVljUsoHDGFi6t
     driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://localhost:5432/test-order-service
-#    username: postgres
-#    password: 12345
-#    driver-class-name: org.postgresql.Driver
+  #    url: jdbc:postgresql://localhost:5432/test-order-service
+  #    username: postgres
+  #    password: 12345
+  #    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -40,11 +40,11 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
-#  rabbitmq:
-#    host: localhost
-#    port: 5672
-#    username: guest
-#    password: guest
+  #  rabbitmq:
+  #    host: localhost
+  #    port: 5672
+  #    username: guest
+  #    password: guest
 
   cloud:
     compatibility-verifier:
