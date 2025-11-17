@@ -728,7 +728,7 @@ export default function OrdersTable() {
                 <tr key={row.id} className="border-b hover:bg-gray-50">
                   <td className="min-h-[40px] py-3 px-3">
                     <div
-                      className="truncate hover:text-[#FF5A5A] cursor-pointer transition-colors"
+                      className="truncate font-bold hover:text-[#FF5A5A] cursor-pointer transition-colors"
                       title={row.name}
                       role="button"
                       tabIndex={0}
