@@ -30,13 +30,13 @@ public class TestOrderController {
     private final TestOrderRepository testOrderRepository;
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('CREATE_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('CREATE_TEST_ORDER')")
     public RestResponse<TestOrderResponse> createTestOrder(@RequestBody @Valid TestOrderRequest request) {
         return testOrderService.createTestOrder(request);
     }
 
     @PutMapping("/{orderId}")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('MODIFY_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('MODIFY_TEST_ORDER')")
     public RestResponse<TestOrderResponse> updateTestOrder(
             @PathVariable String orderId,
             @RequestBody @Valid TestOrderUpdateRequest request) {
@@ -44,13 +44,13 @@ public class TestOrderController {
     }
 
     @GetMapping("/{orderId}")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<TestOrderDetailResponse> getTestOrderById(@PathVariable String orderId) {
         return testOrderService.getTestOrderById(orderId);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<PageResponse<TestOrderResponse>> getTestOrders(
             @RequestParam(required = false, defaultValue = "") String keyword,
             @RequestParam(defaultValue = "1") int page,
@@ -74,7 +74,7 @@ public class TestOrderController {
     }
 
     @DeleteMapping("/{orderId}")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('DELETE_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('DELETE_TEST_ORDER')")
     public RestResponse<PageResponse<TestOrderResponse>> deleteTestOrder(
             @PathVariable String orderId,
             @RequestParam(required = false, defaultValue = "") String keyword,
@@ -99,19 +99,19 @@ public class TestOrderController {
     }
 
     @GetMapping("/statistics")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<?> getTestOrderStatistics() {
         return testOrderService.getTestOrderStatistics();
     }
 
     @GetMapping("/daily-statistics")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<?> getDailyStatistics() {
         return testOrderService.getDailyStatistics();
     }
 
     @PatchMapping("/{orderId}/review")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<TestOrderResponse> reviewTestOrder(@PathVariable String orderId) {
         return testOrderService.reviewTestOrder(orderId);
     }
@@ -136,7 +136,7 @@ public class TestOrderController {
     }
 
     @GetMapping("/email")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<PageResponse<TestOrderDetailResponse>> getTestOrderByEmail(
             @RequestParam(required = false, defaultValue = "") String email,
             @RequestParam(defaultValue = "1") int page,
