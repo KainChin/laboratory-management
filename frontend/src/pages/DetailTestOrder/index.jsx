@@ -112,7 +112,7 @@ export default function DetailTestOrder() {
 
     setTimeout(() => {
       localStorage.setItem("scrollToTable", "true");
-      navigate("/");
+      navigate("/test-orders");
     }, 200);
   };
 
