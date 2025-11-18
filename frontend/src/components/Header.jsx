@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronsRight, Menu, Bell, Users, LogOut } from "lucide-react";
 import { FaHeartbeat } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getUserName } from "../utils/jwtUtils";
 
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [userName, setUserName] = useState("User");
+
+  // Get username from JWT token in localStorage
+  useEffect(() => {
+    const name = getUserName();
+    setUserName(name);
+  }, []);
 
   // Determine breadcrumb based on current path
   const getBreadcrumb = () => {
@@ -91,7 +99,7 @@ export default function Header() {
       {/* Right section */}
       <div className="flex items-center gap-2">
         <span className="text-[14px] text-muted-foreground hidden sm:inline">Welcome: </span>
-        <span className="text-[18px] font-semibold">User</span>
+        <span className="text-[18px] font-semibold">{userName}</span>
         <div className="flex items-center gap-[25px] ml-2">
           <Bell
             style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
