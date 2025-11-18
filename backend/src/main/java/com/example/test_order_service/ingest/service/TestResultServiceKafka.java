@@ -13,6 +13,7 @@ import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.repository.TestResultRepository;
 import com.example.test_order_service.service.TestResultService;
 
+import com.example.test_order_service.utils.GeneralUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Propagation;
@@ -193,6 +194,8 @@ public class TestResultServiceKafka implements TestResultService {
             p.setTestOrder(order);
         }
         result.setTestResultParameter(testResultParameterList);
+        order.setRunAt(LocalDateTime.now());
+        order.setRunBy(GeneralUtils.getCurrentUsername());
 
         // Step 11: Save entities
         TestResult savedResult = testResultRepository.save(result);
