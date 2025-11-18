@@ -135,9 +135,8 @@ export default function DetailTestOrder(props) {
     setLoadingBack(true);
     // small delay so user sees animation; adjust 300-600ms as desired
     setTimeout(() => {
-      // navigate back - change to router navigate if you use react-router
-      if (window.history.length > 1) window.history.back();
-      else window.location.href = "/"; // fallback
+      // navigate to test-orders page
+      navigate("/test-orders");
     }, 350);
   }
 
