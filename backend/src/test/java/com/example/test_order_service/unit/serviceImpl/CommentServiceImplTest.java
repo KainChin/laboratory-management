@@ -77,7 +77,6 @@ public class CommentServiceImplTest {
                 .commentText("This is a test comment")
                 .createdBy("Doctor A")
                 .createdAt(LocalDateTime.now())
-                .deleted(false)
                 .build();
 
         commentResponse = CommentResponse.builder()
