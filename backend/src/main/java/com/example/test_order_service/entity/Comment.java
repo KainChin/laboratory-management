@@ -34,16 +34,15 @@ public class Comment {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_by", nullable = false)
+    private String updatedBy;
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @Column(name = "deleted", nullable = false)
-    private boolean deleted;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.deleted = false;
     }
 
     @PreUpdate
