@@ -13,6 +13,7 @@ import com.example.test_order_service.service.TestOrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,11 +30,13 @@ public class TestOrderController {
     private final TestOrderRepository testOrderRepository;
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('CREATE_TEST_ORDER')")
     public RestResponse<TestOrderResponse> createTestOrder(@RequestBody @Valid TestOrderRequest request) {
         return testOrderService.createTestOrder(request);
     }
 
     @PutMapping("/{orderId}")
+    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('MODIFY_TEST_ORDER')")
     public RestResponse<TestOrderResponse> updateTestOrder(
             @PathVariable String orderId,
             @RequestBody @Valid TestOrderUpdateRequest request) {
@@ -41,11 +44,13 @@ public class TestOrderController {
     }
 
     @GetMapping("/{orderId}")
+    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<TestOrderDetailResponse> getTestOrderById(@PathVariable String orderId) {
         return testOrderService.getTestOrderById(orderId);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<PageResponse<TestOrderResponse>> getTestOrders(
             @RequestParam(required = false, defaultValue = "") String keyword,
             @RequestParam(defaultValue = "1") int page,
@@ -69,6 +74,7 @@ public class TestOrderController {
     }
 
     @DeleteMapping("/{orderId}")
+    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('DELETE_TEST_ORDER')")
     public RestResponse<PageResponse<TestOrderResponse>> deleteTestOrder(
             @PathVariable String orderId,
             @RequestParam(required = false, defaultValue = "") String keyword,
@@ -93,21 +99,26 @@ public class TestOrderController {
     }
 
     @GetMapping("/statistics")
+    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<?> getTestOrderStatistics() {
         return testOrderService.getTestOrderStatistics();
     }
 
     @GetMapping("/daily-statistics")
+    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<?> getDailyStatistics() {
         return testOrderService.getDailyStatistics();
     }
 
     @PatchMapping("/{orderId}/review")
+    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<TestOrderResponse> reviewTestOrder(@PathVariable String orderId) {
         return testOrderService.reviewTestOrder(orderId);
     }
+
     //Gửi yêu cầu đồng bộ kết quả xét nghiệm cho một đơn hàng cụ thể
     @PostMapping("/{orderId}/resync")
+    @PreAuthorize("hasRole('ROLE_LAB_USER')")
     public RestResponse<Void> resyncTestOrderResults(@PathVariable String orderId) {
 
         TestOrder order = testOrderRepository.findById(orderId)
@@ -124,7 +135,8 @@ public class TestOrderController {
                 .build();
     }
 
-    @GetMapping("/email/")
+    @GetMapping("/email")
+    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<PageResponse<TestOrderDetailResponse>> getTestOrderByEmail(
             @RequestParam(required = false, defaultValue = "") String email,
             @RequestParam(defaultValue = "1") int page,

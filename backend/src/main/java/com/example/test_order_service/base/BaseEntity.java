@@ -18,9 +18,15 @@ public abstract class BaseEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     protected LocalDateTime createdAt;
 
+    @Column(name = "updated_by")
+    protected String updatedBy;
+
 //    @LastModifiedDate -> Not needed as we are using @PreUpdate
     @Column(name = "updated_at")
     protected LocalDateTime updatedAt;
+
+    @Column(name = "deleted_by")
+    protected String deletedBy;
 
     @Column(name = "deleted", nullable = false)
     protected boolean deleted = false;

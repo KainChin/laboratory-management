@@ -13,6 +13,7 @@ import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.repository.CommentRepository;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.CommentService;
+import com.example.test_order_service.utils.GeneralUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = commentMapper.toCommentEntity(request);
         comment.setTestOrder(testOrder);
-        comment.setCreatedBy("System"); // TODO: Lấy từ security context
+        comment.setCreatedBy(GeneralUtils.getCurrentUsername());
 
         // Lưu vào DB
         Comment saved = commentRepository.save(comment);
@@ -78,6 +79,7 @@ public class CommentServiceImpl implements CommentService {
 
         // Luôn cập nhật text mới từ request
         comment.setCommentText(request.getCommentText());
+        comment.setUpdatedBy(GeneralUtils.getCurrentUsername());
 
         // Lưu vào DB
         Comment saved = commentRepository.save(comment);

@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +50,7 @@ public class TestOrderServiceImpl implements TestOrderService {
         }
 
         TestOrder testOrder = testOrderMapper.toTestOrderEntity(request);
-        testOrder.setCreatedBy("System");
+        testOrder.setCreatedBy(GeneralUtils.getCurrentUsername());
 
         testOrder.setBloodCollectionId(GeneralUtils.generateBloodCollectionId(testOrderRepository.countByDateCode(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
@@ -111,6 +113,7 @@ public class TestOrderServiceImpl implements TestOrderService {
         testOrder.setPhone(request.getPhone() != null ? request.getPhone() : testOrder.getPhone());
         testOrder.setAddress(request.getAddress() != null ? request.getAddress() : testOrder.getAddress());
         testOrder.setEmail(request.getEmail() != null ? request.getEmail() : testOrder.getEmail());
+        testOrder.setUpdatedBy(GeneralUtils.getCurrentUsername());
 
         TestOrder savedOrder = testOrderRepository.save(testOrder);
         
@@ -138,6 +141,7 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
         testOrder.setDeleted(true);
+        testOrder.setDeletedBy(GeneralUtils.getCurrentUsername());
         testOrderRepository.save(testOrder);
 
         return getTestOrders(pageable, keyword);
@@ -222,7 +226,7 @@ public class TestOrderServiceImpl implements TestOrderService {
         TestOrderStatus oldStatus = testOrder.getStatus();
         testOrder.setStatus(TestOrderStatus.REVIEWED);
         testOrder.setReviewedAt(LocalDateTime.now());
-        testOrder.setReviewedBy("System"); // TODO: Replace with actual user from security context
+        testOrder.setReviewedBy(GeneralUtils.getCurrentUsername());
 
         TestOrder savedOrder = testOrderRepository.save(testOrder);
 
