@@ -20,4 +20,5 @@ public interface TestOrderService {
     RestResponse<TestOrderResponse> reviewTestOrder(String orderId);
     PageResponse<TestOrderDetailResponse> getTestOrderByEmail(Pageable pageable, String email);
     RestResponse<?> getDailyStatistics();
+    RestResponse<TestOrderResponse> getTestOrderByBloodCollectionId(String bloodCollectionId);
 }
