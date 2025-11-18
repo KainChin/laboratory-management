@@ -21,7 +21,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<CommentResponse> createComment(
             @PathVariable String orderId,
             @RequestBody @Valid CreateCommentRequest request
@@ -30,7 +30,7 @@ public class CommentController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('ADD_COMMENT')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('ADD_COMMENT')")
     public RestResponse<List<CommentResponse>> getAllComments(
             @PathVariable String orderId
     ) {
@@ -45,7 +45,7 @@ public class CommentController {
     }
 
     @PutMapping("/{commentId}")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('MODIFY_COMMENT')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('MODIFY_COMMENT')")
     public RestResponse<CommentResponse> updateComment(
             @PathVariable String orderId,
             @PathVariable String commentId,
@@ -55,7 +55,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('DELETE_COMMENT')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('DELETE_COMMENT')")
     public RestResponse<Void> deleteComment(
             @PathVariable String orderId,
             @PathVariable String commentId

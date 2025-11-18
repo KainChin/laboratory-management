@@ -15,13 +15,13 @@ public class TestResultController {
     private final TestResultService testResultService;
 
     @PostMapping(value = "/hl7", consumes = MediaType.TEXT_PLAIN_VALUE)
-    @PreAuthorize("hasRole('ROLE_LAB_USER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN')")
     public RestResponse<TestResultResponse> receiveHl7(@RequestBody String hl7RawData) {
         return testResultService.receiveHl7(hl7RawData);
     }
 
     @GetMapping("/{bloodCollectionId}")
-    @PreAuthorize("hasRole('ROLE_LAB_USER') and hasAuthority('REVIEW_TEST_ORDER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<?> getResultByBloodCollectionId(@PathVariable String bloodCollectionId) {
         return testResultService.getResultByBloodCollectionId(bloodCollectionId);
     }
