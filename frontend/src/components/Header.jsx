@@ -1,8 +1,36 @@
 import React from "react";
 import { ChevronsRight, Menu, Bell, Users, LogOut } from "lucide-react";
 import { FaHeartbeat } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Determine breadcrumb based on current path
+  const getBreadcrumb = () => {
+    const path = location.pathname;
+    
+    if (path.startsWith("/test-orders/detail/")) {
+      return [
+        { label: "HOMEPAGE", path: "/" },
+        { label: "TEST ORDER", path: "/test-orders" },
+        { label: "DETAIL", path: null } // Current page, not clickable
+      ];
+    } else if (path === "/test-orders") {
+      return [
+        { label: "HOMEPAGE", path: "/" },
+        { label: "TEST ORDER", path: null } // Current page, not clickable
+      ];
+    } else {
+      return [
+        { label: "HOMEPAGE", path: null } // Current page, not clickable
+      ];
+    }
+  };
+
+  const breadcrumbs = getBreadcrumb();
+
   return (
     <header className="h-[60px] bg-card border-b border-border flex items-center justify-between px-4">
       {/* Left section */}
@@ -30,10 +58,32 @@ export default function Header() {
             </span>
           </div>
           <>
-            <span style={{ margin: "0 10px", color: "#777777" }}>
-              <ChevronsRight style={{ fontSize: "24px" }} />
-            </span>
-            <span style={{ color: "#FF5A5A", fontWeight: "bold" }}>HOMEPAGE</span>
+            {breadcrumbs.map((crumb, index) => (
+              <React.Fragment key={index}>
+                <span style={{ margin: "0 10px", color: "#777777" }}>
+                  <ChevronsRight style={{ fontSize: "24px" }} />
+                </span>
+                {crumb.path ? (
+                  <span 
+                    onClick={() => navigate(crumb.path)}
+                    style={{ 
+                      color: "#FF5A5A", 
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      transition: "opacity 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.target.style.opacity = "0.7"}
+                    onMouseLeave={(e) => e.target.style.opacity = "1"}
+                  >
+                    {crumb.label}
+                  </span>
+                ) : (
+                  <span style={{ color: "#FF5A5A", fontWeight: "bold" }}>
+                    {crumb.label}
+                  </span>
+                )}
+              </React.Fragment>
+            ))}
           </>
         </div>
       </div>
