@@ -6,6 +6,7 @@ import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.TestResultParameter;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
+import com.example.test_order_service.exception.ResourceNotFoundException;
 import com.example.test_order_service.mapper.TestResultMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.repository.TestResultRepository;
@@ -150,6 +151,9 @@ public class TestResultServiceImpl implements TestResultService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "TestOrder not found for blood collection Id: " + finalBloodCollectionId
                 ));
+        if (order.isDeleted()) {
+            throw new ResourceNotFoundException("Test order not found");
+        }
 
         // Step 9: Create new TestResult
         TestResult result = TestResult.builder()

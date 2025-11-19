@@ -2,15 +2,15 @@ server:
   port: 6868
 
 spring:
-  profiles:
-    active: prod
+#  profiles:
+#    active: prod
 
   application:
     name: test-order-service
   datasource:
     url: jdbc:postgresql://localhost:5432/test-order-service
     username: postgres
-    password: 123456
+    password: 12345
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

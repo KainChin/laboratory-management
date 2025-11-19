@@ -141,6 +141,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<RestResponse<Void>> handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
+        RestResponse<Void> response = RestResponse.<Void>builder()
+                .timestamp(LocalDateTime.now())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(List.of(ex.getMessage()))
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public  ResponseEntity<RestResponse<Void>> handleException(Exception ex, HttpServletRequest request) {
         RestResponse<Void> response = RestResponse.<Void>builder()
