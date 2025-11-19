@@ -318,8 +318,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     id="patient-name-error"
                     role="alert"
                     style={{
-                      color: "#FF5A5A",
-                      fontSize: 12,
+                      color: "#FF0000",
+                      fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
                     }}>
@@ -362,7 +362,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     id="gender-error"
                     role="alert"
                     style={{
-                      color: "#FF5A5A",
+                      color: "#FF0000",
                       fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
@@ -403,7 +403,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     id="phone-error"
                     role="alert"
                     style={{
-                      color: "#FF5A5A",
+                      color: "#FF0000",
                       fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
@@ -444,8 +444,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     id="address-error"
                     role="alert"
                     style={{
-                      color: "#FF5A5A",
-                      fontSize: 12,
+                      color: "#FF0000",
+                      fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
                     }}>
@@ -485,8 +485,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     id="country-error"
                     role="alert"
                     style={{
-                      color: "#FF5A5A",
-                      fontSize: 12,
+                      color: "#FF0000",
+                      fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
                     }}>
@@ -527,7 +527,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     id="dob-error"
                     role="alert"
                     style={{
-                      color: "#FF5A5A",
+                      color: "#FF0000",
                       fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
@@ -568,7 +568,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     id="email-error"
                     role="alert"
                     style={{
-                      color: "#FF5A5A",
+                      color: "#FF0000",
                       fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
@@ -609,8 +609,8 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                     id="citizen-id-error"
                     role="alert"
                     style={{
-                      color: "#FF5A5A",
-                      fontSize: 12,
+                      color: "#FF0000",
+                      fontSize: 14,
                       marginTop: 8,
                       fontWeight: 500
                     }}>
