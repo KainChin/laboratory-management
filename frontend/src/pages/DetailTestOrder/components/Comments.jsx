@@ -19,6 +19,7 @@ export default function Comments({
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
   const [editingSaving, setEditingSaving] = useState(false);
+  const [editingError, setEditingError] = useState("");
 
   const commentsListRef = useRef(null);
   const editingInputRef = useRef(null);
@@ -228,19 +229,25 @@ export default function Comments({
       comment.commentText ?? comment.comment ?? comment.body ?? ""
     );
     setError(null);
+    setEditingError("");
   }
 
   function cancelEdit() {
     setEditingId(null);
     setEditingText("");
+    setEditingError("");
   }
 
   async function saveEdit(commentId) {
     if (!commentId) return;
     const trimmed = (editingText || "").trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      setEditingError("Comment cannot be empty");
+      return;
+    }
     setEditingSaving(true);
     setError(null);
+    setEditingError("");
     try {
       const id = getOrderId();
       if (!id) throw new Error("Missing orderId");
@@ -448,6 +455,7 @@ export default function Comments({
                           value={editingText}
                           onChange={(e) => {
                             setEditingText(e.target.value);
+                            if (editingError) setEditingError("");
                             requestAnimationFrame(resizeEditingInput);
                           }}
                           onInput={resizeEditingInput}
@@ -459,6 +467,11 @@ export default function Comments({
                           aria-label="Edit comment text"
                           aria-required="true"
                         />
+                        {editingError && (
+                          <div role="alert" aria-live="assertive" style={{ color: "#FF0000", fontSize: 14, marginTop: 4 }}>
+                            {editingError}
+                          </div>
+                        )}
                         <div
                           style={{
                             display: "flex",

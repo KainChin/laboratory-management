@@ -153,8 +153,18 @@ export default function TestResult({ tests, onUpdate }) {
       setIsModalOpen(false);
     } catch (err) {
       console.error("HL7 submit error:", err);
-      setPostError(err.message || "Failed to submit HL7");
-      showToast({ type: "error", title: "HL7 Import Failed", message: err.message || "Failed to submit HL7" });
+      
+      // Extract detailed error message from response
+      let errorMessage = "Failed to submit HL7";
+      if (err.response?.data?.message) {
+        // Handle both array and string message formats
+        const msg = err.response.data.message;
+        errorMessage = Array.isArray(msg) ? msg.join(", ") : msg;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setPostError(errorMessage);
     } finally {
       setPosting(false);
     }
@@ -263,7 +273,7 @@ export default function TestResult({ tests, onUpdate }) {
               aria-invalid={postError ? "true" : "false"}
             />
 
-            {postError && <div role="alert" aria-live="assertive" style={{ color: "#e11d48", marginTop: 8 }}>{postError}</div>}
+            {postError && <div role="alert" aria-live="assertive" style={{ color: "#FF0000", marginTop: 8 }}>{postError}</div>}
 
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
               <button 
