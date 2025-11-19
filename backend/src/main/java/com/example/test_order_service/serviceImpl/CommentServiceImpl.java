@@ -75,7 +75,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         // Không cần query testOrder nếu không dùng
-        com.example.test_order_service.entity.TestOrder testOrder = testOrderRepository.findById(orderId)
+        TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
         if (testOrder.isDeleted()) {
             throw new ResourceNotFoundException("Test order not found");
