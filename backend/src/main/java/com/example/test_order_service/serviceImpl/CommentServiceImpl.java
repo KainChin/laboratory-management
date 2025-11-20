@@ -77,6 +77,11 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
+        String currentUsername = GeneralUtils.getCurrentUsername();
+        if (!comment.getCreatedBy().equals(currentUsername)) {
+            throw new IllegalStateException("User does not have permission to update this comment");
+        }
+
         // Luôn cập nhật text mới từ request
         comment.setCommentText(request.getCommentText());
         comment.setUpdatedBy(GeneralUtils.getCurrentUsername());
@@ -109,6 +114,11 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+
+        String currentUsername = GeneralUtils.getCurrentUsername();
+        if (!comment.getCreatedBy().equals(currentUsername)) {
+            throw new IllegalStateException("User does not have permission to delete this comment");
+        }
 
         // Xóa khỏi DB
         commentRepository.deleteById(comment.getCommentId());

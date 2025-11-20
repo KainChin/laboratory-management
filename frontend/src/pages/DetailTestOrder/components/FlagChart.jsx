@@ -128,7 +128,7 @@ export default function FlagChart({ orderId: propOrderId = null, testResults = n
               <path d="M3 12h18M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h4 id="flag-chart-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800, letterSpacing: '0.6px', margin: 0 }}>Flag Chart</h4>
+          <h4 id="flag-chart-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800, margin: 0 }}>Flag Chart</h4>
         </div>
       </div>
 

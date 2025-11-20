@@ -358,11 +358,11 @@ export default function DetailTestOrder() {
         </div>
 
         <div>
-          <h1 className="text-[24px] font-bold text-[#FF5A5A] tracking-[0.35em] leading-tight">
+          <h1 className="text-[24px] font-bold text-[#FF5A5A] leading-tight">
             TEST ORDER DETAIL
           </h1>
           <div className="text-sm">
-            <span className="text-[#FF5A5A] font-medium">ORDER ID:</span> <span className="font-medium text-black">{order.testOrderId}</span>
+            <span className="text-[#000000] font-bold">ORDER ID:</span> <span className="font-medium text-black">{order.testOrderId}</span>
           </div>
         </div>
 
