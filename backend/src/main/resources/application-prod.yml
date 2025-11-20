@@ -107,7 +107,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
   health:
     livenessstate:
       enabled: true

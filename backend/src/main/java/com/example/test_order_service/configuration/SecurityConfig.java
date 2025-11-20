@@ -23,7 +23,8 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST = {
             "/auth/**", "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/swagger-ui.html", "/users/**"
+            "/swagger-ui.html", "/users/**",
+            "/actuator/**"
     };
     //    private final JwtDecoderConfig jwtDecoderConfig;
     private final JwtDecoder jwtDecoder;
