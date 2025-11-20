@@ -39,6 +39,10 @@ public class CommentServiceImpl implements CommentService {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
+        if (testOrder.isDeleted()) {
+            throw new ResourceNotFoundException("Test order not found");
+        }
+
         Comment comment = commentMapper.toCommentEntity(request);
         comment.setTestOrder(testOrder);
         comment.setCreatedBy(GeneralUtils.getCurrentUsername());
@@ -71,8 +75,11 @@ public class CommentServiceImpl implements CommentService {
         }
 
         // Không cần query testOrder nếu không dùng
-        testOrderRepository.findById(orderId)
+        TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+        if (testOrder.isDeleted()) {
+            throw new ResourceNotFoundException("Test order not found");
+        }
 
         Comment comment = commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
@@ -104,8 +111,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public RestResponse<Void> deleteComment(String orderId, String commentId) {
         // Không cần query testOrder nếu bạn không dùng
-        testOrderRepository.findById(orderId)
+        TestOrder order = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        if (order.isDeleted()) {
+            throw new ResourceNotFoundException("Test order not found");
+        }
 
         Comment comment = commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
@@ -132,8 +143,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentResponse> getAllComments(String orderId) {
         // Đảm bảo test order tồn tại
-        testOrderRepository.findById(orderId)
+        TestOrder order = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        if (order.isDeleted()) {
+            throw new ResourceNotFoundException("Test order not found");
+        }
 
         return commentRepository.findAllByTestOrder_TestOrderId(orderId).stream()
                 .sorted(Comparator.comparing(Comment::getCreatedAt))
