@@ -4,9 +4,7 @@ import { motion } from "framer-motion";
 import { FaBars } from "react-icons/fa";
 import {
   FaHome,
-  FaUsers,
-  FaUserCog,
-  FaUserCheck,
+  FaFlask,
 } from "react-icons/fa";
 
 // Inline component
@@ -43,9 +41,7 @@ export default function Sidebar() {
 
   const visibleMenuItems = [
     { path: "/", icon: FaHome, privilege: "READ_ONLY", desc: "Home" },
-    { path: "/test-orders", icon: FaUsers, privilege: "VIEW_ROLE", desc: "Test Orders" },
-    { path: "#", icon: FaUserCog, privilege: "VIEW_USER", desc: "User management" },
-    { path: "#", icon: FaUserCheck, privilege: "VIEW_USER", desc: "Account management" },
+    { path: "/test-orders", icon: FaFlask, privilege: "VIEW_ROLE", desc: "Test Orders" },
   ];
 
   // disable scroll on tablet and mobile viewport
@@ -69,7 +65,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`bg-[#FF5A5A] text-white z-[100] transition-all duration-200 ease-in-out
+      className={`bg-[#FF5A5A] text-white z-[40] transition-all duration-200 ease-in-out
         ${isSideBarOpen ? "md:w-[200px]" : "w-[60px]"}`}
     >
       <div

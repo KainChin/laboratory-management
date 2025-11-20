@@ -6,6 +6,7 @@ import {
   FaTools,
   FaChartLine,
   FaUserShield,
+  FaKey,
 } from "react-icons/fa";
 import { BsBoxSeamFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
@@ -13,7 +14,7 @@ import { Link } from "react-router-dom";
 // Mock data for allowed services
 const mockAllowedServices = [
   "MONITORING_SERVICE",
-  "TEST_ORDER_SERVICE",
+  "IAM_SERVICE",
   "INSTRUMENT_SERVICE",
   "WAREHOUSE_SERVICE",
   "PATIENT_SERVICE",
@@ -32,11 +33,11 @@ function ServiceWidget() {
       path: "http://13.238.99.218:3000/monitoring/",
       color: "from-blue-500 to-cyan-500",
     },
-    TEST_ORDER_SERVICE: {
-      title: "Test Order Management",
-      icon: <FaFlask size={24} />,
-      desc: "Handles creating, updating, reviewing test orders and related comments.",
-      path: "/test-orders",
+    IAM_SERVICE: {
+      title: "IAM Management",
+      icon: <FaKey size={24} />,
+      desc: "Identity and Access Management - Handles user authentication, authorization, roles, and permissions.",
+      path: "http://35.172.58.177:5173/",
       color: "from-purple-500 to-pink-500",
     },
     INSTRUMENT_SERVICE: {
