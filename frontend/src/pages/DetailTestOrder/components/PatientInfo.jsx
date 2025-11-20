@@ -172,7 +172,7 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
       fontWeight: 800,
       margin: 0,
       lineHeight: 1,
-      letterSpacing: '0.6px',
+      // letterSpacing: '0.6px',
     },
     grid: {
       display: "grid",

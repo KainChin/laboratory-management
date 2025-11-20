@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { MessageSquare, Edit2, Trash2 } from "lucide-react";
 import axios from "../../../api/axios";
 import { showToast } from "../../../components/Toast";
+import { getUserName } from "../../../utils/jwtUtils";
 import "../DetailTestOrder.css";
 
 export default function Comments({
@@ -26,6 +27,7 @@ export default function Comments({
   const commentRefs = useRef({});
 
   const [confirmPortal, setConfirmPortal] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState("");
 
   const getOrderId = () => {
     if (propOrderId) return String(propOrderId).trim();
@@ -73,6 +75,12 @@ export default function Comments({
 
   // small helper
   const extractPayload = (j) => j?.result ?? j ?? null;
+
+  // Get logged-in user from JWT token
+  useEffect(() => {
+    const username = getUserName();
+    setLoggedInUser(username || "");
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -184,7 +192,7 @@ export default function Comments({
       });
       showToast({ type: "success", title: "Success", message: "Comment added successfully" });
     } catch (err) {
-      const errorMsg = err.message || "Failed to add comment";
+      const errorMsg = err.response?.data?.message || err.message || "Failed to add comment";
       setError(errorMsg);
       showToast({ type: "error", title: "Error", message: errorMsg });
       console.error("Add comment error:", err);
@@ -211,7 +219,7 @@ export default function Comments({
       );
       showToast({ type: "success", title: "Success", message: "Comment deleted successfully" });
     } catch (err) {
-      const errorMsg = err.message || "Failed to delete comment";
+      const errorMsg = err.response?.data?.message || err.message || "Failed to delete comment";
       setError(errorMsg);
       showToast({ type: "error", title: "Error", message: errorMsg });
       console.error("Delete comment error:", err);
@@ -274,7 +282,7 @@ export default function Comments({
       setEditingId(null);
       showToast({ type: "success", title: "Success", message: "Comment updated successfully" });
     } catch (err) {
-      const errorMsg = err.message || "Failed to update comment";
+      const errorMsg = err.response?.data?.message || err.message || "Failed to update comment";
       setError(errorMsg);
       showToast({ type: "error", title: "Error", message: errorMsg });
       console.error("Update comment error:", err);
@@ -377,7 +385,7 @@ export default function Comments({
           <div className="icon-sq" aria-hidden="true">
             <MessageSquare size={24} />
           </div>
-          <h3 id="comments-section-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800, letterSpacing: '0.6px', margin: 0 }}>Comments</h3>
+          <h3 id="comments-section-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800, margin: 0 }}>Comments</h3>
         </div>
       </div>
 
@@ -527,11 +535,12 @@ export default function Comments({
                     }}
                   >
                     <div style={{ fontSize: 12, color: "#9ca3af" }} />
-                    <div
-                      className="comment-actions"
-                      style={{ display: "flex", gap: 8 }}
-                    >
-                      {!isEditing && (
+                    {/* Only show action buttons if comment belongs to current user */}
+                    {!isEditing && loggedInUser && (c.createdBy ?? c.author ?? "") === loggedInUser && (
+                      <div
+                        className="comment-actions"
+                        style={{ display: "flex", gap: 8 }}
+                      >
                         <button
                           className="icon-btn"
                           title="Edit"
@@ -550,8 +559,6 @@ export default function Comments({
                         >
                           <Edit2 size={24} aria-hidden="true" />
                         </button>
-                      )}
-                      {!isEditing && (
                         <button
                           className="icon-btn"
                           title="Delete"
@@ -574,8 +581,8 @@ export default function Comments({
                         >
                           <Trash2 size={24} aria-hidden="true" />
                         </button>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

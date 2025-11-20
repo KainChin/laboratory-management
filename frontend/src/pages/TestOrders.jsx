@@ -213,10 +213,10 @@ export default function TestOrders() {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-[24px] leading-none font-extrabold tracking-[0.35em] uppercase text-[#FF5A5A]">
+            <h1 className="text-[24px] leading-none font-bold uppercase text-[#FF5A5A]">
               TEST ORDERS
             </h1>
-            <p className="italic text-[20px] text-gray-700 mt-2">
+            <p className="text-[20px] text-gray-700 mt-2">
               Manage patient test orders and view laboratory results
             </p>
           </div>

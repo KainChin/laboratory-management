@@ -175,7 +175,7 @@ export default function TestResult({ tests, onUpdate }) {
       <div className="dto-card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div className="dto-icon"><ClipboardList size={24} /></div>
-          <h3 className="dto-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800, letterSpacing: '0.6px' }}>Test Result</h3>
+          <h3 className="dto-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800 }}>Test Result</h3>
         </div>
 
         <div>

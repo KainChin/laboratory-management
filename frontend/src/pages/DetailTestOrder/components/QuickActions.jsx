@@ -82,7 +82,7 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
           <div className="icon-sq" aria-hidden="true">
             <List size={24} />
           </div>
-          <h4 id="quick-actions-title">Quick Action</h4>
+          <h4 id="quick-actions-title" style={{ letterSpacing: 0 }}>Quick Action</h4>
         </div>
       </div>
 

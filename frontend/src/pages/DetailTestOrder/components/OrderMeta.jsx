@@ -54,7 +54,7 @@ export default function OrderMeta(props) {
         <div className="card-header-left">
           {/* Created uses Calendar icon now */}
           <div className="icon-sq" aria-hidden="true"><Calendar size={24} /></div>
-          <h4 id="order-meta-title">Created</h4>
+          <h4 id="order-meta-title" style={{ letterSpacing: 0 }}>Created</h4>
         </div>
       </div>
 
