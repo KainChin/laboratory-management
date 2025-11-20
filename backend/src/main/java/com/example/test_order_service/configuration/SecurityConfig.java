@@ -36,7 +36,10 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173") // React frontend port
+                        .allowedOrigins(
+                                "http://18.141.34.176:5173",
+                                "http://localhost:5173"
+                        )// React frontend port
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true)
