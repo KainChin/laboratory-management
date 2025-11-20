@@ -97,6 +97,10 @@ public class TestOrderServiceImpl implements TestOrderService {
     public RestResponse<TestOrderResponse> updateTestOrder(String orderId, TestOrderUpdateRequest request) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        if (testOrder.isDeleted()) {
+            throw new ResourceNotFoundException("Test order not found");
+        }
         
         // Lưu status cũ trước khi update
         TestOrderStatus oldStatus = testOrder.getStatus();
@@ -140,6 +144,10 @@ public class TestOrderServiceImpl implements TestOrderService {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
+        if (testOrder.isDeleted()) {
+            throw new ResourceNotFoundException("Test order not found");
+        }
+
         testOrder.setDeleted(true);
         testOrder.setDeletedBy(GeneralUtils.getCurrentUsername());
         testOrderRepository.save(testOrder);
@@ -152,6 +160,10 @@ public class TestOrderServiceImpl implements TestOrderService {
     public RestResponse<TestOrderDetailResponse> getTestOrderById(String orderId) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        if (testOrder.isDeleted()) {
+            throw new ResourceNotFoundException("Test order not found");
+        }
 
         TestOrderDetailResponse testOrderDetailResponse = testOrderMapper.toTestOrderDetailResponse(testOrder);
         testOrderDetailResponse.setAge(GeneralUtils.calculateAge(testOrder.getDateOfBirth()));
@@ -216,6 +228,10 @@ public class TestOrderServiceImpl implements TestOrderService {
     public RestResponse<TestOrderResponse> reviewTestOrder(String orderId) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+
+        if (testOrder.isDeleted()) {
+            throw new ResourceNotFoundException("Test order not found");
+        }
 
         // Validate current status is COMPLETED
         if (testOrder.getStatus() != TestOrderStatus.COMPLETED) {

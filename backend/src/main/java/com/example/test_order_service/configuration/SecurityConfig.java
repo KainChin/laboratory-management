@@ -23,7 +23,8 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST = {
             "/auth/**", "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/swagger-ui.html", "/users/**"
+            "/swagger-ui.html", "/users/**",
+            "/actuator/**"
     };
     //    private final JwtDecoderConfig jwtDecoderConfig;
     private final JwtDecoder jwtDecoder;
@@ -35,7 +36,10 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173") // React frontend port
+                        .allowedOrigins(
+                                "http://18.141.34.176:5173",
+                                "http://localhost:5173"
+                        )// React frontend port
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true)
