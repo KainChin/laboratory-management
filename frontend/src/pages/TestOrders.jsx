@@ -18,6 +18,16 @@ export default function TestOrders() {
     weeklyData: [],
   });
 
+  // Filter states
+  const [filters, setFilters] = useState({
+    sortBy: "patientName",
+    sortDir: "asc",
+    startDate: "",
+    endDate: "",
+    status: "",
+    sortByStatus: "",
+  });
+
   // Ref để chụp biểu đồ
   const chartRef = useRef(null);
 
@@ -90,14 +100,39 @@ export default function TestOrders() {
     },
   ];
 
+  // Handle filter changes
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // Reset filters
+  const handleResetFilters = () => {
+    setFilters({
+      sortBy: "patientName",
+      sortDir: "asc",
+      startDate: "",
+      endDate: "",
+      status: "",
+      sortByStatus: "",
+    });
+  };
+
   // 🎯 Excel export with ExcelJS
   const handleExportExcel = async () => {
     try {
       const queryParams = new URLSearchParams({
         page: "0",
         size: "1000",
-        sortDir: "desc",
+        sortBy: filters.sortBy,
+        sortDir: filters.sortDir,
       });
+
+      if (filters.startDate) queryParams.append("startDate", filters.startDate);
+      if (filters.endDate) queryParams.append("endDate", filters.endDate);
+      if (filters.status) queryParams.append("status", filters.status);
+      if (filters.sortBy === "status" && filters.sortByStatus) {
+        queryParams.set("sortBy", filters.sortByStatus);
+      }
 
       const response = await axios.get(`/test-orders?${queryParams}`);
       const result = response.data;
@@ -163,8 +198,15 @@ export default function TestOrders() {
         const status = (o.status || "").toLowerCase();
         let color = "FFDDEBF7"; // pending-blue
 
-        if (status.includes("comp")) color = "FFD4EDDA"; // green
-        else if (status.includes("cancel")) color = "FFF8D7DA"; // red
+        if (status.includes("com")) {
+          color = "FFD4EDDA"; // Xanh lá (green)
+        } else if (status.includes("review")) {
+          color = "FFE9D5FF"; // Tím (purple)
+        } else if (status.includes("ai")) {
+          color = "FFFED7AA"; // Cam (orange)
+        } else if (status.includes("cancel")) {
+          color = "FFF8D7DA"; // Đỏ (red)
+        }
 
         statusCell.fill = {
           type: "pattern",
@@ -223,7 +265,7 @@ export default function TestOrders() {
           <div className="flex gap-4">
             <button
               onClick={handleExportExcel}
-              className="bg-[#FF5A5A] text-white px-3 min-h-[40px] py-2 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
+              className="bg-[#FF5A5A] text-white px-4 min-h-[40px] py-2 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
             >
               Export Excel
             </button>
@@ -253,7 +295,11 @@ export default function TestOrders() {
       <ActivityCard />
 
       {/* TABLE */}
-      <OrdersTable />
+      <OrdersTable 
+        filters={filters} 
+        onFilterChange={handleFilterChange}
+        onResetFilters={handleResetFilters}
+      />
     </div>
   );
 }
