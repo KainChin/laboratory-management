@@ -8,8 +8,20 @@ import ToastContainer from "./components/Toast";
 import { useAuthToken } from "./hooks/useAuthToken";
 
 function AppContent() {
-  // Sử dụng hook để tự động xử lý token từ URL
-  const { isAuthenticated, getToken, clearToken } = useAuthToken();
+  // Sử dụng hook để tự động xử lý token từ URL và silent login
+  const { loading, error, userInfo, isAuthenticated, getToken, clearToken, refreshToken } = useAuthToken();
+
+  // Hiển thị loading khi đang kiểm tra auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang kiểm tra xác thực...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

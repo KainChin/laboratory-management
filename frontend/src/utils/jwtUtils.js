@@ -26,15 +26,24 @@ export const decodeJWT = (token) => {
 };
 
 /**
+ * Parse claims from JWT token (alias for decodeJWT)
+ * @param {string} token - JWT token to parse
+ * @returns {object|null} - Parsed claims or null
+ */
+export const parseClaims = (token) => {
+  return decodeJWT(token);
+};
+
+/**
  * Get user info from access token in localStorage
  * @returns {object|null} - User info from token or null
  */
 export const getUserFromToken = () => {
   try {
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) return null;
+    const token = localStorage.getItem('token');
+    if (!token) return null;
     
-    return decodeJWT(accessToken);
+    return decodeJWT(token);
   } catch (error) {
     console.error('Error getting user from token:', error);
     return null;
@@ -52,10 +61,18 @@ export const getUserName = () => {
 
 /**
  * Check if token is expired
+ * @param {string} token - Optional token to check, if not provided will get from localStorage
  * @returns {boolean} - True if expired or invalid
  */
-export const isTokenExpired = () => {
-  const userInfo = getUserFromToken();
+export const isTokenExpired = (token) => {
+  let userInfo;
+  
+  if (token) {
+    userInfo = decodeJWT(token);
+  } else {
+    userInfo = getUserFromToken();
+  }
+  
   if (!userInfo || !userInfo.exp) return true;
   
   const currentTime = Math.floor(Date.now() / 1000);

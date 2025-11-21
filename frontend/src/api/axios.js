@@ -4,12 +4,14 @@ const instance = axios.create({
   baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
+  withCredentials: true, // Để gửi cookie cho refresh token
 });
+
 // Interceptor để tự động thêm Bearer token vào mọi request
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -20,15 +22,17 @@ instance.interceptors.request.use(
   }
 );
 
-// Interceptor để xử lý response errors (optional - xử lý 401 Unauthorized)
+// Interceptor để xử lý response errors
 instance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
       // Token hết hạn hoặc không hợp lệ
-      localStorage.removeItem('accessToken');
-      // Có thể redirect về trang login nếu cần
-      // window.location.href = '/login';
+      console.log('❌ Token không hợp lệ hoặc hết hạn');
+      localStorage.removeItem('token');
+      
+      // Có thể redirect về trang chủ hoặc hiển thị thông báo
+      window.dispatchEvent(new Event('token-expired'));
     }
     return Promise.reject(error);
   }
