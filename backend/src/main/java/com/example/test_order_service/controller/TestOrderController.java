@@ -7,6 +7,7 @@ import com.example.test_order_service.dto.response.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.TestOrder;
+import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.ingest.publisher.ResyncRequestPublisher;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
@@ -57,6 +58,7 @@ public class TestOrderController {
             @RequestParam(required = false, defaultValue = "") String keyword,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) TestOrderStatus status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "patientName") String sortBy,
@@ -65,7 +67,7 @@ public class TestOrderController {
         int pageIndex = page < 1 ? 0 : page - 1;
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortBy));
 
-        PageResponse<TestOrderResponse> testOrderPage = testOrderService.getTestOrders(pageable, keyword, startDate, endDate);
+        PageResponse<TestOrderResponse> testOrderPage = testOrderService.getTestOrders(pageable, keyword, startDate, endDate, status);
 
         return RestResponse.<PageResponse<TestOrderResponse>>builder()
                 .timestamp(LocalDateTime.now())
@@ -82,6 +84,7 @@ public class TestOrderController {
             @RequestParam(required = false, defaultValue = "") String keyword,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) TestOrderStatus status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "patientName") String sortBy,
@@ -93,7 +96,7 @@ public class TestOrderController {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortBy));
 
         PageResponse<TestOrderResponse> testOrderPage = testOrderService.deleteTestOrder(
-                orderId, pageable, keyword, startDate, endDate
+                orderId, pageable, keyword, startDate, endDate, status
         );
 
 
