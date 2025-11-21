@@ -163,8 +163,15 @@ export default function TestOrders() {
         const status = (o.status || "").toLowerCase();
         let color = "FFDDEBF7"; // pending-blue
 
-        if (status.includes("comp")) color = "FFD4EDDA"; // green
-        else if (status.includes("cancel")) color = "FFF8D7DA"; // red
+        if (status.includes("com")) {
+          color = "FFD4EDDA"; // Xanh lá (green)
+        } else if (status.includes("review")) {
+          color = "FFE9D5FF"; // Tím (purple)
+        } else if (status.includes("ai")) {
+          color = "FFFED7AA"; // Cam (orange)
+        } else if (status.includes("cancel")) {
+          color = "FFF8D7DA"; // Đỏ (red)
+        }
 
         statusCell.fill = {
           type: "pattern",
