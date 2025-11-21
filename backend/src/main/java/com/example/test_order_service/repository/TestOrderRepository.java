@@ -8,13 +8,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface TestOrderRepository extends JpaRepository<TestOrder, String> {
-    @Query("SELECT t FROM TestOrder t where t.deleted = false AND t.patientName ILIKE CONCAT('%', :keyword, '%')")
-    Page<TestOrder> findTestOrdersByParams(Pageable pageable, @Param("keyword") String keyword);
+    @Query("SELECT t FROM TestOrder t WHERE t.deleted = false " +
+            "AND t.patientName ILIKE CONCAT('%', :keyword, '%') " +
+            "AND (CAST(:startDateTime AS timestamp) IS NULL OR t.createdAt >= :startDateTime) " +
+            "AND (CAST(:endDateTime AS timestamp) IS NULL OR t.createdAt <= :endDateTime)")
+    Page<TestOrder> findTestOrdersByParams(Pageable pageable,
+                                           @Param("keyword") String keyword,
+                                           @Param("startDateTime") LocalDateTime startDateTime,
+                                           @Param("endDateTime") LocalDateTime endDateTime);
 
     @Query("SELECT COUNT(t) FROM TestOrder t WHERE t.deleted = false")
     long countActive();

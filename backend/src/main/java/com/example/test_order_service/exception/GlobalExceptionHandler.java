@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
@@ -153,8 +154,27 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<RestResponse<Void>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String expectedType = (ex.getRequiredType() != null && ex.getRequiredType().equals(LocalDate.class))
+                ? "yyyy-MM-dd"
+                : (ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown");
+
+        String message = String.format("Invalid value '%s' for parameter '%s'. Expected type: %s",
+                ex.getValue(), ex.getName(), expectedType);
+
+        RestResponse<Void> response = RestResponse.<Void>builder()
+                .timestamp(LocalDateTime.now())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(List.of(message))
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
-    public  ResponseEntity<RestResponse<Void>> handleException(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<RestResponse<Void>> handleException(Exception ex, HttpServletRequest request) {
         RestResponse<Void> response = RestResponse.<Void>builder()
                 .timestamp(LocalDateTime.now())
                 .statusCode(HttpStatus.FORBIDDEN.value())
