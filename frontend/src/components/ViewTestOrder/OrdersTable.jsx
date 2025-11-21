@@ -1,4 +1,4 @@
-import { Eye, Edit, Trash2, Filter, Search } from "lucide-react";
+import { Eye, Edit, Trash2, Filter, Search, X, ChevronDown, ChevronUp } from "lucide-react";
 import {
   useState,
   useEffect,
@@ -92,14 +92,14 @@ function Modal({ children, onBackdropClick, contentRef }) {
   );
 }
 
-export default function OrdersTable() {
+export default function OrdersTable({ filters = {}, onFilterChange, onResetFilters }) {
   const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [debouncedKeyword, setDebouncedKeyword] = useState("");
-  const [sortDir, setSortDir] = useState("asc");
+  const [showFilters, setShowFilters] = useState(false);
   const PAGE_SIZE = 5;
   const [page, setPage] = useState(1);
   const [jumpInput, setJumpInput] = useState("");
@@ -117,8 +117,17 @@ export default function OrdersTable() {
             keyword,
             page: pageIdx.toString(),
             size: PAGE_SIZE.toString(),
-            sortDir,
+            sortBy: filters.sortBy || "patientName",
+            sortDir: filters.sortDir || "asc",
           });
+          
+          if (filters.startDate) {
+            params.append("startDate", filters.startDate);
+          }
+          if (filters.endDate) {
+            params.append("endDate", filters.endDate);
+          }
+          
           const res = await axios.get(
             `/test-orders?${params}`
           );
@@ -163,7 +172,7 @@ export default function OrdersTable() {
       }
       fetchOrders();
     },
-    [keyword, page, sortDir]
+    [keyword, page, filters]
   );
 
   useEffect(() => {
@@ -1091,20 +1100,130 @@ export default function OrdersTable() {
           className="bg-red-100 text-[#FF5A5A] px-3 min-h-[40px] py-2 rounded-lg flex items-center gap-1 hover:bg-red-200 hover:text-[#FF3A3A] transition-colors duration-300 text-sm"
           onClick={() => {
             setDebouncedKeyword(searchInput.trim());
+            setShowFilters(!showFilters);
           }}
         >
-          <Filter size={24} /> Search
-        </button>
-        <button
-          className="bg-gray-100 text-gray-700 px-3 min-h-[40px] py-2 rounded-lg ml-2 border text-sm"
-          onClick={() => {
-            setSortDir(sortDir === "asc" ? "desc" : "asc");
-            setPage(1);
-          }}
-        >
-          Sort: {sortDir === "asc" ? "A-Z" : "Z-A"}
+          <Filter size={20} /> 
+          {showFilters ? (
+            <>
+              <span>Hide Filters</span>
+              <ChevronUp size={16} />
+            </>
+          ) : (
+            <>
+              <span>Show Filters</span>
+              <ChevronDown size={16} />
+            </>
+          )}
         </button>
       </div>
+
+      {/* FILTER SECTION */}
+      {showFilters && (
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+              <Filter size={16} className="text-[#FF5A5A]" />
+              Filters & Sorting Options
+            </h3>
+            <button
+              onClick={onResetFilters}
+              className="text-xs text-gray-600 hover:text-[#FF5A5A] flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+            >
+              <X size={14} />
+              Reset All
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Sort By */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                Sort By
+              </label>
+              <select
+                value={filters.sortBy}
+                onChange={(e) => onFilterChange("sortBy", e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent bg-white"
+              >
+                <option value="patientName">Patient Name</option>
+                <option value="createdAt">Created Date</option>
+                <option value="status">Status</option>
+              </select>
+            </div>
+
+            {/* Sort Direction */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                Sort Order
+              </label>
+              <select
+                value={filters.sortDir}
+                onChange={(e) => onFilterChange("sortDir", e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent bg-white"
+              >
+                <option value="asc">↑ Ascending (A-Z / Old-New)</option>
+                <option value="desc">↓ Descending (Z-A / New-Old)</option>
+              </select>
+            </div>
+
+            {/* Start Date */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={filters.startDate}
+                onChange={(e) => onFilterChange("startDate", e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent bg-white"
+              />
+            </div>
+
+            {/* End Date */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={filters.endDate}
+                onChange={(e) => onFilterChange("endDate", e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent bg-white"
+              />
+            </div>
+          </div>
+
+          {/* Active Filters Display */}
+          {(filters.startDate || filters.endDate || filters.sortBy !== "patientName" || filters.sortDir !== "asc") && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <p className="text-xs text-gray-600 flex flex-wrap items-center gap-2">
+                <span className="font-medium">Active:</span>
+                {filters.sortBy !== "patientName" && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Sort: {filters.sortBy === "createdAt" ? "Created Date" : filters.sortBy === "status" ? "Status" : "Patient Name"}
+                  </span>
+                )}
+                {filters.sortDir !== "asc" && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                    Order: {filters.sortDir === "desc" ? "Descending" : "Ascending"}
+                  </span>
+                )}
+                {filters.startDate && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    From: {filters.startDate}
+                  </span>
+                )}
+                {filters.endDate && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    To: {filters.endDate}
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="overflow-x-auto">
         <table
@@ -1737,7 +1856,7 @@ export default function OrdersTable() {
         onConfirm={async () => {
           try {
             const res = await axios.delete(
-              `/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=patientName&sortDir=${sortDir}`
+              `/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=${filters.sortBy || "patientName"}&sortDir=${filters.sortDir || "asc"}${filters.startDate ? `&startDate=${filters.startDate}` : ""}${filters.endDate ? `&endDate=${filters.endDate}` : ""}`
             );
             const data = res.data;
             if (data?.result) {

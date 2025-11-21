@@ -18,6 +18,14 @@ export default function TestOrders() {
     weeklyData: [],
   });
 
+  // Filter states
+  const [filters, setFilters] = useState({
+    sortBy: "patientName",
+    sortDir: "asc",
+    startDate: "",
+    endDate: "",
+  });
+
   // Ref để chụp biểu đồ
   const chartRef = useRef(null);
 
@@ -90,14 +98,33 @@ export default function TestOrders() {
     },
   ];
 
+  // Handle filter changes
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // Reset filters
+  const handleResetFilters = () => {
+    setFilters({
+      sortBy: "patientName",
+      sortDir: "asc",
+      startDate: "",
+      endDate: "",
+    });
+  };
+
   // 🎯 Excel export with ExcelJS
   const handleExportExcel = async () => {
     try {
       const queryParams = new URLSearchParams({
         page: "0",
         size: "1000",
-        sortDir: "desc",
+        sortBy: filters.sortBy,
+        sortDir: filters.sortDir,
       });
+
+      if (filters.startDate) queryParams.append("startDate", filters.startDate);
+      if (filters.endDate) queryParams.append("endDate", filters.endDate);
 
       const response = await axios.get(`/test-orders?${queryParams}`);
       const result = response.data;
@@ -230,7 +257,7 @@ export default function TestOrders() {
           <div className="flex gap-4">
             <button
               onClick={handleExportExcel}
-              className="bg-[#FF5A5A] text-white px-3 min-h-[40px] py-2 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
+              className="bg-[#FF5A5A] text-white px-4 min-h-[40px] py-2 rounded-lg hover:bg-[#FF3A3A] transition-colors duration-300"
             >
               Export Excel
             </button>
@@ -260,7 +287,11 @@ export default function TestOrders() {
       <ActivityCard />
 
       {/* TABLE */}
-      <OrdersTable />
+      <OrdersTable 
+        filters={filters} 
+        onFilterChange={handleFilterChange}
+        onResetFilters={handleResetFilters}
+      />
     </div>
   );
 }
