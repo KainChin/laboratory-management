@@ -99,7 +99,10 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [debouncedKeyword, setDebouncedKeyword] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const [showSortDirMenu, setShowSortDirMenu] = useState(false);
+  const [showDateMenu, setShowDateMenu] = useState(false);
+  const [showSortByStatusMenu, setShowSortByStatusMenu] = useState(false);
   const PAGE_SIZE = 5;
   const [page, setPage] = useState(1);
   const [jumpInput, setJumpInput] = useState("");
@@ -117,7 +120,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
             keyword,
             page: pageIdx.toString(),
             size: PAGE_SIZE.toString(),
-            sortBy: filters.sortBy || "patientName",
+            sortBy: filters.sortBy === "status" && filters.sortByStatus ? filters.sortByStatus : (filters.sortBy || "patientName"),
             sortDir: filters.sortDir || "asc",
           });
           
@@ -126,6 +129,9 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
           }
           if (filters.endDate) {
             params.append("endDate", filters.endDate);
+          }
+          if (filters.status) {
+            params.append("status", filters.status);
           }
           
           const res = await axios.get(
@@ -142,6 +148,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
               date: order.dateOfBirth,
               creator: order.createdBy || "Unknown",
               dob: order.dateOfBirth || "",
+              createdAt: order.createdAt || order.createdDate || "",
               phone: order.phone,
               email: order.email,
               gender: order.gender,
@@ -174,6 +181,20 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
     },
     [keyword, page, filters]
   );
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.relative')) {
+        setShowStatusMenu(false);
+        setShowSortDirMenu(false);
+        setShowDateMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     fetchOrdersWrapper();
@@ -1079,9 +1100,11 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mb-3">
-        <div className="relative flex-1">
-          <Search size={24} className="absolute left-2 top-2 text-gray-400" />
+      {/* FILTER BAR - New Design */}
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
+        {/* Search Box - Expanded to match table */}
+        <div className="relative flex-1" style={{ minWidth: "300px", maxWidth: "500px" }}>
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             ref={searchInputRef}
             type="text"
@@ -1092,135 +1115,260 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
                 setDebouncedKeyword(searchInput.trim());
               }
             }}
-            placeholder="Search patient name... (Press / to focus)"
-            className="w-full pl-8 pr-3 min-h-[40px] py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-300"
+            placeholder="Search by name..."
+            className="w-full pl-9 pr-3 h-[38px] border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent"
           />
         </div>
-        <button
-          className="bg-red-100 text-[#FF5A5A] px-3 min-h-[40px] py-2 rounded-lg flex items-center gap-1 hover:bg-red-200 hover:text-[#FF3A3A] transition-colors duration-300 text-sm"
-          onClick={() => {
-            setDebouncedKeyword(searchInput.trim());
-            setShowFilters(!showFilters);
-          }}
-        >
-          <Filter size={20} /> 
-          {showFilters ? (
-            <>
-              <span>Hide Filters</span>
-              <ChevronUp size={16} />
-            </>
-          ) : (
-            <>
-              <span>Show Filters</span>
-              <ChevronDown size={16} />
-            </>
+
+        {/* By Status Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => {
+              setShowStatusMenu(!showStatusMenu);
+              setShowSortDirMenu(false);
+              setShowDateMenu(false);
+              setShowSortByStatusMenu(false);
+            }}
+            className={`h-[38px] px-4 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${
+              filters.status
+                ? "bg-[#FF5A5A] text-white hover:bg-[#FF3A3A]"
+                : "bg-[#FF5A5A] text-white hover:bg-[#FF3A3A]"
+            }`}
+          >
+            <Filter size={16} />
+            By Status
+            <ChevronDown size={14} />
+          </button>
+          
+          {showStatusMenu && (
+            <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[180px]">
+              <button
+                onClick={() => {
+                  onFilterChange("status", "");
+                  setShowStatusMenu(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+              >
+                <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                All Status
+              </button>
+              <button
+                onClick={() => {
+                  onFilterChange("status", "PENDING");
+                  setShowStatusMenu(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+              >
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                Pending
+              </button>
+              <button
+                onClick={() => {
+                  onFilterChange("status", "COMPLETED");
+                  setShowStatusMenu(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+              >
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                Completed
+              </button>
+              <button
+                onClick={() => {
+                  onFilterChange("status", "REVIEWED");
+                  setShowStatusMenu(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+              >
+                <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                Reviewed
+              </button>
+              <button
+                onClick={() => {
+                  onFilterChange("status", "AI_REVIEWED");
+                  setShowStatusMenu(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+              >
+                <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                AI Reviewed
+              </button>
+              <button
+                onClick={() => {
+                  onFilterChange("status", "CANCELLED");
+                  setShowStatusMenu(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+              >
+                <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                Cancelled
+              </button>
+            </div>
           )}
-        </button>
+        </div>
+
+        {/* Sort Direction Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => {
+              setShowSortDirMenu(!showSortDirMenu);
+              setShowStatusMenu(false);
+              setShowDateMenu(false);
+              setShowSortByStatusMenu(false);
+            }}
+            className="h-[38px] px-4 bg-[#FF5A5A] text-white rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-[#FF3A3A] transition-colors"
+          >
+            {filters.sortDir === "asc" ? "↑" : "↓"} Order
+            <ChevronDown size={14} />
+          </button>
+          
+          {showSortDirMenu && (
+            <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[160px]">
+              <button
+                onClick={() => {
+                  onFilterChange("sortDir", "asc");
+                  setShowSortDirMenu(false);
+                }}
+                className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 ${
+                  filters.sortDir === "asc" ? "bg-gray-50 font-medium" : ""
+                }`}
+              >
+                <span>↑</span> Ascending
+              </button>
+              <button
+                onClick={() => {
+                  onFilterChange("sortDir", "desc");
+                  setShowSortDirMenu(false);
+                }}
+                className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 ${
+                  filters.sortDir === "desc" ? "bg-gray-50 font-medium" : ""
+                }`}
+              >
+                <span>↓</span> Descending
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Date Range Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => {
+              setShowDateMenu(!showDateMenu);
+              setShowStatusMenu(false);
+              setShowSortDirMenu(false);
+              setShowSortByStatusMenu(false);
+            }}
+            className={`h-[38px] px-4 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${
+              filters.startDate || filters.endDate
+                ? "bg-blue-500 text-white hover:bg-blue-600"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Date Range
+            <ChevronDown size={14} />
+          </button>
+          
+          {showDateMenu && (
+            <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50 min-w-[280px]">
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    value={filters.startDate}
+                    onChange={(e) => onFilterChange("startDate", e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    value={filters.endDate}
+                    onChange={(e) => onFilterChange("endDate", e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      onFilterChange("startDate", "");
+                      onFilterChange("endDate", "");
+                    }}
+                    className="flex-1 px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    onClick={() => setShowDateMenu(false)}
+                    className="flex-1 px-3 py-1.5 text-xs bg-[#FF5A5A] text-white rounded hover:bg-[#FF3A3A] transition-colors"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Reset Button - Chỉ hiện khi có filter active */}
+        {(filters.status || filters.startDate || filters.endDate || filters.sortDir !== "asc" || filters.sortByStatus) && (
+          <button
+            onClick={onResetFilters}
+            className="h-[38px] px-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm flex items-center gap-1.5"
+            title="Reset all filters"
+          >
+            <X size={16} />
+            Reset
+          </button>
+        )}
       </div>
 
-      {/* FILTER SECTION */}
-      {showFilters && (
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-              <Filter size={16} className="text-[#FF5A5A]" />
-              Filters & Sorting Options
-            </h3>
-            <button
-              onClick={onResetFilters}
-              className="text-xs text-gray-600 hover:text-[#FF5A5A] flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
-            >
-              <X size={14} />
-              Reset All
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Sort By */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Sort By
-              </label>
-              <select
-                value={filters.sortBy}
-                onChange={(e) => onFilterChange("sortBy", e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent bg-white"
+      {/* Active Filters Tags */}
+      {(filters.status || filters.startDate || filters.endDate || filters.sortDir !== "asc" || filters.sortByStatus) && (
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <span className="text-xs text-gray-600 font-medium">Active filters:</span>
+          {filters.status && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#FF5A5A] text-white">
+              Status: {filters.status.replace("_", " ")}
+              <button
+                onClick={() => onFilterChange("status", "")}
+                className="ml-1.5 hover:bg-white/20 rounded-full p-0.5"
               >
-                <option value="patientName">Patient Name</option>
-                <option value="createdAt">Created Date</option>
-                <option value="status">Status</option>
-              </select>
-            </div>
-
-            {/* Sort Direction */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Sort Order
-              </label>
-              <select
-                value={filters.sortDir}
-                onChange={(e) => onFilterChange("sortDir", e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent bg-white"
+                <X size={12} />
+              </button>
+            </span>
+          )}
+          {filters.sortDir !== "asc" && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+              ↓ Descending
+            </span>
+          )}
+          {filters.startDate && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              From: {filters.startDate}
+              <button
+                onClick={() => onFilterChange("startDate", "")}
+                className="ml-1.5 hover:bg-blue-200 rounded-full p-0.5"
               >
-                <option value="asc">↑ Ascending (A-Z / Old-New)</option>
-                <option value="desc">↓ Descending (Z-A / New-Old)</option>
-              </select>
-            </div>
-
-            {/* Start Date */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Start Date
-              </label>
-              <input
-                type="date"
-                value={filters.startDate}
-                onChange={(e) => onFilterChange("startDate", e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent bg-white"
-              />
-            </div>
-
-            {/* End Date */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                End Date
-              </label>
-              <input
-                type="date"
-                value={filters.endDate}
-                onChange={(e) => onFilterChange("endDate", e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF5A5A] focus:border-transparent bg-white"
-              />
-            </div>
-          </div>
-
-          {/* Active Filters Display */}
-          {(filters.startDate || filters.endDate || filters.sortBy !== "patientName" || filters.sortDir !== "asc") && (
-            <div className="mt-3 pt-3 border-t border-gray-200">
-              <p className="text-xs text-gray-600 flex flex-wrap items-center gap-2">
-                <span className="font-medium">Active:</span>
-                {filters.sortBy !== "patientName" && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                    Sort: {filters.sortBy === "createdAt" ? "Created Date" : filters.sortBy === "status" ? "Status" : "Patient Name"}
-                  </span>
-                )}
-                {filters.sortDir !== "asc" && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                    Order: {filters.sortDir === "desc" ? "Descending" : "Ascending"}
-                  </span>
-                )}
-                {filters.startDate && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    From: {filters.startDate}
-                  </span>
-                )}
-                {filters.endDate && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    To: {filters.endDate}
-                  </span>
-                )}
-              </p>
-            </div>
+                <X size={12} />
+              </button>
+            </span>
+          )}
+          {filters.endDate && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              To: {filters.endDate}
+              <button
+                onClick={() => onFilterChange("endDate", "")}
+                className="ml-1.5 hover:bg-blue-200 rounded-full p-0.5"
+              >
+                <X size={12} />
+              </button>
+            </span>
           )}
         </div>
       )}
@@ -1231,11 +1379,12 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
           style={{ tableLayout: "fixed" }}
         >
           <colgroup>
-            <col style={{ width: "35%" }} />
+            <col style={{ width: "25%" }} />
+            <col style={{ width: "12%" }} />
+            <col style={{ width: "15%" }} />
             <col style={{ width: "15%" }} />
             <col style={{ width: "18%" }} />
-            <col style={{ width: "22%" }} />
-            <col style={{ width: "10%" }} />
+            <col style={{ width: "15%" }} />
           </colgroup>
           <thead>
             <tr className="bg-[#FF5A5A] text-white">
@@ -1249,6 +1398,9 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
                 <div className="truncate">Date of Birth</div>
               </th>
               <th className="min-h-[40px] py-3 px-3 font-bold text-base">
+                <div className="truncate">Created At</div>
+              </th>
+              <th className="min-h-[40px] py-3 px-3 font-bold text-base">
                 <div className="truncate">Created By</div>
               </th>
               <th className="min-h-[40px] py-3 px-3 rounded-tr-lg text-center font-bold text-base">
@@ -1259,7 +1411,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
           <tbody>
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-gray-500">
+                <td colSpan={6} className="py-8 text-center text-gray-500">
                   No patient data available
                 </td>
               </tr>
@@ -1315,6 +1467,11 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
                   <td className="min-h-[40px] py-3 px-3">
                     <div className="truncate" title={row.dob}>
                       {row.dob || ""}
+                    </div>
+                  </td>
+                  <td className="min-h-[40px] py-3 px-3">
+                    <div className="truncate" title={row.createdAt}>
+                      {row.createdAt || ""}
                     </div>
                   </td>
                   <td className="min-h-[40px] py-3 px-3">
@@ -1855,8 +2012,9 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={async () => {
           try {
+            const sortBy = filters.sortBy === "status" && filters.sortByStatus ? filters.sortByStatus : (filters.sortBy || "patientName");
             const res = await axios.delete(
-              `/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=${filters.sortBy || "patientName"}&sortDir=${filters.sortDir || "asc"}${filters.startDate ? `&startDate=${filters.startDate}` : ""}${filters.endDate ? `&endDate=${filters.endDate}` : ""}`
+              `/test-orders/${deleteId}?page=${page}&size=${PAGE_SIZE}&keyword=${keyword}&sortBy=${sortBy}&sortDir=${filters.sortDir || "asc"}${filters.startDate ? `&startDate=${filters.startDate}` : ""}${filters.endDate ? `&endDate=${filters.endDate}` : ""}${filters.status ? `&status=${filters.status}` : ""}`
             );
             const data = res.data;
             if (data?.result) {

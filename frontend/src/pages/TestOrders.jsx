@@ -24,6 +24,8 @@ export default function TestOrders() {
     sortDir: "asc",
     startDate: "",
     endDate: "",
+    status: "",
+    sortByStatus: "",
   });
 
   // Ref để chụp biểu đồ
@@ -110,6 +112,8 @@ export default function TestOrders() {
       sortDir: "asc",
       startDate: "",
       endDate: "",
+      status: "",
+      sortByStatus: "",
     });
   };
 
@@ -125,6 +129,10 @@ export default function TestOrders() {
 
       if (filters.startDate) queryParams.append("startDate", filters.startDate);
       if (filters.endDate) queryParams.append("endDate", filters.endDate);
+      if (filters.status) queryParams.append("status", filters.status);
+      if (filters.sortBy === "status" && filters.sortByStatus) {
+        queryParams.set("sortBy", filters.sortByStatus);
+      }
 
       const response = await axios.get(`/test-orders?${queryParams}`);
       const result = response.data;
