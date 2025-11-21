@@ -13,10 +13,12 @@ import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.repository.CommentRepository;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.serviceImpl.CommentServiceImpl;
+import com.example.test_order_service.utils.GeneralUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
 
@@ -326,27 +328,31 @@ public class CommentServiceImplTest {
             String orderId = "TO-001";
             String commentId = "C-001";
 
-            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                    .thenReturn(Optional.of(comment));
-            when(commentRepository.save(any(Comment.class))).thenReturn(comment);
-            when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
+            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
+                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-            // When
-            RestResponse<CommentResponse> response = commentService.updateComment(
-                    orderId, commentId, updateCommentRequest
-            );
+                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                        .thenReturn(Optional.of(comment));
+                when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+                when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
 
-            // Then
-            assertThat(response).isNotNull();
-            assertThat(response.getStatusCode()).isEqualTo(200);
-            assertThat(response.getMessage()).isEqualTo("Comment updated successfully");
-            assertThat(response.getResult()).isNotNull();
-            assertThat(response.getTimestamp()).isNotNull();
+                // When
+                RestResponse<CommentResponse> response = commentService.updateComment(
+                        orderId, commentId, updateCommentRequest
+                );
 
-            verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId(commentId, orderId);
-            verify(commentRepository).save(any(Comment.class));
-            verify(commentMapper).toCommentResponse(comment);
+                // Then
+                assertThat(response).isNotNull();
+                assertThat(response.getStatusCode()).isEqualTo(200);
+                assertThat(response.getMessage()).isEqualTo("Comment updated successfully");
+                assertThat(response.getResult()).isNotNull();
+                assertThat(response.getTimestamp()).isNotNull();
+
+                verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId(commentId, orderId);
+                verify(commentRepository).save(any(Comment.class));
+                verify(commentMapper).toCommentResponse(comment);
+            }
         }
 
         @Test
@@ -382,19 +388,23 @@ public class CommentServiceImplTest {
             String newText = "Updated comment text";
             updateCommentRequest.setCommentText(newText);
 
-            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                    .thenReturn(Optional.of(comment));
-            when(commentRepository.save(any(Comment.class))).thenReturn(comment);
-            when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
+            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
+                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-            // When
-            commentService.updateComment(orderId, commentId, updateCommentRequest);
+                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                        .thenReturn(Optional.of(comment));
+                when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+                when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
 
-            // Then
-            verify(commentRepository).save(argThat(c ->
-                    c.getCommentText().equals(newText)
-            ));
+                // When
+                commentService.updateComment(orderId, commentId, updateCommentRequest);
+
+                // Then
+                verify(commentRepository).save(argThat(c ->
+                        c.getCommentText().equals(newText)
+                ));
+            }
         }
 
         @Test
@@ -405,17 +415,21 @@ public class CommentServiceImplTest {
             String orderId = "TO-001";
             String commentId = "C-001";
 
-            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                    .thenReturn(Optional.of(comment));
-            when(commentRepository.save(any(Comment.class)))
-                    .thenThrow(new DataAccessException("Database error") {});
+            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
+                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-            // When & Then
-            assertThatThrownBy(() -> commentService.updateComment(
-                    orderId, commentId, updateCommentRequest
-            ))
-                    .isInstanceOf(DataAccessException.class);
+                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                        .thenReturn(Optional.of(comment));
+                when(commentRepository.save(any(Comment.class)))
+                        .thenThrow(new DataAccessException("Database error") {});
+
+                // When & Then
+                assertThatThrownBy(() -> commentService.updateComment(
+                        orderId, commentId, updateCommentRequest
+                ))
+                        .isInstanceOf(DataAccessException.class);
+            }
         }
     }
 
@@ -436,22 +450,26 @@ public class CommentServiceImplTest {
             String orderId = "TO-001";
             String commentId = "C-001";
 
-            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                    .thenReturn(Optional.of(comment));
-            doNothing().when(commentRepository).deleteById(commentId);
+            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
+                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-            // When
-            RestResponse<Void> response = commentService.deleteComment(orderId, commentId);
+                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                        .thenReturn(Optional.of(comment));
+                doNothing().when(commentRepository).deleteById(commentId);
 
-            // Then
-            assertThat(response).isNotNull();
-            assertThat(response.getStatusCode()).isEqualTo(200);
-            assertThat((String) response.getMessage()).contains("Comment " + commentId + " deleted successfully");
-            assertThat(response.getTimestamp()).isNotNull();
+                // When
+                RestResponse<Void> response = commentService.deleteComment(orderId, commentId);
 
-            verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId(commentId, orderId);
-            verify(commentRepository).deleteById(commentId);
+                // Then
+                assertThat(response).isNotNull();
+                assertThat(response.getStatusCode()).isEqualTo(200);
+                assertThat((String) response.getMessage()).contains("Comment " + commentId + " deleted successfully");
+                assertThat(response.getTimestamp()).isNotNull();
+
+                verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId(commentId, orderId);
+                verify(commentRepository).deleteById(commentId);
+            }
         }
 
         @Test
@@ -483,17 +501,21 @@ public class CommentServiceImplTest {
             String orderId = "TO-001";
             String commentId = "C-001";
 
-            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                    .thenReturn(Optional.of(comment));
-            doThrow(new DataAccessException("Database error") {})
-                    .when(commentRepository).deleteById(commentId);
+            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
+                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-            // When & Then
-            assertThatThrownBy(() -> commentService.deleteComment(orderId, commentId))
-                    .isInstanceOf(DataAccessException.class);
+                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                        .thenReturn(Optional.of(comment));
+                doThrow(new DataAccessException("Database error") {})
+                        .when(commentRepository).deleteById(commentId);
 
-            verify(commentRepository).deleteById(commentId);
+                // When & Then
+                assertThatThrownBy(() -> commentService.deleteComment(orderId, commentId))
+                        .isInstanceOf(DataAccessException.class);
+
+                verify(commentRepository).deleteById(commentId);
+            }
         }
     }
 }
