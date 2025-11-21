@@ -13,12 +13,14 @@ import com.example.test_order_service.service.TestOrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestController
@@ -53,17 +55,17 @@ public class TestOrderController {
     @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('REVIEW_TEST_ORDER')")
     public RestResponse<PageResponse<TestOrderResponse>> getTestOrders(
             @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "patientName") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
         Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-
         int pageIndex = page < 1 ? 0 : page - 1;
-
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortBy));
 
-        PageResponse<TestOrderResponse> testOrderPage = testOrderService.getTestOrders(pageable, keyword);
+        PageResponse<TestOrderResponse> testOrderPage = testOrderService.getTestOrders(pageable, keyword, startDate, endDate);
 
         return RestResponse.<PageResponse<TestOrderResponse>>builder()
                 .timestamp(LocalDateTime.now())
@@ -78,6 +80,8 @@ public class TestOrderController {
     public RestResponse<PageResponse<TestOrderResponse>> deleteTestOrder(
             @PathVariable String orderId,
             @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "patientName") String sortBy,
@@ -88,7 +92,10 @@ public class TestOrderController {
 
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(direction, sortBy));
 
-        PageResponse<TestOrderResponse> testOrderPage = testOrderService.deleteTestOrder(orderId, pageable, keyword);
+        PageResponse<TestOrderResponse> testOrderPage = testOrderService.deleteTestOrder(
+                orderId, pageable, keyword, startDate, endDate
+        );
+
 
         return RestResponse.<PageResponse<TestOrderResponse>>builder()
                 .timestamp(LocalDateTime.now())

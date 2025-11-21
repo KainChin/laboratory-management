@@ -9,13 +9,15 @@ import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public interface TestOrderService {
     RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request);
     RestResponse<TestOrderResponse> updateTestOrder(String orderId, TestOrderUpdateRequest request);
-    PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword);
+    PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword, LocalDate startDate, LocalDate endDate);
     RestResponse<TestOrderDetailResponse> getTestOrderById(String orderId);
-    PageResponse<TestOrderResponse> deleteTestOrder(String orderId, Pageable pageable, String keyword);
+    PageResponse<TestOrderResponse> deleteTestOrder(String orderId, Pageable pageable, String keyword, LocalDate startDate, LocalDate endDate);
     RestResponse<?> getTestOrderStatistics();
     RestResponse<TestOrderResponse> reviewTestOrder(String orderId);
     PageResponse<TestOrderDetailResponse> getTestOrderByEmail(Pageable pageable, String email);

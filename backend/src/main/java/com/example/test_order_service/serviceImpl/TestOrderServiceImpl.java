@@ -81,8 +81,12 @@ public class TestOrderServiceImpl implements TestOrderService {
 
     @Override
 //    @Transactional(readOnly = true)
-    public PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword) {
-        Page<TestOrder> testOrderPage = testOrderRepository.findTestOrdersByParams(pageable, keyword);
+    public PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword, LocalDate startDate, LocalDate endDate) {
+        // Convert LocalDate to LocalDateTime
+        LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = endDate != null ? endDate.atTime(23, 59, 59, 999999999) : null;
+
+        Page<TestOrder> testOrderPage = testOrderRepository.findTestOrdersByParams(pageable, keyword, startDateTime, endDateTime);
 
         return PageResponse.<TestOrderResponse>builder()
                 .currentPage(testOrderPage.getNumber() + 1)
@@ -140,7 +144,7 @@ public class TestOrderServiceImpl implements TestOrderService {
     }
 
     @Override
-    public PageResponse<TestOrderResponse> deleteTestOrder(String orderId, Pageable pageable, String keyword) {
+    public PageResponse<TestOrderResponse> deleteTestOrder(String orderId, Pageable pageable, String keyword, LocalDate startDate, LocalDate endDate) {
         TestOrder testOrder = testOrderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
@@ -152,7 +156,7 @@ public class TestOrderServiceImpl implements TestOrderService {
         testOrder.setDeletedBy(GeneralUtils.getCurrentUsername());
         testOrderRepository.save(testOrder);
 
-        return getTestOrders(pageable, keyword);
+        return getTestOrders(pageable, keyword, startDate, endDate);
     }
 
     @Override
