@@ -6,7 +6,7 @@ import axios from 'axios';
  * Dùng cho login, register, refresh token
  */
 const publicApi = axios.create({
-  baseURL: 'http://35.172.58.177:8089',
+  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://54.225.178.199:8080/iam',
   headers: {
     'Content-Type': 'application/json',
   },
