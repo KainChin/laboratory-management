@@ -24,6 +24,8 @@ public class TestOrderRequest {
     private LocalDate dateOfBirth;
 
     @NotBlank(message = "Citizen ID is required")
+    @Size(max = 30, message = "Citizen ID must not exceed 30 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Citizen ID must contain only letters, numbers, spaces and hyphens")
     private String citizenId;
 
     @NotBlank(message = "Country is required")

@@ -607,6 +607,10 @@ export default function OrdersTable() {
     }
     if (!f.citizenId || !String(f.citizenId).trim()) {
       e.citizenId = "Citizen ID is required";
+    } else if (f.citizenId.length > 30) {
+      e.citizenId = "Citizen ID must not exceed 30 characters";
+    } else if (!/^[a-zA-Z0-9\s-]+$/.test(f.citizenId)) {
+      e.citizenId = "Citizen ID must contain only letters, numbers, spaces and hyphens";
     }
     if (!f.address || !String(f.address).trim()) {
       e.address = "Address is required";
@@ -1373,8 +1377,10 @@ export default function OrdersTable() {
               transformOrigin: "center",
               transition: "transform 120ms ease",
               animation: "slideUp 0.4s ease-out",
+              maxHeight: "90vh",
+              overflowY: "auto",
             }}
-            className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
+            className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-5 shadow-lg mx-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3
@@ -1387,7 +1393,7 @@ export default function OrdersTable() {
                 ? "UPDATE TEST ORDER"
                 : "NEW TEST ORDER"}
             </h3>
-            <p className="text-center text-sm text-gray-500 mb-6">
+            <p className="text-center text-sm text-gray-500 mb-4">
               {mode === "view"
                 ? "View patient information for this test order"
                 : mode === "edit"
@@ -1395,8 +1401,8 @@ export default function OrdersTable() {
                 : "Enter patient information to create a new test order"}
             </p>
 
-            <div className="border rounded-lg p-6 bg-gray-50">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label
                     htmlFor="patientName"
@@ -1415,11 +1421,11 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter patient's full name (e.g., John Doe)"
                   />
                   {errors.patientName && (
-                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.patientName}
                     </div>
                   )}
@@ -1432,7 +1438,7 @@ export default function OrdersTable() {
                     Date of Birth
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
+                    <div className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
                       {localForm.dob}
                     </div>
                   ) : (
@@ -1447,11 +1453,11 @@ export default function OrdersTable() {
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
                       type="date"
-                      className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
+                      className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
                     />
                   )}
                   {errors.dob && (
-                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.dob}
                     </div>
                   )}
@@ -1475,11 +1481,11 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter phone number (e.g., +84 123 456 789)"
                   />
                   {errors.phone && (
-                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.phone}
                     </div>
                   )}
@@ -1503,11 +1509,11 @@ export default function OrdersTable() {
                     }}
                     type="email"
                     readOnly={mode === "view"}
-                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter email address (e.g., patient@example.com)"
                   />
                   {errors.email && (
-                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.email}
                     </div>
                   )}
@@ -1521,7 +1527,7 @@ export default function OrdersTable() {
                     Gender
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
+                    <div className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
                       {localForm.gender
                         ? localForm.gender === "MALE" || localForm.gender === "Male"
                           ? "Male"
@@ -1541,7 +1547,7 @@ export default function OrdersTable() {
                         setLocalForm((s) => ({ ...s, [name]: value }));
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
-                      className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
+                      className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
                       <option value="Male">Male</option>
@@ -1550,7 +1556,7 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.gender && (
-                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.gender}
                     </div>
                   )}
@@ -1563,7 +1569,7 @@ export default function OrdersTable() {
                     Status
                   </label>
                   {mode === "view" ? (
-                    <div className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
+                    <div className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
                       {localForm.status || ""}
                     </div>
                   ) : (
@@ -1577,7 +1583,7 @@ export default function OrdersTable() {
                         setLocalForm((s) => ({ ...s, [name]: value }));
                         setErrors((s) => ({ ...s, [name]: undefined }));
                       }}
-                      className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
+                      className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select</option>
                       <option value="Pending">Pending</option>
@@ -1586,7 +1592,7 @@ export default function OrdersTable() {
                     </select>
                   )}
                   {errors.status && (
-                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.status}
                     </div>
                   )}
@@ -1609,11 +1615,11 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter full address (e.g., 123 Main St, District 1)"
                   />
                   {errors.address && (
-                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.address}
                     </div>
                   )}
@@ -1637,11 +1643,11 @@ export default function OrdersTable() {
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter country (e.g., Vietnam)"
                   />
                   {errors.country && (
-                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.country}
                     </div>
                   )}
@@ -1679,11 +1685,11 @@ export default function OrdersTable() {
                       }
                     }}
                     readOnly={mode === "view"}
-                    className="w-full mt-2 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
                     placeholder="Enter citizen ID or passport number"
                   />
                   {errors.citizenId && (
-                    <div className="text-sm mt-1" style={{ color: "#FF0000" }}>
+                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.citizenId}
                     </div>
                   )}
@@ -1691,7 +1697,7 @@ export default function OrdersTable() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-4 mt-6">
+            <div className="flex justify-end gap-3 mt-4">
               <button
                 ref={closeButtonRef}
                 onClick={() => {
@@ -1807,3 +1813,4 @@ export default function OrdersTable() {
     </div>
   );
 }
+

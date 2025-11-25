@@ -105,6 +105,10 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     // Validate Citizen ID
     if (!formData.citizenId || !formData.citizenId.trim()) {
       newErrors.citizenId = "Citizen ID is required";
+    } else if (formData.citizenId.length > 30) {
+      newErrors.citizenId = "Citizen ID must not exceed 30 characters";
+    } else if (!/^[a-zA-Z0-9\s-]+$/.test(formData.citizenId)) {
+      newErrors.citizenId = "Citizen ID must contain only letters, numbers, spaces and hyphens";
     }
     
     // Validate Address
