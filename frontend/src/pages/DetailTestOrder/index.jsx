@@ -125,43 +125,15 @@ export default function DetailTestOrder() {
 
     setIsExporting(true);
 
-    // 1. Định nghĩa CSS để fix layout in
+    // 1. Định nghĩa CSS để fix layout in (giữ nguyên các rules trước)
     const printStyles = `
       /* Ẩn header và các nút */
-      .printing .dto-page-header {
-        display: none !important;
-      }
-      
-      /* PHÁ VỠ LAYOUT GRID (Quan trọng nhất) */
-      .printing .dto-grid {
-        display: block !important; /* Chuyển từ grid thành block */
-        grid-template-columns: 1fr !important;
-      }
-      .printing .dto-left-col,
-      .printing .dto-right-col {
-        display: block !important; /* Ép các cột xếp chồng lên nhau */
-        width: 100% !important;
-        grid-column: auto !important;
-      }
-      
-      /* ẨN CÁC COMPONENT BẠN KHÔNG MUỐN */
-      .printing .no-print {
-        display: none !important;
-      }
-      
-      /* Dọn dẹp giao diện (bỏ bóng, nền, v.v.) */
-      .printing .dto-page {
-        background: #ffffff !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-      .printing .dto-left-col > *,
-      .printing .dto-right-col > * {
-        box-shadow: none !important;
-        border: none !important;
-        border-radius: 0 !important;
-        padding: 12px !important; /* Đồng bộ padding */
-      }
+      .printing .dto-page-header { display: none !important; }
+      .printing .dto-grid { display: block !important; grid-template-columns: 1fr !important; }
+      .printing .dto-left-col, .printing .dto-right-col { display: block !important; width: 100% !important; grid-column: auto !important; }
+      .printing .no-print { display: none !important; }
+      .printing .dto-page { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
+      .printing .dto-left-col > *, .printing .dto-right-col > * { box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 12px !important; }
     `;
 
     // 2. Tạo và chèn thẻ <style> vào <head>
@@ -175,33 +147,49 @@ export default function DetailTestOrder() {
       document.head.appendChild(style);
     }
 
-    // 3. Thêm class 'printing'
+    // 3. Thêm class 'printing' (áp dụng styles chỉ cho mục in)
     element.classList.add("printing");
 
-    // 4. Cấu hình PDF
+    // 4. Chờ font và các tài nguyên (giúp render sắc nét trên máy khác)
+    try {
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+    } catch {
+      // ignore; continue even if fonts API not supported
+    }
+
+    // Thêm delay nhỏ để đảm bảo CSS được áp dụng và hình ảnh tải xong
+    await new Promise((res) => setTimeout(res, 250));
+
+    // 5. Cấu hình PDF: dùng JPEG để tránh lỗi PNG signature
     const options = {
       margin: 10,
       filename: `test-order-${order.testOrderId}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
+      image: { type: "jpeg", quality: 0.95 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        scrollY: -window.scrollY,
+        backgroundColor: "#ffffff",
+      },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["css", "legacy"] },
     };
 
-    // 5. Đợi 50ms để CSS được áp dụng, sau đó mới in
-    setTimeout(async () => {
-      try {
-        await html2pdf().set(options).from(element).save();
-      } catch (error) {
-        console.error("Error exporting PDF:", error);
-      } finally {
-        // 6. Dọn dẹp sau khi in
-        element.classList.remove("printing");
-        setIsExporting(false);
-        // Bạn có thể xóa thẻ style nếu muốn, nhưng để lại cũng không sao
-        // const styleToRemove = document.getElementById(styleId);
-        // if (styleToRemove) document.head.removeChild(styleToRemove);
-      }
-    }, 50); // Đợi 50ms để fix lỗi race condition
+    // 6. Thực hiện export (đặt trong try/finally để luôn dọn dẹp)
+    try {
+      await html2pdf().set(options).from(element).save();
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      showToast({ type: "error", title: "Export Failed", message: "Could not generate PDF. Check console for details." });
+    } finally {
+      element.classList.remove("printing");
+      setIsExporting(false);
+      // Lưu ý: không xóa style để tránh flicker khi người dùng in lại, nhưng có thể xóa nếu muốn
+    }
   };
   // ===================================================================
   // ++ HẾT HÀM MỚI ++
