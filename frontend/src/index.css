@@ -3,10 +3,17 @@
 @tailwind utilities;
 
 * {
-  font-family: Arial, sans-serif;
+  font-family: Arial, 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: Arial, 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
   background-color: #f8fafc;
 }
+
+/* Ensure emoji flags display properly */
+.emoji-flag {
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  font-size: 1.2em;
+}
+

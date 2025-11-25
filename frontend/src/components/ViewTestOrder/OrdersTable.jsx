@@ -12,6 +12,7 @@ import axios from "../../api/axios";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import Loading from "../Loading";
 import { showToast } from "../Toast";
+import CountrySelect from "../CountrySelect";
 
 // Modal portal so the overlay covers the whole viewport
 function Modal({ children, onBackdropClick, contentRef }) {
@@ -1632,20 +1633,22 @@ export default function OrdersTable() {
                   >
                     Country
                   </label>
-                  <input
-                    ref={countryRef}
-                    id="country"
-                    name="country"
-                    value={localForm.country}
-                    onChange={(e) => {
-                      const { name, value } = e.target;
-                      setLocalForm((s) => ({ ...s, [name]: value }));
-                      setErrors((s) => ({ ...s, [name]: undefined }));
-                    }}
-                    readOnly={mode === "view"}
-                    className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
-                    placeholder="Enter country (e.g., Vietnam)"
-                  />
+                  {mode === "view" ? (
+                    <div className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
+                      {localForm.country || ""}
+                    </div>
+                  ) : (
+                    <CountrySelect
+                      value={localForm.country}
+                      onChange={(value) => {
+                        setLocalForm((s) => ({ ...s, country: value }));
+                        setErrors((s) => ({ ...s, country: undefined }));
+                      }}
+                      error={errors.country}
+                      placeholder="Select country"
+                      style={{ marginTop: "4px" }}
+                    />
+                  )}
                   {errors.country && (
                     <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
                       {errors.country}
