@@ -40,7 +40,7 @@ export default function Header() {
   const breadcrumbs = getBreadcrumb();
 
   return (
-    <header className="h-[60px] bg-card border-b border-border flex items-center justify-between px-4">
+    <header style={{ backgroundColor: "#FFFFFF" }} className="h-[60px] bg-card border-b border-border flex items-center justify-between px-4">
       {/* Left section */}
       <div className="flex items-center gap-3">
         <button

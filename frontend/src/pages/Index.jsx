@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { AlertCircle } from "lucide-react";
 import ServiceWidget from "../components/ServiceWidget";
-import AuthStatus from "../components/AuthStatus";
 
 // Mock user data
 const mockUserInfo = {
@@ -57,11 +56,6 @@ export default function Index() {
             </div>
           </div>
         )}
-
-        {/* Authentication Status (Optional: có thể xóa nếu không cần) */}
-        <div className="w-full max-w-[600px] mx-auto mb-6">
-          <AuthStatus />
-        </div>
 
         {/* Main Content */}
         <div className="flex flex-col items-center gap-8">

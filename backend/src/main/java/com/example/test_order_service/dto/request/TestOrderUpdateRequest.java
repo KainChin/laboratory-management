@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +25,13 @@ public class TestOrderUpdateRequest {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateOfBirth;
 
+    @Size(max = 30, message = "Citizen ID must not exceed 30 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Citizen ID must contain only letters, numbers, spaces and hyphens")
     private String citizenId;
     private String country;
 
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private Gender gender; 
     @Enumerated(EnumType.STRING)
     private TestOrderStatus status;
 

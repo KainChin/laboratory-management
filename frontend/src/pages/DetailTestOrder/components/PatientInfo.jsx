@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { User } from "lucide-react";
+import CountrySelect from "../../../components/CountrySelect";
 
 export default function PatientInfo({ patient = {}, isEditing = false, onSave, onCancel }) {
   const [formData, setFormData] = useState({
@@ -105,6 +106,10 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
     // Validate Citizen ID
     if (!formData.citizenId || !formData.citizenId.trim()) {
       newErrors.citizenId = "Citizen ID is required";
+    } else if (formData.citizenId.length > 30) {
+      newErrors.citizenId = "Citizen ID must not exceed 30 characters";
+    } else if (!/^[a-zA-Z0-9\s-]+$/.test(formData.citizenId)) {
+      newErrors.citizenId = "Citizen ID must contain only letters, numbers, spaces and hyphens";
     }
     
     // Validate Address
@@ -462,23 +467,16 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
             <div style={styles.pairLabel}>Country</div>
             {isEditing ? (
               <div>
-                <input
-                  type="text"
-                  name="country"
-                  id="country-input"
+                <CountrySelect
                   value={formData.country}
-                  onChange={handleChange}
-                  style={{
-                    ...styles.input,
-                    borderColor: errors.country ? "#FF5A5A" : "#CCC"
+                  onChange={(value) => {
+                    setFormData(prev => ({ ...prev, country: value }));
+                    if (errors.country) {
+                      setErrors(prev => ({ ...prev, country: "" }));
+                    }
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
-                  onBlur={(e) => e.target.style.borderColor = errors.country ? "#FF5A5A" : "#CCC"}
-                  aria-label="Country"
-                  aria-required="true"
-                  aria-invalid={errors.country ? "true" : "false"}
-                  aria-describedby={errors.country ? "country-error" : undefined}
-                  placeholder="Enter country name"
+                  error={errors.country}
+                  placeholder="Select country"
                 />
                 {errors.country && (
                   <div 
