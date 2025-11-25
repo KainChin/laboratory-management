@@ -6,7 +6,7 @@ import axios from 'axios';
  * Dùng cho login, register, refresh token
  */
 const publicApi = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://54.225.178.199:8080/iam',
+  baseURL: import.meta.env.VITE_API_GATEWAY_URL || 'https://iam-service.site/',
   headers: {
     'Content-Type': 'application/json',
   },
