@@ -82,7 +82,16 @@ public class TestResultServiceKafka implements TestResultService {
         validateHl7FormatBasic(rawHl7);
 
         // Step 3: Split segments - using simple newline approach (more standard)
-        String[] lines = rawHl7.split("\\r?\\n");
+//        String[] lines = rawHl7.split("\\r?\\n");
+        String[] lines;
+        if (rawHl7.contains("\r") || rawHl7.contains("\n")) {
+            // Standard HL7 with line separators
+            lines = rawHl7.split("\\r?\\n");
+        } else {
+            // Concatenated format - split by segment identifiers
+            // Common HL7 segments: MSH, PID, OBR, OBX, ORC, NTE, etc.
+            lines = rawHl7.split("(?=MSH|PID|OBR|OBX|ORC|NTE|ZMD|FT1)");
+        }
 
         // Step 4: Validate segment structure
         validateHl7Segments(lines);
