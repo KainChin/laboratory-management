@@ -238,7 +238,7 @@ public class CommentServiceImpl implements CommentService {
 
                     return RestResponse.<CommentResponse>builder()
                             .statusCode(200)
-                            .message("AI review completed successfully")
+                            .message("AI review completed successfully for order " + orderId)
                             .result(commentResponse)
                             .timestamp(LocalDateTime.now())
                             .build();
