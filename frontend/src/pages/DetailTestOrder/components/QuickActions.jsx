@@ -5,7 +5,7 @@ import axios from '../../../api/axios';
 import { createPortal } from "react-dom";
 import { showToast } from '../../../components/Toast';
 
-export default function QuickActions({ status, onStatusChange, onEditOrder }) {
+export default function QuickActions({ status, onStatusChange, onEditOrder, onAiCommentAdded }) {
   const { id } = useParams();
   const [isReviewing, setIsReviewing] = useState(false);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
@@ -40,7 +40,14 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
 
     try {
       setIsAiReviewing(true);
-      await axios.post(`/test-orders/${id}/comments/ai-reviewed`);
+      const response = await axios.post(`/test-orders/${id}/comments/ai-reviewed`);
+      // If parent passed a callback, try to extract the created comment and send it up
+      if (typeof onAiCommentAdded === "function") {
+        const data = response?.data || {};
+        // Try common shapes: { result: { comment: {...} } } or { comment: {...} } or result directly
+        const newComment = data?.result?.comment ?? data?.comment ?? data?.result ?? (Object.keys(data).length ? data : null);
+        if (newComment) onAiCommentAdded(newComment);
+      }
       showToast({
         type: "success",
         title: "AI Auto Review",
