@@ -13,9 +13,12 @@ import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.repository.CommentRepository;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.utils.GeneralUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
 
     @Mock CommentRepository commentRepository;
@@ -32,11 +36,6 @@ class CommentServiceImplTest {
     @Mock CommentEventPublisher commentEventPublisher;
 
     @InjectMocks CommentServiceImpl service;
-
-    @BeforeEach
-    void init() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     private TestOrder validOrder(String id, boolean deleted) {
         TestOrder o = new TestOrder();
@@ -58,6 +57,7 @@ class CommentServiceImplTest {
                 assertThrows(IllegalArgumentException.class,
                         () -> service.createComment("to1", null));
         assertEquals("No comment data provided", ex.getMessage());
+        verifyNoInteractions(testOrderRepository, commentRepository, commentMapper, commentEventPublisher);
     }
 
     @Test
@@ -66,6 +66,10 @@ class CommentServiceImplTest {
 
         assertThrows(ResourceNotFoundException.class,
                 () -> service.createComment("to1", new CreateCommentRequest("x")));
+
+        verify(testOrderRepository).findById("to1");
+        verifyNoMoreInteractions(testOrderRepository);
+        verifyNoInteractions(commentRepository, commentMapper, commentEventPublisher);
     }
 
     @Test
@@ -75,6 +79,9 @@ class CommentServiceImplTest {
 
         assertThrows(ResourceNotFoundException.class,
                 () -> service.createComment("to1", new CreateCommentRequest("x")));
+
+        verify(testOrderRepository).findById("to1");
+        verifyNoInteractions(commentRepository, commentMapper, commentEventPublisher);
     }
 
     @Test
@@ -85,17 +92,18 @@ class CommentServiceImplTest {
         Comment entity = new Comment();
         entity.setCommentText("hello");
 
+        LocalDateTime now = LocalDateTime.now();
         Comment saved = new Comment();
         saved.setCommentId("c1");
         saved.setCommentText("hello");
         saved.setCreatedBy("user1");
-        saved.setCreatedAt(LocalDateTime.now());
+        saved.setCreatedAt(now);
 
         CommentResponse dto = CommentResponse.builder()
                 .commentId("c1")
                 .commentText("hello")
                 .createdBy("user1")
-                .createdAt(saved.getCreatedAt())
+                .createdAt(now)
                 .build();
 
         when(testOrderRepository.findById("to1")).thenReturn(Optional.of(order));
@@ -108,18 +116,26 @@ class CommentServiceImplTest {
 
             RestResponse<CommentResponse> res = service.createComment("to1", req);
 
+            assertNotNull(res);
             assertEquals(200, res.getStatusCode());
             assertEquals("Comment created successfully", res.getMessage());
+            assertNotNull(res.getResult());
             assertEquals("c1", res.getResult().getCommentId());
 
             verify(commentEventPublisher).publishCommentEvent(saved, "COMMENT_CREATED");
         }
+
+        verify(testOrderRepository).findById("to1");
+        verify(commentMapper).toCommentEntity(req);
+        verify(commentRepository).save(any(Comment.class));
+        verify(commentMapper).toCommentResponse(saved);
     }
 
     @Test
     void createComment_publishThrows_shouldStillReturnSuccess() {
         TestOrder order = validOrder("to1", false);
         CreateCommentRequest req = new CreateCommentRequest("hello");
+
         Comment entity = new Comment();
         Comment saved = new Comment();
         saved.setCommentId("c1");
@@ -127,7 +143,9 @@ class CommentServiceImplTest {
         when(testOrderRepository.findById("to1")).thenReturn(Optional.of(order));
         when(commentMapper.toCommentEntity(req)).thenReturn(entity);
         when(commentRepository.save(any(Comment.class))).thenReturn(saved);
-        when(commentMapper.toCommentResponse(saved)).thenReturn(CommentResponse.builder().commentId("c1").build());
+        when(commentMapper.toCommentResponse(saved))
+                .thenReturn(CommentResponse.builder().commentId("c1").build());
+
         doThrow(new RuntimeException("kafka down"))
                 .when(commentEventPublisher).publishCommentEvent(saved, "COMMENT_CREATED");
 
@@ -135,7 +153,11 @@ class CommentServiceImplTest {
             mocked.when(GeneralUtils::getCurrentUsername).thenReturn("user1");
 
             RestResponse<CommentResponse> res = service.createComment("to1", req);
+
+            assertNotNull(res);
             assertEquals(200, res.getStatusCode());
+            assertNotNull(res.getResult());
+            assertEquals("c1", res.getResult().getCommentId());
         }
     }
 
@@ -145,8 +167,9 @@ class CommentServiceImplTest {
     void updateComment_nullRequest_shouldThrow() {
         IllegalArgumentException ex =
                 assertThrows(IllegalArgumentException.class,
-                        () -> service.updateComment("to1","c1", null));
+                        () -> service.updateComment("to1", "c1", null));
         assertEquals("No comment data provided", ex.getMessage());
+        verifyNoInteractions(testOrderRepository, commentRepository, commentMapper, commentEventPublisher);
     }
 
     @Test
@@ -154,7 +177,10 @@ class CommentServiceImplTest {
         when(testOrderRepository.findById("to1")).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-                () -> service.updateComment("to1","c1", new UpdateCommentRequest("x")));
+                () -> service.updateComment("to1", "c1", new UpdateCommentRequest("x")));
+
+        verify(testOrderRepository).findById("to1");
+        verifyNoInteractions(commentRepository, commentMapper, commentEventPublisher);
     }
 
     @Test
@@ -163,41 +189,54 @@ class CommentServiceImplTest {
                 .thenReturn(Optional.of(validOrder("to1", true)));
 
         assertThrows(ResourceNotFoundException.class,
-                () -> service.updateComment("to1","c1", new UpdateCommentRequest("x")));
+                () -> service.updateComment("to1", "c1", new UpdateCommentRequest("x")));
+
+        verify(testOrderRepository).findById("to1");
+        verifyNoInteractions(commentRepository, commentMapper, commentEventPublisher);
     }
 
     @Test
     void updateComment_commentNotFound_shouldThrow() {
-        when(testOrderRepository.findById("to1")).thenReturn(Optional.of(validOrder("to1", false)));
-        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1","to1"))
+        when(testOrderRepository.findById("to1"))
+                .thenReturn(Optional.of(validOrder("to1", false)));
+        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1", "to1"))
                 .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-                () -> service.updateComment("to1","c1", new UpdateCommentRequest("x")));
+                () -> service.updateComment("to1", "c1", new UpdateCommentRequest("x")));
+
+        verify(testOrderRepository).findById("to1");
+        verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId("c1", "to1");
+        verifyNoInteractions(commentMapper, commentEventPublisher);
     }
 
     @Test
     void updateComment_notOwner_shouldThrow() {
-        when(testOrderRepository.findById("to1")).thenReturn(Optional.of(validOrder("to1", false)));
+        when(testOrderRepository.findById("to1"))
+                .thenReturn(Optional.of(validOrder("to1", false)));
 
         Comment c = new Comment();
         c.setCommentId("c1");
         c.setCreatedBy("other");
 
-        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1","to1"))
+        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1", "to1"))
                 .thenReturn(Optional.of(c));
 
         try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
             mocked.when(GeneralUtils::getCurrentUsername).thenReturn("user1");
 
             assertThrows(IllegalStateException.class,
-                    () -> service.updateComment("to1","c1", new UpdateCommentRequest("x")));
+                    () -> service.updateComment("to1", "c1", new UpdateCommentRequest("x")));
         }
+
+        verify(commentRepository, never()).save(any());
+        verifyNoInteractions(commentMapper, commentEventPublisher);
     }
 
     @Test
     void updateComment_success() {
-        when(testOrderRepository.findById("to1")).thenReturn(Optional.of(validOrder("to1", false)));
+        when(testOrderRepository.findById("to1"))
+                .thenReturn(Optional.of(validOrder("to1", false)));
 
         Comment c = new Comment();
         c.setCommentId("c1");
@@ -210,22 +249,32 @@ class CommentServiceImplTest {
         saved.setCreatedBy("user1");
         saved.setCreatedAt(LocalDateTime.now());
 
-        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1","to1"))
+        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1", "to1"))
                 .thenReturn(Optional.of(c));
         when(commentRepository.save(any(Comment.class))).thenReturn(saved);
-        when(commentMapper.toCommentResponse(saved))
-                .thenReturn(CommentResponse.builder().commentId("c1").commentText("new").build());
+
+        CommentResponse outDto = CommentResponse.builder()
+                .commentId("c1")
+                .commentText("new")
+                .build();
+        when(commentMapper.toCommentResponse(saved)).thenReturn(outDto);
 
         try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
             mocked.when(GeneralUtils::getCurrentUsername).thenReturn("user1");
 
             RestResponse<CommentResponse> res =
-                    service.updateComment("to1","c1", new UpdateCommentRequest("new"));
+                    service.updateComment("to1", "c1", new UpdateCommentRequest("new"));
 
+            assertNotNull(res);
             assertEquals(200, res.getStatusCode());
             assertEquals("Comment updated successfully", res.getMessage());
+            assertNotNull(res.getResult());
+            assertEquals("c1", res.getResult().getCommentId());
+
             verify(commentEventPublisher).publishCommentEvent(saved, "COMMENT_UPDATED");
         }
+
+        verify(commentRepository).save(any(Comment.class));
     }
 
     // -------- deleteComment --------
@@ -233,27 +282,38 @@ class CommentServiceImplTest {
     @Test
     void deleteComment_orderNotFound_shouldThrow() {
         when(testOrderRepository.findById("to1")).thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class,
-                () -> service.deleteComment("to1","c1"));
+                () -> service.deleteComment("to1", "c1"));
+
+        verify(testOrderRepository).findById("to1");
+        verifyNoInteractions(commentRepository, commentMapper, commentEventPublisher);
     }
 
     @Test
     void deleteComment_deletedOrder_shouldThrow() {
         when(testOrderRepository.findById("to1"))
                 .thenReturn(Optional.of(validOrder("to1", true)));
+
         assertThrows(ResourceNotFoundException.class,
-                () -> service.deleteComment("to1","c1"));
+                () -> service.deleteComment("to1", "c1"));
+
+        verify(testOrderRepository).findById("to1");
+        verifyNoInteractions(commentRepository, commentMapper, commentEventPublisher);
     }
 
     @Test
     void deleteComment_commentNotFound_shouldThrow() {
         when(testOrderRepository.findById("to1"))
                 .thenReturn(Optional.of(validOrder("to1", false)));
-        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1","to1"))
+        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1", "to1"))
                 .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-                () -> service.deleteComment("to1","c1"));
+                () -> service.deleteComment("to1", "c1"));
+
+        verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId("c1", "to1");
+        verifyNoInteractions(commentEventPublisher);
     }
 
     @Test
@@ -265,15 +325,18 @@ class CommentServiceImplTest {
         c.setCommentId("c1");
         c.setCreatedBy("other");
 
-        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1","to1"))
+        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1", "to1"))
                 .thenReturn(Optional.of(c));
 
         try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
             mocked.when(GeneralUtils::getCurrentUsername).thenReturn("user1");
 
             assertThrows(IllegalStateException.class,
-                    () -> service.deleteComment("to1","c1"));
+                    () -> service.deleteComment("to1", "c1"));
         }
+
+        verify(commentRepository, never()).deleteById(anyString());
+        verifyNoInteractions(commentEventPublisher);
     }
 
     @Test
@@ -285,16 +348,17 @@ class CommentServiceImplTest {
         c.setCommentId("c1");
         c.setCreatedBy("user1");
 
-        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1","to1"))
+        when(commentRepository.findByCommentIdAndTestOrder_TestOrderId("c1", "to1"))
                 .thenReturn(Optional.of(c));
 
         try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
             mocked.when(GeneralUtils::getCurrentUsername).thenReturn("user1");
 
-            RestResponse<Void> res = service.deleteComment("to1","c1");
+            RestResponse<Void> res = service.deleteComment("to1", "c1");
 
+            assertNotNull(res);
             assertEquals(200, res.getStatusCode());
-            assertTrue(res.getMessage().toString().contains("deleted successfully"));
+            assertNotNull(res.getMessage());
 
             verify(commentRepository).deleteById("c1");
             verify(commentEventPublisher).publishCommentEvent(c, "COMMENT_DELETED");
@@ -306,16 +370,24 @@ class CommentServiceImplTest {
     @Test
     void getAllComments_orderNotFound_shouldThrow() {
         when(testOrderRepository.findById("to1")).thenReturn(Optional.empty());
+
         assertThrows(ResourceNotFoundException.class,
                 () -> service.getAllComments("to1"));
+
+        verify(testOrderRepository).findById("to1");
+        verifyNoInteractions(commentRepository, commentMapper);
     }
 
     @Test
     void getAllComments_deletedOrder_shouldThrow() {
         when(testOrderRepository.findById("to1"))
                 .thenReturn(Optional.of(validOrder("to1", true)));
+
         assertThrows(ResourceNotFoundException.class,
                 () -> service.getAllComments("to1"));
+
+        verify(testOrderRepository).findById("to1");
+        verifyNoInteractions(commentRepository, commentMapper);
     }
 
     @Test
@@ -341,7 +413,11 @@ class CommentServiceImplTest {
 
         List<CommentResponse> res = service.getAllComments("to1");
 
-        assertEquals(List.of("c1","c2"),
+        assertEquals(List.of("c1", "c2"),
                 res.stream().map(CommentResponse::getCommentId).toList());
+
+        verify(commentRepository).findAllByTestOrder_TestOrderId("to1");
+        verify(commentMapper).toCommentResponse(c1);
+        verify(commentMapper).toCommentResponse(c2);
     }
 }

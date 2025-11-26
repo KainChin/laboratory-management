@@ -22,7 +22,7 @@ class TestOrderMapperTest {
     void toTestOrderEntity_shouldMapFromRequest() {
         TestOrderRequest req = TestOrderRequest.builder()
                 .patientName("Nguyen Van A")
-                .dateOfBirth(LocalDate.of(2000,1,1))
+                .dateOfBirth(LocalDate.of(2000, 1, 1))
                 .citizenId("123")
                 .country("VN")
                 .gender(Gender.MALE)
@@ -35,7 +35,7 @@ class TestOrderMapperTest {
 
         assertNotNull(entity);
         assertEquals("Nguyen Van A", entity.getPatientName());
-        assertEquals(LocalDate.of(2000,1,1), entity.getDateOfBirth());
+        assertEquals(LocalDate.of(2000, 1, 1), entity.getDateOfBirth());
         assertEquals("123", entity.getCitizenId());
         assertEquals("VN", entity.getCountry());
         assertEquals(Gender.MALE, entity.getGender());
@@ -45,13 +45,18 @@ class TestOrderMapperTest {
     }
 
     @Test
+    void toTestOrderEntity_nullRequest_shouldReturnNull() {
+        assertNull(mapper.toTestOrderEntity(null));
+    }
+
+    @Test
     void toTestOrderResponse_shouldMapEntityToDto() {
         LocalDateTime now = LocalDateTime.now();
         TestOrder o = new TestOrder();
         o.setTestOrderId("to1");
         o.setPatientId("p1");
         o.setPatientName("A");
-        o.setDateOfBirth(LocalDate.of(2000,1,1));
+        o.setDateOfBirth(LocalDate.of(2000, 1, 1));
         o.setCitizenId("123");
         o.setCountry("VN");
         o.setGender(Gender.FEMALE);
@@ -69,10 +74,47 @@ class TestOrderMapperTest {
         assertEquals("to1", dto.getTestOrderId());
         assertEquals("p1", dto.getPatientId());
         assertEquals("A", dto.getPatientName());
+        assertEquals(LocalDate.of(2000, 1, 1), dto.getDateOfBirth());
         assertEquals("123", dto.getCitizenId());
+        assertEquals("VN", dto.getCountry());
+        assertEquals(Gender.FEMALE, dto.getGender());
+        assertEquals("HN", dto.getAddress());
+        assertEquals("a@gmail.com", dto.getEmail());
+        assertEquals("0123", dto.getPhone());
         assertEquals("bc1", dto.getBloodCollectionId());
         assertEquals(TestOrderStatus.PENDING, dto.getStatus());
+        assertEquals("admin", dto.getCreatedBy());
         assertEquals(now, dto.getCreatedAt());
+    }
+
+    @Test
+    void toTestOrderResponse_nullEntity_shouldReturnNull() {
+        assertNull(mapper.toTestOrderResponse(null));
+    }
+
+    @Test
+    void toTestOrderResponse_whenNullableFieldsNull_shouldMapAndKeepNulls() {
+        TestOrder o = new TestOrder();
+        o.setTestOrderId("to-null");
+        o.setPatientId("p-null");
+        o.setPatientName("NullCase");
+        o.setGender(null);
+        o.setStatus(null);
+        o.setCreatedAt(null);
+        o.setCreatedBy(null);
+        o.setBloodCollectionId(null);
+
+        TestOrderResponse dto = mapper.toTestOrderResponse(o);
+
+        assertNotNull(dto);
+        assertEquals("to-null", dto.getTestOrderId());
+        assertEquals("p-null", dto.getPatientId());
+        assertEquals("NullCase", dto.getPatientName());
+        assertNull(dto.getGender());
+        assertNull(dto.getStatus());
+        assertNull(dto.getCreatedAt());
+        assertNull(dto.getCreatedBy());
+        assertNull(dto.getBloodCollectionId());
     }
 
     @Test
@@ -98,5 +140,35 @@ class TestOrderMapperTest {
         assertEquals(Gender.MALE, dto.getGender());
         assertEquals("bc1", dto.getBloodCollectionId());
         assertEquals(TestOrderStatus.COMPLETED, dto.getStatus());
+    }
+
+    @Test
+    void toTestOrderDetailResponse_nullEntity_shouldReturnNull() {
+        assertNull(mapper.toTestOrderDetailResponse(null));
+    }
+
+    @Test
+    void toTestOrderDetailResponse_whenNullableFieldsNull_shouldMapAndKeepNulls() {
+        TestOrder o = new TestOrder();
+        o.setTestOrderId("to-null-detail");
+        o.setPatientId("p-null-detail");
+        o.setPatientName("DetailNull");
+        o.setCitizenId(null);
+        o.setCountry(null);
+        o.setGender(null);
+        o.setBloodCollectionId(null);
+        o.setStatus(null);
+
+        TestOrderDetailResponse dto = mapper.toTestOrderDetailResponse(o);
+
+        assertNotNull(dto);
+        assertEquals("to-null-detail", dto.getTestOrderId());
+        assertEquals("p-null-detail", dto.getPatientId());
+        assertEquals("DetailNull", dto.getPatientName());
+        assertNull(dto.getCitizenId());
+        assertNull(dto.getCountry());
+        assertNull(dto.getGender());
+        assertNull(dto.getBloodCollectionId());
+        assertNull(dto.getStatus());
     }
 }

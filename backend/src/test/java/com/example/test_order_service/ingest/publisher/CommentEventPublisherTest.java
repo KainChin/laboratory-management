@@ -3,7 +3,6 @@ package com.example.test_order_service.ingest.publisher;
 import com.example.test_order_service.entity.Comment;
 import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.ingest.dto.CommentEventPayload;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -29,13 +28,6 @@ class CommentEventPublisherTest {
     @InjectMocks
     private CommentEventPublisher publisher;
 
-    private CompletableFuture<SendResult<String, Object>> future;
-
-    @BeforeEach
-    void setup() {
-        future = new CompletableFuture<>();
-    }
-
     @Test
     void publishCommentEvent_nullComment_currentImplThrowsNpe() {
         assertThrows(NullPointerException.class,
@@ -59,12 +51,18 @@ class CommentEventPublisherTest {
         when(testOrder.getTestOrderId()).thenReturn("TO-1");
         when(testOrder.getEmail()).thenReturn("a@gmail.com");
 
+        LocalDateTime now = LocalDateTime.now();
         Comment comment = mock(Comment.class);
         when(comment.getTestOrder()).thenReturn(testOrder);
         when(comment.getCommentId()).thenReturn("C-1");
         when(comment.getCommentText()).thenReturn("hello");
         when(comment.getCreatedBy()).thenReturn("user-1");
-        when(comment.getCreatedAt()).thenReturn(LocalDateTime.now());
+        when(comment.getCreatedAt()).thenReturn(now);
+
+        @SuppressWarnings("unchecked")
+        SendResult<String, Object> sendResult = mock(SendResult.class);
+        CompletableFuture<SendResult<String, Object>> future =
+                CompletableFuture.completedFuture(sendResult);
 
         when(kafkaTemplate.send(eq("comment-events-topic"), eq("TO-1"), any(CommentEventPayload.class)))
                 .thenReturn(future);
@@ -85,7 +83,7 @@ class CommentEventPublisherTest {
         assertEquals("a@gmail.com", payload.getEmail());
         assertEquals("hello", payload.getCommentText());
         assertEquals("user-1", payload.getCreatedBy());
-        assertNotNull(payload.getCreatedAt());
+        assertEquals(now, payload.getCreatedAt());
     }
 
     @Test
