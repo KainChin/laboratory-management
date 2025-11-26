@@ -5,9 +5,9 @@ import com.example.test_order_service.dto.response.CommentResponse;
 import com.example.test_order_service.dto.request.CreateCommentRequest;
 import com.example.test_order_service.dto.request.UpdateCommentRequest;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public interface CommentService {
@@ -15,5 +15,5 @@ public interface CommentService {
     RestResponse<CommentResponse> updateComment(String orderId, String commentId, UpdateCommentRequest request);
     RestResponse<Void> deleteComment(String orderId, String commentId);
     List<CommentResponse> getAllComments(String orderId);
-    CompletableFuture<RestResponse<CommentResponse>> getAIReview(String orderId);
+    Mono<RestResponse<CommentResponse>> getAIReview(String orderId);
 }

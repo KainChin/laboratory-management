@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
@@ -183,5 +184,24 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    @ExceptionHandler(WebClientResponseException.class)
+    public ResponseEntity<RestResponse<Void>> handleWebClientResponseException(
+            WebClientResponseException ex,
+            HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+        String message = "External API call failed: " + ex.getMessage();
+
+        RestResponse<Void> response = RestResponse.<Void>builder()
+                .timestamp(LocalDateTime.now())
+                .statusCode(status.value())
+                .error(status.getReasonPhrase())
+                .message(List.of(message))
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(status).body(response);
     }
 }

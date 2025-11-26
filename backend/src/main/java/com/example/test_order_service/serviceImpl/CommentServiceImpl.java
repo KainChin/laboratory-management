@@ -11,7 +11,6 @@ import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.TestResult;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.exception.ResourceNotFoundException;
-// THÊM IMPORT
 import com.example.test_order_service.ingest.publisher.CommentEventPublisher;
 import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.repository.CommentRepository;
@@ -19,7 +18,6 @@ import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.CommentService;
 import com.example.test_order_service.utils.GeneralUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -28,7 +26,6 @@ import reactor.core.scheduler.Schedulers;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -177,82 +174,78 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Async("taskExecutor")
-    public CompletableFuture<RestResponse<CommentResponse>> getAIReview(String orderId) {
-        // Kiểm tra test order có tồn tại không
-        TestOrder testOrder = testOrderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
+    public Mono<RestResponse<CommentResponse>> getAIReview(String orderId) {
+        return Mono.fromCallable(() -> {
+                    // Kiểm tra test order có tồn tại không
+                    TestOrder testOrder = testOrderRepository.findById(orderId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Test order not found"));
 
-        if (testOrder.isDeleted()) {
-            throw new ResourceNotFoundException("Test order not found");
-        }
+                    if (testOrder.isDeleted()) {
+                        throw new ResourceNotFoundException("Test order not found");
+                    }
 
-        // Kiểm tra test result có tồn tại không
-        TestResult testResult = testOrder.getTestResults();
-        if (testResult == null) {
-            throw new ResourceNotFoundException("Test result not found for this order");
-        }
+                    // Kiểm tra test result có tồn tại không
+                    TestResult testResult = testOrder.getTestResults();
+                    if (testResult == null) {
+                        throw new ResourceNotFoundException("Test result not found for this order");
+                    }
 
-        // Lấy HL7 raw data
-        String hl7Message = testResult.getHl7RawData();
-        if (hl7Message == null || hl7Message.isEmpty()) {
-            throw new ResourceNotFoundException("HL7 data not found in test result");
-        }
+                    // Lấy HL7 raw data
+                    String hl7Message = testResult.getHl7RawData();
+                    if (hl7Message == null || hl7Message.isEmpty()) {
+                        throw new ResourceNotFoundException("HL7 data not found in test result");
+                    }
 
-        // Tạo request cho AI API
-        AIReviewRequest aiRequest = AIReviewRequest.builder()
-                .hl7Message(hl7Message)
-                .build();
-
-        // Gọi AI API bất đồng bộ
-        return webClient.post()
-                .uri("https://medical-ai-api-xva0.onrender.com/analyze_hl7")
-                .bodyValue(aiRequest)
-                .retrieve()
-                .bodyToMono(AIReviewResponse.class)
-                .publishOn(Schedulers.boundedElastic()) // Chuyển sang thread pool cho blocking operations
-                .map(aiResponse -> {
-                    // Tạo Comment mới với kết quả từ AI
-                    Comment aiComment = Comment.builder()
-                            .commentText(aiResponse.getAnalysisResult())
-                            .createdBy("AI-REVIEWED")
-                            .testOrder(testOrder)
-                            .updatedBy("AI-REVIEWED")
+                    // Tạo request cho AI API
+                    AIReviewRequest aiRequest = AIReviewRequest.builder()
+                            .hl7Message(hl7Message)
                             .build();
 
-                    testOrder.setStatus(TestOrderStatus.AI_REVIEWED);
-
-                    // Lưu comment vào database - blocking calls nhưng đã ở boundedElastic thread
-                    Comment savedComment = commentRepository.save(aiComment);
-                    testOrderRepository.save(testOrder);
-
-//                    try {
-//                        commentEventPublisher.publishCommentEvent(savedComment, "COMMENT_CREATED");
-//                    } catch (Exception e) {
-//                        // Log lỗi nhưng không làm fail request
-//                        System.err.println("Failed to publish COMMENT_CREATED event: " + e.getMessage());
-//                    }
-
-                    // Chuyển đổi sang CommentResponse
-                    CommentResponse commentResponse = commentMapper.toCommentResponse(savedComment);
-
-                    return RestResponse.<CommentResponse>builder()
-                            .statusCode(200)
-                            .message("AI review completed successfully for order " + orderId)
-                            .result(commentResponse)
-                            .timestamp(LocalDateTime.now())
-                            .build();
+                    return new Object[]{testOrder, aiRequest};
                 })
-                .onErrorResume(error -> {
-                    // Xử lý lỗi khi gọi AI API
-                    System.err.println("Error calling AI API: " + error.getMessage());
-                    return Mono.just(RestResponse.<CommentResponse>builder()
-                            .statusCode(500)
-                            .message("Failed to get AI review: " + error.getMessage())
-                            .error(error.getMessage())
-                            .timestamp(LocalDateTime.now())
-                            .build());
-                })
-                .toFuture();
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(data -> {
+                    TestOrder testOrder = (TestOrder) ((Object[]) data)[0];
+                    AIReviewRequest aiRequest = (AIReviewRequest) ((Object[]) data)[1];
+
+                    // Gọi AI API bất đồng bộ
+                    return webClient.post()
+                            .uri("https://medical-ai-api-xva0.onrender.com/analyze_hl7")
+                            .bodyValue(aiRequest)
+                            .retrieve()
+                            .bodyToMono(AIReviewResponse.class)
+                            .publishOn(Schedulers.boundedElastic())
+                            .map(aiResponse -> {
+                                // Tạo Comment mới với kết quả từ AI
+                                Comment aiComment = Comment.builder()
+                                        .commentText(aiResponse.getAnalysisResult())
+                                        .createdBy("AI-REVIEWED")
+                                        .testOrder(testOrder)
+                                        .updatedBy("AI-REVIEWED")
+                                        .build();
+
+                                testOrder.setStatus(TestOrderStatus.AI_REVIEWED);
+
+                                // Lưu comment vào database
+                                Comment savedComment = commentRepository.save(aiComment);
+                                testOrderRepository.save(testOrder);
+
+                                try {
+                                    commentEventPublisher.publishCommentEvent(savedComment, "COMMENT_CREATED");
+                                } catch (Exception e) {
+                                    System.err.println("Failed to publish COMMENT_CREATED event: " + e.getMessage());
+                                }
+
+                                // Chuyển đổi sang CommentResponse
+                                CommentResponse commentResponse = commentMapper.toCommentResponse(savedComment);
+
+                                return RestResponse.<CommentResponse>builder()
+                                        .statusCode(200)
+                                        .message("AI review completed successfully for order " + orderId)
+                                        .result(commentResponse)
+                                        .timestamp(LocalDateTime.now())
+                                        .build();
+                            });
+                });
     }
 }

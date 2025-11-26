@@ -128,7 +128,7 @@ public class TestOrderController {
 
     //Gửi yêu cầu đồng bộ kết quả xét nghiệm cho một đơn hàng cụ thể
     @PostMapping("/{orderId}/resync")
-    @PreAuthorize("hasRole('ROLE_LAB_USER')")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN')")
     public RestResponse<Void> resyncTestOrderResults(@PathVariable String orderId) {
 
         TestOrder order = testOrderRepository.findById(orderId)

@@ -9,10 +9,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/test-orders/{orderId}/comments")
@@ -47,7 +47,7 @@ public class CommentController {
 
     @PostMapping("/ai-reviewed")
     @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('ADD_COMMENT')")
-    public CompletableFuture<RestResponse<CommentResponse>> getAIReview(
+    public Mono<RestResponse<CommentResponse>> getAIReview(
             @PathVariable String orderId
     ) {
         return commentService.getAIReview(orderId);
