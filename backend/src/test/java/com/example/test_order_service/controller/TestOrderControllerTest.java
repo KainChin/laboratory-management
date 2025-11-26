@@ -100,7 +100,7 @@ public class TestOrderControllerTest {
     }
 
     @Test
-    void getTestOrders_shouldBuildPageable_andWrapResponse() {
+    void getTestOrders_shouldBuildPageable_andWrapResponse_descBranch() {
         PageResponse<TestOrderResponse> pageResponse = mock(PageResponse.class);
 
         when(testOrderService.getTestOrders(any(Pageable.class), anyString(), any(), any(), any()))
@@ -141,7 +141,7 @@ public class TestOrderControllerTest {
     }
 
     @Test
-    void getTestOrders_whenPageLessThan1_shouldUsePage0() {
+    void getTestOrders_whenPageLessThan1_andAscBranch() {
         PageResponse<TestOrderResponse> pageResponse = mock(PageResponse.class);
 
         when(testOrderService.getTestOrders(any(Pageable.class), anyString(), any(), any(), any()))
@@ -156,11 +156,16 @@ public class TestOrderControllerTest {
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         verify(testOrderService).getTestOrders(pageableCaptor.capture(), anyString(), any(), any(), any());
-        assertEquals(0, pageableCaptor.getValue().getPageNumber());
+        Pageable p = pageableCaptor.getValue();
+
+        assertEquals(0, p.getPageNumber());
+        Sort.Order order = p.getSort().getOrderFor("patientName");
+        assertNotNull(order);
+        assertEquals(Sort.Direction.ASC, order.getDirection());
     }
 
     @Test
-    void deleteTestOrder_shouldDelegate_andWrapResponse() {
+    void deleteTestOrder_shouldDelegate_andWrapResponse_ascBranch() {
         PageResponse<TestOrderResponse> pageResponse = mock(PageResponse.class);
 
         when(testOrderService.deleteTestOrder(eq("o9"), any(Pageable.class), anyString(), any(), any(), any()))
@@ -181,6 +186,40 @@ public class TestOrderControllerTest {
 
         verify(testOrderService).deleteTestOrder(eq("o9"), any(Pageable.class), anyString(), any(), any(), any());
         verifyNoMoreInteractions(testOrderService, resyncRequestPublisher, testOrderRepository);
+    }
+
+    @Test
+    void deleteTestOrder_descBranch_andPageLessThan1() {
+        PageResponse<TestOrderResponse> pageResponse = mock(PageResponse.class);
+        when(testOrderService.deleteTestOrder(eq("o9"), any(Pageable.class), anyString(), any(), any(), any()))
+                .thenReturn(pageResponse);
+
+        controller.deleteTestOrder(
+                "o9",
+                "k",
+                LocalDate.parse("2025-01-01"),
+                LocalDate.parse("2025-01-02"),
+                TestOrderStatus.PENDING,
+                0, 10,
+                "createdAt", "DESC"
+        );
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(testOrderService).deleteTestOrder(
+                eq("o9"),
+                pageableCaptor.capture(),
+                eq("k"),
+                eq(LocalDate.parse("2025-01-01")),
+                eq(LocalDate.parse("2025-01-02")),
+                eq(TestOrderStatus.PENDING)
+        );
+
+        Pageable p = pageableCaptor.getValue();
+        assertEquals(0, p.getPageNumber());
+        assertEquals(10, p.getPageSize());
+        Sort.Order order = p.getSort().getOrderFor("createdAt");
+        assertNotNull(order);
+        assertEquals(Sort.Direction.DESC, order.getDirection());
     }
 
     @Test
@@ -269,7 +308,7 @@ public class TestOrderControllerTest {
     }
 
     @Test
-    void getTestOrderByEmail_shouldDelegate_andWrapResponse() {
+    void getTestOrderByEmail_shouldDelegate_andWrapResponse_ascBranch() {
         PageResponse<TestOrderDetailResponse> pageResponse = mock(PageResponse.class);
 
         when(testOrderService.getTestOrderByEmail(any(Pageable.class), eq("a@b.com")))
@@ -284,6 +323,26 @@ public class TestOrderControllerTest {
 
         verify(testOrderService).getTestOrderByEmail(any(Pageable.class), eq("a@b.com"));
         verifyNoMoreInteractions(testOrderService, resyncRequestPublisher, testOrderRepository);
+    }
+
+    @Test
+    void getTestOrderByEmail_descBranch_andPageLessThan1() {
+        PageResponse<TestOrderDetailResponse> pageResponse = mock(PageResponse.class);
+
+        when(testOrderService.getTestOrderByEmail(any(Pageable.class), eq("x@y.com")))
+                .thenReturn(pageResponse);
+
+        controller.getTestOrderByEmail("x@y.com", 0, 3, "createdAt", "DESC");
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(testOrderService).getTestOrderByEmail(pageableCaptor.capture(), eq("x@y.com"));
+
+        Pageable p = pageableCaptor.getValue();
+        assertEquals(0, p.getPageNumber());
+        assertEquals(3, p.getPageSize());
+        Sort.Order order = p.getSort().getOrderFor("createdAt");
+        assertNotNull(order);
+        assertEquals(Sort.Direction.DESC, order.getDirection());
     }
 
     @Test
