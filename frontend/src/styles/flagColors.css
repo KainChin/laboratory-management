@@ -1,27 +1,35 @@
-.flag-normal {
-  background-color: #fff7e6 !important; /* Light yellow for Normal */
-  color: #d48806;
+.root {
+  /* Flag palette - semantic variables for easy reuse */
+  --flag-n-bg: #10b981;   /* green */
+  --flag-h-bg: #ef4444;   /* red */
+  --flag-l-bg: #f59e0b;   /* amber/orange */
+  --flag-a-bg: #6366f1;   /* indigo */
+  --flag-aa-bg: #0ea5e9;  /* sky/blue */
+  --flag-vs-bg: #6b7280;  /* gray */
+
+  --flag-text-on-dark: #ffffff;
+
+  /* Lighter background variants (for charts / pill backgrounds) */
+  --flag-n-bg-soft: #ecfdf5;
+  --flag-h-bg-soft: #fff1f2;
+  --flag-l-bg-soft: #fffbeb;
+  --flag-a-bg-soft: #eef2ff;
+  --flag-aa-bg-soft: #ecfeff;
+  --flag-vs-bg-soft: #f3f4f6;
 }
 
-.flag-high {
-  background-color: #fff1f0 !important; /* Light red for High */
-  color: #cf1322;
-}
+/* Chart / textual color utilities (used in some components) */
+.chart-N { color: var(--flag-n-bg); }
+.chart-H { color: var(--flag-h-bg); }
+.chart-L { color: var(--flag-l-bg); }
+.chart-A { color: var(--flag-a-bg); }
+.chart-AA { color: var(--flag-aa-bg); }
+.chart-VS { color: var(--flag-vs-bg); }
 
-.flag-low {
-  background-color: #fff2e8 !important; /* Light orange for Low */
-  color: #d4380d;
-}
-
-/* Chart colors */
-.chart-normal {
-  color: #10b981;
-}
-
-.chart-high {
-  color: #FF5A5A;
-}
-
-.chart-low {
-  color: #f59e0b;
-}
+/* Soft backgrounds for larger areas if needed */
+.bg-N-soft { background-color: var(--flag-n-bg-soft); }
+.bg-H-soft { background-color: var(--flag-h-bg-soft); }
+.bg-L-soft { background-color: var(--flag-l-bg-soft); }
+.bg-A-soft { background-color: var(--flag-a-bg-soft); }
+.bg-AA-soft { background-color: var(--flag-aa-bg-soft); }
+.bg-VS-soft { background-color: var(--flag-vs-bg-soft); }
