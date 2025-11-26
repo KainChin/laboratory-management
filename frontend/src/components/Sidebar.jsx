@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaBars } from "react-icons/fa";
 import {
   FaHome,
-  FaFlask,
+  FaUsers,
+  FaUserCog,
+  FaUserCheck,
 } from "react-icons/fa";
 
 // Inline component
@@ -40,8 +42,10 @@ export default function Sidebar() {
   };
 
   const visibleMenuItems = [
-    { path: "/", icon: FaHome, privilege: "READ_ONLY", desc: "Home" },
-    { path: "/test-orders", icon: FaFlask, privilege: "VIEW_ROLE", desc: "Test Orders" },
+    { path: "#", icon: FaHome, privilege: "READ_ONLY", desc: "Home" },
+    { path: "#", icon: FaUsers, privilege: "VIEW_ROLE", desc: "Role management" },
+    { path: "#", icon: FaUserCog, privilege: "VIEW_USER", desc: "User management" },
+    { path: "#", icon: FaUserCheck, privilege: "VIEW_USER", desc: "Account management" },
   ];
 
   // disable scroll on tablet and mobile viewport
@@ -65,7 +69,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`bg-[#FF5A5A] text-white z-[40] transition-all duration-200 ease-in-out
+      className={`bg-[#FF5A5A] text-white z-[100] transition-all duration-200 ease-in-out 
         ${isSideBarOpen ? "md:w-[200px]" : "w-[60px]"}`}
     >
       <div
@@ -73,7 +77,7 @@ export default function Sidebar() {
       >
         <motion.div
           className={`p-2 ml-[2px] w-max rounded-[5px] hover:cursor-pointer hover:scale-110 transition-all duration-200
-                      ${location.pathname === "/" && "bg-[#FFFFFF33]"}`}
+          ${location.pathname === "/" && "bg-[#FFFFFF33]" }`}
         >
           <FaBars
             onClick={handleOpenSideBar}
@@ -83,16 +87,16 @@ export default function Sidebar() {
       </div>
 
       <div className={`pt-5 bg-[#FF5A5A] w-full md:opacity-100
-                                          ${isSideBarOpen ? "opacity-100" : "opacity-0"}`}>
+                      ${isSideBarOpen ? "opacity-100" : "opacity-0"}`}>
         {
           visibleMenuItems.map((item, index) => (
             <Link
               to={item.path}
               key={index}
               className={`flex items-center w-full px-2 mb-5 transition-all duration-200 ease-in-out
-                                                   hover:cursor-pointer hover:scale-105
-                                                   ${isSideBarOpen ? "hover:bg-white/20 rounded-r-full" : "bg-transparent hover:bg-transparent"}
-                                                   ${isSideBarOpen && location.pathname === item.path && "bg-[#FFFFFF33]"}`}
+                        hover:cursor-pointer hover:scale-105
+                        ${isSideBarOpen ? "hover:bg-white/20 rounded-r-full" : "bg-transparent hover:bg-transparent"}
+                        ${isSideBarOpen && location.pathname === item.path && "bg-[#FFFFFF33]"}`}
             >
               <div>
                 <SidebarIcon
@@ -103,7 +107,7 @@ export default function Sidebar() {
               </div>
               {isSideBarOpen && (
                 <span className="pt-1 whitespace-nowrap text-[14px]
-                       transition-all duration-300 ease-in-out hover:cursor-pointer">
+                transition-all duration-300 ease-in-out hover:cursor-pointer">
                   {item.desc}
                 </span>
               )}

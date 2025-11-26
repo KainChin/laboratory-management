@@ -1,44 +1,33 @@
-/* Flag styles */
+/* Flag styles - consistent pill badges for test result flags
+   supported flags: N, H, L, A, AA, VS
+   These use variables from flagColors.css to keep palette centralized. */
 .dto-flag {
   display: inline-block;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 4px 10px;
+  border-radius: 999px; /* pill */
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: middle;
+  white-space: nowrap;
+  color: var(--flag-text-on-dark, #fff);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset;
 }
 
 .dto-flag-default {
-  background-color: #9ca3af;
-  color: white;
+  background-color: #6b7280; /* gray-500 */
+  color: #ffffff;
 }
 
-.dto-flag-N {
-  background-color: #10b981;
-  color: white;
-}
+/* Specific flag colors - use a consistent, high-contrast palette */
+.dto-flag-N { background-color: var(--flag-n-bg, #10b981); color: var(--flag-text-on-dark); }
+.dto-flag-H { background-color: var(--flag-h-bg, #ef4444); color: var(--flag-text-on-dark); }
+.dto-flag-L { background-color: var(--flag-l-bg, #f59e0b); color: var(--flag-text-on-dark); }
+.dto-flag-A { background-color: var(--flag-a-bg, #6366f1); color: var(--flag-text-on-dark); }
+.dto-flag-AA { background-color: var(--flag-aa-bg, #0ea5e9); color: var(--flag-text-on-dark); }
+.dto-flag-VS { background-color: var(--flag-vs-bg, #6b7280); color: var(--flag-text-on-dark); }
 
-.dto-flag-H {
-  background-color: #FF5A5A;
-  color: white;
-}
+/* Optional lighter background helpers used elsewhere */
+.flag-pill-soft { padding: 6px 12px; border-radius: 8px; }
 
-.dto-flag-L {
-  background-color: #f59e0b;
-  color: white;
-}
-
-/* Status Chart colors */
-.status-N {
-  color: #10b981;
-  background-color: #fff7e6;
-}
-
-.status-H {
-  color: #FF5A5A;
-  background-color: #fff1f0;
-}
-
-.status-L {
-  color: #f59e0b;
-  background-color: #fff2e8;
-}
+.flag-col { display: flex; align-items: center; justify-content: flex-start; gap: 8px; }

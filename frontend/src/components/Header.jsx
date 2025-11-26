@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { ChevronsRight, Menu, Bell, Users, LogOut } from "lucide-react";
 import { FaHeartbeat } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getUserName } from "../utils/jwtUtils";
+import UserDetailsModal from "./UserDetailsModal";
 
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [userName, setUserName] = useState("User");
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [showUserTooltip, setShowUserTooltip] = useState(false);
+  const [showLogoutTooltip, setShowLogoutTooltip] = useState(false);
 
   // Get username from JWT token in localStorage
   useEffect(() => {
@@ -67,7 +71,7 @@ export default function Header() {
           </div>
           <>
             {breadcrumbs.map((crumb, index) => (
-              <React.Fragment key={index}>
+              <Fragment key={index}>
                 <span style={{ margin: "0 10px", color: "#777777" }}>
                   <ChevronsRight style={{ fontSize: "24px" }} />
                 </span>
@@ -90,7 +94,7 @@ export default function Header() {
                     {crumb.label}
                   </span>
                 )}
-              </React.Fragment>
+              </Fragment>
             ))}
           </>
         </div>
@@ -105,16 +109,79 @@ export default function Header() {
             style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
             className="hover:scale-110 transition-all duration-300 ease-in-out"
           />
-          <Users
-            style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
-            className="hover:scale-110 transition-all duration-300 ease-in-out"
-          />
-          <LogOut
-            style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
-            className="hover:scale-110 transition-all duration-300 ease-in-out"
-          />
+          <div
+            className="relative inline-flex"
+            onMouseEnter={() => setShowUserTooltip(true)}
+            onMouseLeave={() => setShowUserTooltip(false)}
+          >
+            <Users
+              onClick={() => setShowUserModal(true)}
+              style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
+              className="hover:scale-110 transition-all duration-300 ease-in-out"
+            />
+            {/* User Details Tooltip */}
+            {showUserTooltip && (
+              <div 
+                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-1.5 bg-black text-white text-sm rounded shadow-lg whitespace-nowrap z-50 pointer-events-none"
+                style={{
+                  animation: "fadeIn 0.2s ease-in-out"
+                }}
+              >
+                User details
+                {/* Arrow pointing up */}
+                <div 
+                  className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-px"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: "6px solid transparent",
+                    borderRight: "6px solid transparent",
+                    borderBottom: "6px solid black"
+                  }}
+                />
+              </div>
+            )}
+          </div>
+          <div
+            className="relative inline-flex"
+            onMouseEnter={() => setShowLogoutTooltip(true)}
+            onMouseLeave={() => setShowLogoutTooltip(false)}
+          >
+            <LogOut
+              style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
+              className="hover:scale-110 transition-all duration-300 ease-in-out"
+            />
+            {/* Logout Tooltip */}
+            {showLogoutTooltip && (
+              <div 
+                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-1.5 bg-black text-white text-sm rounded shadow-lg whitespace-nowrap z-50 pointer-events-none"
+                style={{
+                  animation: "fadeIn 0.2s ease-in-out"
+                }}
+              >
+                Logout
+                {/* Arrow pointing up */}
+                <div 
+                  className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-px"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: "6px solid transparent",
+                    borderRight: "6px solid transparent",
+                    borderBottom: "6px solid black"
+                  }}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* User Details Modal */}
+      <UserDetailsModal
+        open={showUserModal}
+        onClose={() => setShowUserModal(false)}
+      />
     </header>
   );
 }
