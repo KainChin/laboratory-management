@@ -31,8 +31,8 @@ class TestOrderTest {
     void gettersSettersAndEquality_shouldWork() {
         TestOrder a = new TestOrder();
         a.setTestOrderId("to1");
-        a.setPatientId("p1");
-        a.setPatientName("Nguyen Van A"); // required in DB but test set luôn
+        a.setPatientId(1); // ✅ Integer
+        a.setPatientName("Nguyen Van A");
         a.setCitizenId("123");
         a.setCountry("VN");
         a.setBloodCollectionId("bc1");
@@ -40,7 +40,7 @@ class TestOrderTest {
 
         TestOrder b = new TestOrder();
         b.setTestOrderId("to1");
-        b.setPatientId("p1");
+        b.setPatientId(1); // ✅ Integer
         b.setPatientName("Nguyen Van A");
         b.setCitizenId("123");
         b.setCountry("VN");

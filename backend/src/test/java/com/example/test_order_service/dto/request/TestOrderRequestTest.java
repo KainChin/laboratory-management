@@ -25,9 +25,10 @@ class TestOrderRequestTest {
 
     private TestOrderRequest validRequest() {
         return TestOrderRequest.builder()
+                .patientId(1) // ✅ required
                 .patientName("Nguyen Van A")
                 .dateOfBirth(LocalDate.now().minusYears(20))
-                .citizenId("0123456789")
+                .identityNumber("0123456789") // ✅ citizenId -> identityNumber
                 .country("VN")
                 .gender(Gender.MALE)
                 .address("Hanoi")
@@ -67,12 +68,14 @@ class TestOrderRequestTest {
     }
 
     @Test
-    void blankCitizenId_shouldFail() {
+    void blankIdentityNumber_shouldFail() {
         TestOrderRequest req = validRequest();
-        req.setCitizenId("");
+        req.setIdentityNumber("");
 
         Set<ConstraintViolation<TestOrderRequest>> violations = validator.validate(req);
         assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("identityNumber")));
     }
 
     @Test
@@ -117,7 +120,11 @@ class TestOrderRequestTest {
 
         // no-args constructor coverage
         TestOrderRequest empty = new TestOrderRequest();
+        empty.setPatientId(1); // ✅ nếu Lombok bắt non-null
         empty.setPatientName("X");
+        empty.setIdentityNumber("111");
+        empty.setCountry("VN");
+        empty.setPhone("0123456789");
         assertEquals("X", empty.getPatientName());
     }
 }

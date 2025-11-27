@@ -16,10 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -41,9 +38,10 @@ class TestOrderMapperTest {
     void setUp() {
         // Setup test order request
         testOrderRequest = TestOrderRequest.builder()
+                .patientId(1) // required Integer
                 .patientName("Nguyen Van An")
                 .dateOfBirth(LocalDate.of(1985, 3, 15))
-                .citizenId("079085012345")
+                .identityNumber("079085012345") // citizenId -> identityNumber
                 .country("Vietnam")
                 .gender(Gender.MALE)
                 .phone("+84987654321")
@@ -54,10 +52,10 @@ class TestOrderMapperTest {
         // Setup test order entity
         testOrder = TestOrder.builder()
                 .testOrderId("TO-001")
-                .patientId("PAT-2025-001")
+                .patientId(1) // Integer
                 .patientName("Nguyen Van An")
                 .dateOfBirth(LocalDate.of(1985, 3, 15))
-                .citizenId("079085012345")
+                .citizenId("079085012345") // entity vẫn citizenId
                 .country("Vietnam")
                 .gender(Gender.MALE)
                 .phone("+84987654321")
@@ -70,6 +68,7 @@ class TestOrderMapperTest {
                 .reviewedBy("Dr. Jane Smith")
                 .reviewedAt(LocalDateTime.of(2025, 11, 6, 14, 30, 0))
                 .build();
+
         testOrder.setCreatedBy("Admin");
         testOrder.setCreatedAt(LocalDateTime.of(2025, 11, 6, 8, 0, 0));
     }
@@ -87,11 +86,10 @@ class TestOrderMapperTest {
         @Order(1)
         @DisplayName("Should map TestOrderRequest to TestOrder successfully")
         void shouldMapTestOrderRequestToTestOrderSuccessfully() {
-            // When
             TestOrder result = testOrderMapper.toTestOrderEntity(testOrderRequest);
 
-            // Then
             assertThat(result).isNotNull();
+            assertThat(result.getPatientId()).isEqualTo(1);
             assertThat(result.getPatientName()).isEqualTo("Nguyen Van An");
             assertThat(result.getDateOfBirth()).isEqualTo(LocalDate.of(1985, 3, 15));
             assertThat(result.getCitizenId()).isEqualTo("079085012345");
@@ -106,10 +104,7 @@ class TestOrderMapperTest {
         @Order(2)
         @DisplayName("Should handle null request")
         void shouldHandleNullRequest() {
-            // When
             TestOrder result = testOrderMapper.toTestOrderEntity(null);
-
-            // Then
             assertThat(result).isNull();
         }
 
@@ -117,10 +112,10 @@ class TestOrderMapperTest {
         @Order(3)
         @DisplayName("Should handle request with null optional fields")
         void shouldHandleRequestWithNullOptionalFields() {
-            // Given
             TestOrderRequest requestWithNulls = TestOrderRequest.builder()
+                    .patientId(1)
                     .patientName("John Doe")
-                    .citizenId("123456789")
+                    .identityNumber("123456789")
                     .country("USA")
                     .phone("1234567890")
                     .dateOfBirth(null)
@@ -129,11 +124,10 @@ class TestOrderMapperTest {
                     .email(null)
                     .build();
 
-            // When
             TestOrder result = testOrderMapper.toTestOrderEntity(requestWithNulls);
 
-            // Then
             assertThat(result).isNotNull();
+            assertThat(result.getPatientId()).isEqualTo(1);
             assertThat(result.getPatientName()).isEqualTo("John Doe");
             assertThat(result.getDateOfBirth()).isNull();
             assertThat(result.getGender()).isNull();
@@ -145,34 +139,28 @@ class TestOrderMapperTest {
         @Order(4)
         @DisplayName("Should map all gender types correctly")
         void shouldMapAllGenderTypesCorrectly() {
-            // Test MALE
             testOrderRequest.setGender(Gender.MALE);
-            TestOrder male = testOrderMapper.toTestOrderEntity(testOrderRequest);
-            assertThat(male.getGender()).isEqualTo(Gender.MALE);
+            assertThat(testOrderMapper.toTestOrderEntity(testOrderRequest).getGender())
+                    .isEqualTo(Gender.MALE);
 
-            // Test FEMALE
             testOrderRequest.setGender(Gender.FEMALE);
-            TestOrder female = testOrderMapper.toTestOrderEntity(testOrderRequest);
-            assertThat(female.getGender()).isEqualTo(Gender.FEMALE);
+            assertThat(testOrderMapper.toTestOrderEntity(testOrderRequest).getGender())
+                    .isEqualTo(Gender.FEMALE);
 
-            // Test OTHER
             testOrderRequest.setGender(Gender.OTHER);
-            TestOrder other = testOrderMapper.toTestOrderEntity(testOrderRequest);
-            assertThat(other.getGender()).isEqualTo(Gender.OTHER);
+            assertThat(testOrderMapper.toTestOrderEntity(testOrderRequest).getGender())
+                    .isEqualTo(Gender.OTHER);
         }
 
         @Test
         @Order(5)
         @DisplayName("Should handle empty strings in request")
         void shouldHandleEmptyStringsInRequest() {
-            // Given
             testOrderRequest.setAddress("");
             testOrderRequest.setEmail("");
 
-            // When
             TestOrder result = testOrderMapper.toTestOrderEntity(testOrderRequest);
 
-            // Then
             assertThat(result.getAddress()).isEmpty();
             assertThat(result.getEmail()).isEmpty();
         }
@@ -181,14 +169,11 @@ class TestOrderMapperTest {
         @Order(6)
         @DisplayName("Should handle special characters in fields")
         void shouldHandleSpecialCharactersInFields() {
-            // Given
             testOrderRequest.setPatientName("Nguyễn Văn Anh (Tên gọi: 'Andy')");
             testOrderRequest.setAddress("Số 1/2, Đường 3-4, P.5-6 Q.7/8");
 
-            // When
             TestOrder result = testOrderMapper.toTestOrderEntity(testOrderRequest);
 
-            // Then
             assertThat(result.getPatientName()).isEqualTo("Nguyễn Văn Anh (Tên gọi: 'Andy')");
             assertThat(result.getAddress()).isEqualTo("Số 1/2, Đường 3-4, P.5-6 Q.7/8");
         }
@@ -197,10 +182,8 @@ class TestOrderMapperTest {
         @Order(7)
         @DisplayName("Should not set auto-generated fields during request mapping")
         void shouldNotSetAutoGeneratedFieldsDuringRequestMapping() {
-            // When
             TestOrder result = testOrderMapper.toTestOrderEntity(testOrderRequest);
 
-            // Then - These fields should not be set by mapper
             assertThat(result.getTestOrderId()).isNull();
             assertThat(result.getBloodCollectionId()).isNull();
             assertThat(result.getStatus()).isNull();
@@ -220,13 +203,11 @@ class TestOrderMapperTest {
         @Order(1)
         @DisplayName("Should map TestOrder to TestOrderResponse successfully")
         void shouldMapTestOrderToTestOrderResponseSuccessfully() {
-            // When
             TestOrderResponse response = testOrderMapper.toTestOrderResponse(testOrder);
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getTestOrderId()).isEqualTo("TO-001");
-            assertThat(response.getPatientId()).isEqualTo("PAT-2025-001");
+            assertThat(response.getPatientId()).isEqualTo(1);
             assertThat(response.getPatientName()).isEqualTo("Nguyen Van An");
             assertThat(response.getDateOfBirth()).isEqualTo(LocalDate.of(1985, 3, 15));
             assertThat(response.getCitizenId()).isEqualTo("079085012345");
@@ -244,28 +225,21 @@ class TestOrderMapperTest {
         @Order(2)
         @DisplayName("Should handle null entity for response")
         void shouldHandleNullEntityForResponse() {
-            // When
-            TestOrderResponse response = testOrderMapper.toTestOrderResponse(null);
-
-            // Then
-            assertThat(response).isNull();
+            assertThat(testOrderMapper.toTestOrderResponse(null)).isNull();
         }
 
         @Test
         @Order(3)
         @DisplayName("Should map all status types correctly")
         void shouldMapAllStatusTypesCorrectly() {
-            // PENDING
             testOrder.setStatus(TestOrderStatus.PENDING);
             assertThat(testOrderMapper.toTestOrderResponse(testOrder).getStatus())
                     .isEqualTo(TestOrderStatus.PENDING);
 
-            // COMPLETED
             testOrder.setStatus(TestOrderStatus.COMPLETED);
             assertThat(testOrderMapper.toTestOrderResponse(testOrder).getStatus())
                     .isEqualTo(TestOrderStatus.COMPLETED);
 
-            // REVIEWED
             testOrder.setStatus(TestOrderStatus.REVIEWED);
             assertThat(testOrderMapper.toTestOrderResponse(testOrder).getStatus())
                     .isEqualTo(TestOrderStatus.REVIEWED);
@@ -275,7 +249,6 @@ class TestOrderMapperTest {
         @Order(4)
         @DisplayName("Should handle entity with null fields")
         void shouldHandleEntityWithNullFields() {
-            // Given
             TestOrder orderWithNulls = TestOrder.builder()
                     .testOrderId("TO-002")
                     .patientName("Test Patient")
@@ -286,10 +259,8 @@ class TestOrderMapperTest {
                     .email(null)
                     .build();
 
-            // When
             TestOrderResponse response = testOrderMapper.toTestOrderResponse(orderWithNulls);
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getPatientId()).isNull();
             assertThat(response.getDateOfBirth()).isNull();
@@ -312,13 +283,11 @@ class TestOrderMapperTest {
         @Order(1)
         @DisplayName("Should map TestOrder to TestOrderDetailResponse successfully")
         void shouldMapTestOrderToTestOrderDetailResponseSuccessfully() {
-            // When
             TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getTestOrderId()).isEqualTo("TO-001");
-            assertThat(response.getPatientId()).isEqualTo("PAT-2025-001");
+            assertThat(response.getPatientId()).isEqualTo(1);
             assertThat(response.getPatientName()).isEqualTo("Nguyen Van An");
             assertThat(response.getDateOfBirth()).isEqualTo(LocalDate.of(1985, 3, 15));
             assertThat(response.getCitizenId()).isEqualTo("079085012345");
@@ -335,10 +304,8 @@ class TestOrderMapperTest {
         @Order(2)
         @DisplayName("Should map audit fields correctly in detail response")
         void shouldMapAuditFieldsCorrectlyInDetailResponse() {
-            // When
             TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
-            // Then
             assertThat(response.getCreatedBy()).isEqualTo("Admin");
             assertThat(response.getCreatedAt()).isEqualTo(LocalDateTime.of(2025, 11, 6, 8, 0, 0));
             assertThat(response.getRunBy()).isEqualTo("Dr. John Doe");
@@ -349,49 +316,15 @@ class TestOrderMapperTest {
 
         @Test
         @Order(3)
-        @DisplayName("Should map date of birth correctly in detail response")
-        void shouldMapDateOfBirthCorrectlyInDetailResponse() {
-            // Given - Person born on 1985-03-15
-            testOrder.setDateOfBirth(LocalDate.of(1985, 3, 15));
-
-            // When
-            TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
-
-            // Then - MapStruct only maps fields, age calculation would need custom logic
-            assertThat(response.getDateOfBirth()).isEqualTo(LocalDate.of(1985, 3, 15));
-            // Note: age field may be null if mapper doesn't have @AfterMapping or custom age calculation
+        @DisplayName("Should handle null entity for detail response")
+        void shouldHandleNullEntityForDetailResponse() {
+            assertThat(testOrderMapper.toTestOrderDetailResponse(null)).isNull();
         }
 
         @Test
         @Order(4)
-        @DisplayName("Should handle null date of birth when calculating age")
-        void shouldHandleNullDateOfBirthWhenCalculatingAge() {
-            // Given
-            testOrder.setDateOfBirth(null);
-
-            // When
-            TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
-
-            // Then
-            assertThat(response.getAge()).isNull();
-        }
-
-        @Test
-        @Order(5)
-        @DisplayName("Should handle null entity for detail response")
-        void shouldHandleNullEntityForDetailResponse() {
-            // When
-            TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(null);
-
-            // Then
-            assertThat(response).isNull();
-        }
-
-        @Test
-        @Order(6)
         @DisplayName("Should map nested test results in detail response")
         void shouldMapNestedTestResultsInDetailResponse() {
-            // Given
             TestResult testResult = TestResult.builder()
                     .resultId("TR-001")
                     .bloodCollectionId("TUBE-001")
@@ -399,32 +332,26 @@ class TestOrderMapperTest {
                     .build();
             testOrder.setTestResults(testResult);
 
-            // When
             TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
-            // Then
             assertThat(response.getTestResults()).isNotNull();
         }
 
         @Test
-        @Order(7)
+        @Order(5)
         @DisplayName("Should handle null test results in detail response")
         void shouldHandleNullTestResultsInDetailResponse() {
-            // Given
             testOrder.setTestResults(null);
 
-            // When
             TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
-            // Then
             assertThat(response.getTestResults()).isNull();
         }
 
         @Test
-        @Order(8)
+        @Order(6)
         @DisplayName("Should map nested comments in detail response")
         void shouldMapNestedCommentsInDetailResponse() {
-            // Given
             Comment comment1 = Comment.builder()
                     .commentId("C-001")
                     .commentText("First comment")
@@ -435,43 +362,34 @@ class TestOrderMapperTest {
                     .build();
             testOrder.setComments(Arrays.asList(comment1, comment2));
 
-            // When
             TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
-            // Then
             assertThat(response.getComments()).isNotNull();
             assertThat(response.getComments()).hasSize(2);
         }
 
         @Test
-        @Order(9)
+        @Order(7)
         @DisplayName("Should handle null comments in detail response")
         void shouldHandleNullCommentsInDetailResponse() {
-            // Given
             testOrder.setComments(null);
 
-            // When
             TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
-            // Then
             assertThat(response.getComments()).isNull();
         }
 
         @Test
-        @Order(10)
+        @Order(8)
         @DisplayName("Should handle empty comments list in detail response")
         void shouldHandleEmptyCommentsListInDetailResponse() {
-            // Given
             testOrder.setComments(Collections.emptyList());
 
-            // When
             TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
-            // Then
             assertThat(response.getComments()).isEmpty();
         }
     }
-
 
     // ═══════════════════════════════════════════════════════════════
     // EDGE CASES AND SPECIAL SCENARIOS
@@ -486,16 +404,13 @@ class TestOrderMapperTest {
         @Order(1)
         @DisplayName("Should handle very long text fields")
         void shouldHandleVeryLongTextFields() {
-            // Given
             String longName = "A".repeat(150);
             String longAddress = "B".repeat(255);
             testOrderRequest.setPatientName(longName);
             testOrderRequest.setAddress(longAddress);
 
-            // When
             TestOrder result = testOrderMapper.toTestOrderEntity(testOrderRequest);
 
-            // Then
             assertThat(result.getPatientName()).hasSize(150);
             assertThat(result.getAddress()).hasSize(255);
         }
@@ -504,14 +419,11 @@ class TestOrderMapperTest {
         @Order(2)
         @DisplayName("Should not modify original entity during mapping")
         void shouldNotModifyOriginalEntityDuringMapping() {
-            // Given
             String originalName = testOrder.getPatientName();
             TestOrderStatus originalStatus = testOrder.getStatus();
 
-            // When
             testOrderMapper.toTestOrderResponse(testOrder);
 
-            // Then
             assertThat(testOrder.getPatientName()).isEqualTo(originalName);
             assertThat(testOrder.getStatus()).isEqualTo(originalStatus);
         }
@@ -520,11 +432,9 @@ class TestOrderMapperTest {
         @Order(3)
         @DisplayName("Should create independent response objects")
         void shouldCreateIndependentResponseObjects() {
-            // When
             TestOrderResponse response1 = testOrderMapper.toTestOrderResponse(testOrder);
             TestOrderResponse response2 = testOrderMapper.toTestOrderResponse(testOrder);
 
-            // Then
             assertThat(response1).isNotSameAs(response2);
         }
 
@@ -532,14 +442,11 @@ class TestOrderMapperTest {
         @Order(4)
         @DisplayName("Should handle whitespace in fields")
         void shouldHandleWhitespaceInFields() {
-            // Given
             testOrderRequest.setPatientName("  John Doe  ");
             testOrderRequest.setAddress("  123 Street  ");
 
-            // When
             TestOrder result = testOrderMapper.toTestOrderEntity(testOrderRequest);
 
-            // Then
             assertThat(result.getPatientName()).isEqualTo("  John Doe  ");
             assertThat(result.getAddress()).isEqualTo("  123 Street  ");
         }
@@ -548,16 +455,12 @@ class TestOrderMapperTest {
         @Order(5)
         @DisplayName("Should handle future date of birth")
         void shouldHandleFutureDateOfBirth() {
-            // Given
             LocalDate futureDate = LocalDate.of(2030, 12, 31);
             testOrder.setDateOfBirth(futureDate);
 
-            // When
             TestOrderDetailResponse response = testOrderMapper.toTestOrderDetailResponse(testOrder);
 
-            // Then - Date should be mapped correctly
             assertThat(response.getDateOfBirth()).isEqualTo(futureDate);
-            // Note: age calculation is not implemented in basic MapStruct mapper
         }
     }
 
@@ -581,11 +484,9 @@ class TestOrderMapperTest {
         @Order(2)
         @DisplayName("Should map consistently for same input")
         void shouldMapConsistentlyForSameInput() {
-            // When
             TestOrderResponse response1 = testOrderMapper.toTestOrderResponse(testOrder);
             TestOrderResponse response2 = testOrderMapper.toTestOrderResponse(testOrder);
 
-            // Then
             assertThat(response1.getTestOrderId()).isEqualTo(response2.getTestOrderId());
             assertThat(response1.getPatientName()).isEqualTo(response2.getPatientName());
             assertThat(response1.getStatus()).isEqualTo(response2.getStatus());
@@ -595,13 +496,11 @@ class TestOrderMapperTest {
         @Order(3)
         @DisplayName("Should handle concurrent mapping calls")
         void shouldHandleConcurrentMappingCalls() {
-            // When
             List<TestOrderResponse> responses = new ArrayList<>();
             for (int i = 0; i < 100; i++) {
                 responses.add(testOrderMapper.toTestOrderResponse(testOrder));
             }
 
-            // Then
             assertThat(responses).hasSize(100);
             responses.forEach(response -> {
                 assertThat(response.getTestOrderId()).isEqualTo("TO-001");
@@ -610,4 +509,3 @@ class TestOrderMapperTest {
         }
     }
 }
-

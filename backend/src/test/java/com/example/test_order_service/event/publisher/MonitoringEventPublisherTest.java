@@ -44,7 +44,7 @@ class MonitoringEventPublisherTest {
 
         // lenient để tránh UnnecessaryStubbing cho những test không dùng hết field
         lenient().when(testOrder.getTestOrderId()).thenReturn("order-1");
-        lenient().when(testOrder.getPatientId()).thenReturn("patient-1");
+        lenient().when(testOrder.getPatientId()).thenReturn(1); // ✅ Integer, không phải "patient-1"
         lenient().when(testOrder.getPatientName()).thenReturn("John Doe");
         lenient().when(testOrder.getDateOfBirth()).thenReturn(null);
         lenient().when(testOrder.getCitizenId()).thenReturn("CID");

@@ -11,7 +11,7 @@ import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.ingest.publisher.ResyncRequestPublisher;
 import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
-import org.apache.kafka.common.errors.ResourceNotFoundException;
+import com.example.test_order_service.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -23,7 +23,6 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -50,12 +49,12 @@ public class TestOrderControllerTest {
                         .result(mock(TestOrderResponse.class))
                         .build();
 
-        when(testOrderService.createTestOrder(req)).thenReturn(serviceResp);
+        when(testOrderService.createTestOrder(req, "token")).thenReturn(serviceResp);
 
-        RestResponse<TestOrderResponse> resp = controller.createTestOrder(req);
+        RestResponse<TestOrderResponse> resp = controller.createTestOrder(req, "token");
 
         assertSame(serviceResp, resp);
-        verify(testOrderService).createTestOrder(req);
+        verify(testOrderService).createTestOrder(req, "token");
         verifyNoMoreInteractions(testOrderService, resyncRequestPublisher, testOrderRepository);
     }
 
@@ -279,31 +278,35 @@ public class TestOrderControllerTest {
         verifyNoMoreInteractions(testOrderService, resyncRequestPublisher, testOrderRepository);
     }
 
+    // ✅ FIX: controller chỉ delegate sang service
     @Test
-    void resyncTestOrderResults_whenOrderExists_shouldSendKafka_andReturn202() {
-        TestOrder order = mock(TestOrder.class);
-        when(order.getBloodCollectionId()).thenReturn("bc1");
-        when(testOrderRepository.findById("o3")).thenReturn(Optional.of(order));
+    void resyncTestOrderResults_shouldDelegateToService_andReturnResponse() {
+        RestResponse<Void> serviceResp = RestResponse.<Void>builder()
+                .statusCode(202)
+                .message("Resync requested")
+                .timestamp(LocalDateTime.now())
+                .result(null)
+                .build();
+
+        when(testOrderService.resyncTestOrderResults("o3")).thenReturn(serviceResp);
 
         RestResponse<Void> resp = controller.resyncTestOrderResults("o3");
 
-        assertEquals(202, resp.getStatusCode());
-        assertNotNull(resp.getTimestamp());
-        assertTrue(String.valueOf(resp.getMessage()).contains("Resync request for orderId 'o3'"));
-
-        verify(testOrderRepository).findById("o3");
-        verify(resyncRequestPublisher).requestResync("o3", "bc1", "ManualTriggerByUser");
+        assertSame(serviceResp, resp);
+        verify(testOrderService).resyncTestOrderResults("o3");
         verifyNoMoreInteractions(testOrderService, resyncRequestPublisher, testOrderRepository);
     }
 
+    // ✅ FIX: nếu service throw thì controller propagate
     @Test
-    void resyncTestOrderResults_whenOrderNotFound_shouldThrow() {
-        when(testOrderRepository.findById("missing")).thenReturn(Optional.empty());
+    void resyncTestOrderResults_whenServiceThrows_shouldPropagate() {
+        when(testOrderService.resyncTestOrderResults("missing"))
+                .thenThrow(new ResourceNotFoundException("not found"));
 
         assertThrows(ResourceNotFoundException.class,
                 () -> controller.resyncTestOrderResults("missing"));
 
-        verify(testOrderRepository).findById("missing");
+        verify(testOrderService).resyncTestOrderResults("missing");
         verifyNoMoreInteractions(testOrderService, resyncRequestPublisher, testOrderRepository);
     }
 

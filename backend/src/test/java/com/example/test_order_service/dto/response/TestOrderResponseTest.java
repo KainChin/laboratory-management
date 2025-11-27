@@ -17,7 +17,7 @@ class TestOrderResponseTest {
         TestOrderResponse res = TestOrderResponse.builder()
                 .testOrderId("to1")
                 .patientName("A")
-                .patientId("p1")
+                .patientId(1) // ✅ Integer, không phải "p1"
                 .dateOfBirth(LocalDate.of(2000,1,1))
                 .citizenId("123")
                 .country("VN")
@@ -33,6 +33,7 @@ class TestOrderResponseTest {
 
         assertEquals("to1", res.getTestOrderId());
         assertEquals("A", res.getPatientName());
+        assertEquals(1, res.getPatientId()); // ✅ thêm assert cho Integer
         assertEquals(Gender.FEMALE, res.getGender());
         assertEquals(TestOrderStatus.COMPLETED, res.getStatus());
         assertEquals(now, res.getCreatedAt());
