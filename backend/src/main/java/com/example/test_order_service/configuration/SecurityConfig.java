@@ -25,9 +25,10 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
+    //delete "/login" if used the old way to configure CORS
     private static final String[] WHITE_LIST = {
             "/auth/**", "/swagger-ui/**",
-            "/v3/api-docs/**",
+            "/v3/api-docs/**", "/login",
             "/swagger-ui.html", "/users/**",
             "/actuator/**"
     };
@@ -35,7 +36,7 @@ public class SecurityConfig {
     private final JwtDecoder jwtDecoder;
     private final AuthenticationEntryPointCustomizer authenticationEntryPoint;
 
-    // CORS configuration using WebMvcConfigurer (commented out)
+    // THis one is the old way to configure CORS
 //    @Bean
 //    public WebMvcConfigurer corsConfigurer() {
 //        return new WebMvcConfigurer() {
@@ -54,6 +55,7 @@ public class SecurityConfig {
 //        };
 //    }
 
+    //this is the new way to configure CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -71,6 +73,7 @@ public class SecurityConfig {
         return source;
     }
 
+    //delete cors if using the old way to configure CORS
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http

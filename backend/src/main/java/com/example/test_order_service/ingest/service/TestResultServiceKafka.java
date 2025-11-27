@@ -133,8 +133,8 @@ public class TestResultServiceKafka implements TestResultService {
                     hasPID = true;
 
                     // Extract PID-3 (Patient ID)
-                    if (parts.length > 2 && !parts[2].isBlank()) {
-                        String patientIdStr = parts[2].trim();
+                    if (parts.length > 2 && !parts[3].isBlank()) {
+                        String patientIdStr = parts[3].trim();
                         try {
                             hl7PatientId = Integer.parseInt(patientIdStr);
                         } catch (NumberFormatException e) {
