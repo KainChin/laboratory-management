@@ -10,22 +10,21 @@ import {
 } from "react-icons/fa";
 import { BsBoxSeamFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
-
-// Mock data for allowed services
-const mockAllowedServices = [
-  "MONITORING_SERVICE",
-  "IAM_SERVICE",
-  "INSTRUMENT_SERVICE",
-  "WAREHOUSE_SERVICE",
-  "PATIENT_SERVICE",
-];
+import useAllowedService from "../hooks/useAllowedService";
 
 function ServiceWidget() {
-  const services = mockAllowedServices;
+  const services = useAllowedService();
   if (services.length === 0) return null;
   const authToken = localStorage.getItem("token");
 
   const serviceMapping = {
+    TEST_ORDER_SERVICE: {
+      title: "Test Order Management",
+      icon: <FaFlask size={24} />,
+      desc: "Manage test orders, review results, and handle patient test requests.",
+      path: "/test-orders",
+      color: "from-teal-400 to-cyan-500",
+    },
     MONITORING_SERVICE: {
       title: "System Monitoring",
       icon: <FaChartLine size={24} />,
@@ -37,14 +36,14 @@ function ServiceWidget() {
       title: "IAM Management",
       icon: <FaKey size={24} />,
       desc: "Identity and Access Management - Handles user authentication, authorization, roles, and permissions.",
-      path: "http://35.172.58.177:5173/",
+      path: "https://iam-service.site/roles",
       color: "from-purple-500 to-pink-500",
     },
     INSTRUMENT_SERVICE: {
       title: "Instrument Management",
       icon: <FaTools size={24} />,
       desc: "Manages laboratory instruments, reagents and executing blood testing.",
-      path: "#",
+      path: "http://52.76.52.123:3000/",
       color: "from-orange-500 to-red-500",
     },
     WAREHOUSE_SERVICE: {

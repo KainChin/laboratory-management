@@ -16,6 +16,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class TestOrderRequest {
+        @NotNull(message = "Patient ID is required")
+    private Integer patientId;
+
     @NotBlank(message = "Patient name is required")
     private String patientName;
 
@@ -23,10 +26,18 @@ public class TestOrderRequest {
     @PastOrPresent(message = "Date of birth cannot be in the future")
     private LocalDate dateOfBirth;
 
-    @NotBlank(message = "Citizen ID is required")
-    @Size(max = 30, message = "Citizen ID must not exceed 30 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Citizen ID must contain only letters, numbers, spaces and hyphens")
-    private String citizenId;
+    @AssertTrue(message = "Date of birth cannot be more than 120 years ago")
+    private boolean isValidDateOfBirth() {
+        if (dateOfBirth == null) {
+            return true;
+        }
+        LocalDate minDate = LocalDate.now().minusYears(120);
+        return dateOfBirth.isAfter(minDate);
+    }
+
+    @NotBlank(message = "Identity number is required")
+    @Size(max = 30, message = "Identity number must not exceed 30 characters")
+    private String identityNumber;
 
     @NotBlank(message = "Country is required")
     private String country;

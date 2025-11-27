@@ -14,7 +14,7 @@ import java.time.LocalDate;
 
 @Service
 public interface TestOrderService {
-    RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request);
+    RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request, String authToken);
     RestResponse<TestOrderResponse> updateTestOrder(String orderId, TestOrderUpdateRequest request);
     PageResponse<TestOrderResponse> getTestOrders(Pageable pageable, String keyword, LocalDate startDate, LocalDate endDate, TestOrderStatus status);
     RestResponse<TestOrderDetailResponse> getTestOrderById(String orderId);

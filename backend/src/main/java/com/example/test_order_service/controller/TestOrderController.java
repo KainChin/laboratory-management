@@ -1,12 +1,16 @@
 package com.example.test_order_service.controller;
 
 import com.example.test_order_service.dto.response.PageResponse;
+import com.example.test_order_service.dto.response.PatientListResponse;
 import com.example.test_order_service.dto.response.RestResponse;
 import com.example.test_order_service.dto.response.TestOrderDetailResponse;
 import com.example.test_order_service.dto.response.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
+import com.example.test_order_service.ingest.publisher.ResyncRequestPublisher;
+import com.example.test_order_service.integration.patient.PatientServiceClient;
+import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +29,35 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class TestOrderController {
     private final TestOrderService testOrderService;
+    private final ResyncRequestPublisher resyncRequestPublisher;
+    private final TestOrderRepository testOrderRepository;
+    private final PatientServiceClient patientServiceClient;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('CREATE_TEST_ORDER')")
-    public RestResponse<TestOrderResponse> createTestOrder(@RequestBody @Valid TestOrderRequest request) {
-        return testOrderService.createTestOrder(request);
+    public RestResponse<TestOrderResponse> createTestOrder(
+            @RequestBody @Valid TestOrderRequest request,
+            @RequestHeader(value = "Authorization", required = true) String authToken) {
+        return testOrderService.createTestOrder(request, authToken);
+    }
+
+    @GetMapping("/patients")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('CREATE_TEST_ORDER')")
+    public RestResponse<PatientListResponse> getPatients(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "patientId,desc") String sort,
+            @RequestHeader(value = "Authorization", required = true) String authToken) {
+
+        PatientListResponse patients = patientServiceClient.getAllPatients(page, pageSize, keyword, sort, authToken);
+
+        return RestResponse.<PatientListResponse>builder()
+                .statusCode(200)
+                .message("Patients retrieved successfully")
+                .result(patients)
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 
     @PutMapping("/{orderId}")

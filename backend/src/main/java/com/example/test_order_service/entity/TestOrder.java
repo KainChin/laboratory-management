@@ -26,7 +26,7 @@ public class TestOrder extends BaseEntity {
     private String testOrderId;
 
     @Column(name = "patient_id")
-    private String patientId;
+    private Integer patientId;
 
     @Column(name = "patient_name", nullable = false, length = 150)
     private String patientName;

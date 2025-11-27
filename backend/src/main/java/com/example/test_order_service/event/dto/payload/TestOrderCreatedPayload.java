@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class TestOrderCreatedPayload {
     
     private String testOrderId;
-    private String patientId;
+    private Integer patientId;
     private String patientName;
     
     @JsonFormat(pattern = "dd/MM/yyyy")

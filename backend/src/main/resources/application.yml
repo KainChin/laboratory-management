@@ -60,3 +60,7 @@ instrument:
 wait:
   poll-interval-ms: 5000
   max-wait-ms: 600000
+
+patient-service:
+  base-url: http://54.206.211.154:8687
+  timeout-ms: 5000

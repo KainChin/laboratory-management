@@ -8,6 +8,7 @@ import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.event.publisher.MonitoringEventPublisher;
 import com.example.test_order_service.exception.ResourceNotFoundException;
+import com.example.test_order_service.integration.patient.PatientServiceClient;
 import com.example.test_order_service.ingest.publisher.ResyncRequestPublisher;
 import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;
@@ -19,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -42,15 +40,24 @@ public class TestOrderServiceImpl implements TestOrderService {
     private final ResyncRequestPublisher resyncRequestPublisher;
     private final TestResultRepository testResultRepository;
     private final InstrumentSyncService instrumentSyncService;
-    
+    private final PatientServiceClient patientServiceClient;
+
     // Optional: Event publisher sẽ chỉ inject nếu có sẵn
     @Autowired(required = false)
     private MonitoringEventPublisher eventPublisher;
 
     @Override
-    public RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request) {
+    public RestResponse<TestOrderResponse> createTestOrder(TestOrderRequest request, String authToken) {
         if (request == null) {
             throw new IllegalArgumentException("No test results provided");
+        }
+
+        // Validate patient exists and is active by calling patient service
+        PatientDto patient = patientServiceClient.getPatientById(request.getPatientId(), authToken);
+
+        // This validation is redundant but for extra safety
+        if (Boolean.FALSE.equals(patient.getIsActive())) {
+            throw new ResourceNotFoundException("Patient is inactive with ID: " + request.getPatientId());
         }
 
         TestOrder testOrder = testOrderMapper.toTestOrderEntity(request);

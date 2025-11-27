@@ -116,7 +116,7 @@ public class MonitoringEventPublisher {
     private TestOrderCreatedEvent buildTestOrderCreatedEvent(TestOrder testOrder) {
         TestOrderCreatedPayload payload = TestOrderCreatedPayload.builder()
                 .testOrderId(testOrder.getTestOrderId())
-                .patientId(testOrder.getPatientId())
+                .patientId(testOrder.getPatientId() != null ? testOrder.getPatientId() : null)
                 .patientName(testOrder.getPatientName())
                 .dateOfBirth(testOrder.getDateOfBirth())
                 .citizenId(testOrder.getCitizenId())

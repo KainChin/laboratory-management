@@ -1,7 +1,6 @@
 package com.example.test_order_service.dto.response;
 
 import com.example.test_order_service.entity.enumForEntity.Gender;
-import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,23 +14,25 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestOrderResponse {
-    private String testOrderId;
-    private String patientName;
+public class PatientDto {
     private Integer patientId;
+    private String fullName;
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
-    private String identityNumber;
-    private String citizenId;
-    private String country;
+
     private Gender gender;
-    private String address;
-    private String email;
     private String phone;
-    private String bloodCollectionId;
+    private String email;
+    private String address;
+    private String identityNumber;
     private String createdBy;
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private String updatedBy;
+
     private LocalDateTime createdAt;
-    private TestOrderStatus status;
+
+    private LocalDateTime updatedAt;
+
+    private Boolean isActive;
 }
+
