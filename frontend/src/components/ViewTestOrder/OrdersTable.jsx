@@ -62,7 +62,7 @@ function Modal({ children, onBackdropClick, contentRef }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2"
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 p-2"
       onClick={onBackdropClick}
       role="dialog"
       aria-modal="true"
@@ -1989,6 +1989,18 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
             </div>
 
             <div className="flex justify-end gap-3 mt-4">
+              {mode === "create" && (
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setShowPatientSelector(true);
+                  }}
+                  className="px-4 min-h-[40px] py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-100 transition-colors duration-300"
+                  title="Back to patient selection"
+                >
+                  Back
+                </button>
+              )}
               <button
                 ref={closeButtonRef}
                 onClick={() => {

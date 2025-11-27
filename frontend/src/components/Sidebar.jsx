@@ -4,9 +4,7 @@ import { motion } from "framer-motion";
 import { FaBars } from "react-icons/fa";
 import {
   FaHome,
-  FaUsers,
-  FaUserCog,
-  FaUserCheck,
+  FaClipboardList,
 } from "react-icons/fa";
 
 // Inline component
@@ -42,10 +40,8 @@ export default function Sidebar() {
   };
 
   const visibleMenuItems = [
-    { path: "#", icon: FaHome, privilege: "READ_ONLY", desc: "Home" },
-    { path: "#", icon: FaUsers, privilege: "VIEW_ROLE", desc: "Role management" },
-    { path: "#", icon: FaUserCog, privilege: "VIEW_USER", desc: "User management" },
-    { path: "#", icon: FaUserCheck, privilege: "VIEW_USER", desc: "Account management" },
+    { path: "/", icon: FaHome, privilege: "READ_ONLY", desc: "Home" },
+    { path: "/test-orders", icon: FaClipboardList, privilege: "READ_ONLY", desc: "Test Orders" },
   ];
 
   // disable scroll on tablet and mobile viewport
