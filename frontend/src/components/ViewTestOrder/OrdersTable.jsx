@@ -13,6 +13,7 @@ import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import Loading from "../Loading";
 import { showToast } from "../Toast";
 import CountrySelect from "../CountrySelect";
+import PatientSelector from "../PatientSelector";
 
 // Modal portal so the overlay covers the whole viewport
 function Modal({ children, onBackdropClick, contentRef }) {
@@ -256,6 +257,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
   };
 
   const [showModal, setShowModal] = useState(false);
+  const [showPatientSelector, setShowPatientSelector] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const modalRef = useRef(null);
   const patientNameRef = useRef(null); // REF MỚI CHO INPUT PATIENT NAME
@@ -274,6 +276,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
   const [modalScale, setModalScale] = useState(1);
   const [mode, setMode] = useState("create");
   const [form, setForm] = useState({
+    patientId: null, // Thêm patientId vào state
     patientName: "",
     dob: "",
     phone: "",
@@ -534,6 +537,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
 
   function resetForm() {
     setForm({
+      patientId: null,
       patientName: "",
       dob: "",
       phone: "",
@@ -561,7 +565,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
     const parts = dateStr.split("-");
     if (parts.length !== 3) return dateStr;
     const [yyyy, mm, dd] = parts;
-    return `${dd}/${mm}/${yyyy}`;
+    return `${dd.padStart(2, "0")}/${mm.padStart(2, "0")}/${yyyy}`;
   }
 
   function enumToSelectGender(g) {
@@ -653,11 +657,47 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
   }
 
   const openCreateModal = useCallback(() => {
-    setMode("create");
-    setEditingId(null);
-    resetForm();
-    setShowModal(true);
+    // Mở PatientSelector để chọn patient trước
+    setShowPatientSelector(true);
   }, []);
+
+  // Handler khi user chọn patient từ PatientSelector
+  const handlePatientSelect = useCallback((patient) => {
+    setShowPatientSelector(false);
+    
+    // Format date từ Patient Service (yyyy-MM-dd) sang format input date (yyyy-MM-dd)
+    const formatDateForInput = (dateStr) => {
+      if (!dateStr) return "";
+      // Handle ISO string
+      if (dateStr.includes("T")) {
+        dateStr = dateStr.split("T")[0];
+      }
+      const parts = dateStr.split("-");
+      if (parts.length === 3) {
+        const [yyyy, mm, dd] = parts;
+        return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+      }
+      return dateStr;
+    };
+
+    // Pre-fill form với thông tin từ patient đã chọn
+    setMode("create");
+    setForm({
+      patientId: patient.patientId, // Lưu patientId để gửi lên backend
+      patientName: patient.fullName || "",
+      dob: formatDateForInput(patient.dateOfBirth) || "",
+      phone: patient.phone || "",
+      email: patient.email || "",
+      gender: enumToSelectGender(patient.gender) || "",
+      status: "Pending", // Default status
+      address: patient.address || "",
+      country: "Vietnam", // Default country - user có thể edit
+      citizenId: patient.identityNumber || "",
+    });
+    setErrors({});
+    setShowModal(true); // Mở modal để user có thể edit trước khi submit
+  }, []);
+
 
   const openEditModal = useCallback((order) => {
     setMode("edit");
@@ -704,9 +744,12 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
     }
 
     const payload = {
+      patientId: f.patientId || undefined, 
       patientName: f.patientName,
       dateOfBirth: f.dob ? formatDateForBackend(f.dob) : "",
-      citizenId: f.citizenId,
+      dob: f.dob ? formatDateForBackend(f.dob) : "", 
+      birthDate: f.dob ? formatDateForBackend(f.dob) : "",
+      identityNumber: f.citizenId,
       country: f.country,
       gender: selectToEnumGender(f.gender) || "",
       status: f.status ? selectToEnumStatus(f.status) : undefined,
@@ -715,6 +758,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
       phone: f.phone,
     };
 
+    console.log("[OrdersTable] Creating test order with payload (JSON):", JSON.stringify(payload));
     setIsSubmitting(true);
 
     try {
@@ -747,6 +791,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
       });
       resetForm();
       setLocalForm({
+        patientId: null,
         patientName: "",
         dob: "",
         phone: "",
@@ -786,6 +831,8 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
     const payload = {
       patientName: f.patientName || undefined,
       dateOfBirth: f.dob ? formatDateForBackend(f.dob) : undefined,
+      dob: f.dob ? formatDateForBackend(f.dob) : undefined, // Add dob
+      birthDate: f.dob ? formatDateForBackend(f.dob) : undefined, // Add birthDate
       gender: f.gender ? selectToEnumGender(f.gender) : undefined,
       status: f.status ? selectToEnumStatus(f.status) : undefined,
       phone: f.phone || undefined,
@@ -1785,8 +1832,8 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
                       setErrors((s) => ({ ...s, [name]: undefined }));
                     }}
                     type="email"
-                    readOnly={mode === "view"}
-                    className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white"
+                    disabled={true}
+                    className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
                     placeholder="Enter email address (e.g., patient@example.com)"
                   />
                   {errors.email && (
@@ -1838,42 +1885,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
                     </div>
                   )}
                 </div>
-                <div>
-                  <label
-                    htmlFor="status"
-                    className="text-[#FF5A5A] font-semibold text-sm"
-                  >
-                    Status
-                  </label>
-                  {mode === "view" ? (
-                    <div className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm bg-white flex items-center">
-                      {localForm.status || ""}
-                    </div>
-                  ) : (
-                    <select
-                      ref={statusRef}
-                      id="status"
-                      name="status"
-                      value={localForm.status}
-                      onChange={(e) => {
-                        const { name, value } = e.target;
-                        setLocalForm((s) => ({ ...s, [name]: value }));
-                        setErrors((s) => ({ ...s, [name]: undefined }));
-                      }}
-                      className="w-full mt-1 min-h-[40px] p-2 border border-gray-200 rounded-lg text-sm"
-                    >
-                      <option value="">Select</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
-                  )}
-                  {errors.status && (
-                    <div className="text-xs mt-0.5" style={{ color: "#FF0000" }}>
-                      {errors.status}
-                    </div>
-                  )}
-                </div>
+
                 <div>
                   <label
                     htmlFor="address"
@@ -2089,6 +2101,14 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
         <div className="fixed left-1/2 top-5 -translate-x-1/2 bg-red-100 text-[#FF5A5A] px-6 py-2 shadow-lg rounded-lg z-50 font-semibold">
           {deleteError}
         </div>
+      )}
+
+      {/* Patient Selector Modal */}
+      {showPatientSelector && (
+        <PatientSelector
+          onSelect={handlePatientSelect}
+          onClose={() => setShowPatientSelector(false)}
+        />
       )}
     </div>
   );

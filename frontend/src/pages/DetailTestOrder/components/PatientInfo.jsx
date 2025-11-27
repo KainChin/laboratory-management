@@ -549,12 +549,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
                   id="email-input"
                   value={formData.email}
                   onChange={handleChange}
+                  disabled
                   style={{
                     ...styles.input,
-                    borderColor: errors.email ? "#FF5A5A" : "#CCC"
+                    borderColor: "#CCC",
+                    backgroundColor: "#E5E7EB",
+                    color: "#6B7280",
+                    cursor: "not-allowed"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
-                  onBlur={(e) => e.target.style.borderColor = errors.email ? "#FF5A5A" : "#CCC"}
                   aria-label="Email Address"
                   aria-required="false"
                   aria-invalid={errors.email ? "true" : "false"}

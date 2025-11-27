@@ -18,11 +18,12 @@ import java.util.List;
 @Builder
 public class TestOrderDetailResponse {
     private String testOrderId;
-    private String patientId;
+    private Integer patientId;
     private String patientName;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateOfBirth;
     private Integer age;
+    private String identityNumber;
     private String citizenId;
     private String country;
     private Gender gender;
