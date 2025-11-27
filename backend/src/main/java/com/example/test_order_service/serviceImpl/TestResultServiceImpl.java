@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 public class TestResultServiceImpl implements TestResultService {
     private final TestResultRepository testResultRepository;
     private final TestOrderRepository testOrderRepository;
-
     private final TestResultMapper testResultMapper;
 
     @Transactional

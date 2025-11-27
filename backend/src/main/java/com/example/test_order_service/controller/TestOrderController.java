@@ -6,14 +6,10 @@ import com.example.test_order_service.dto.response.TestOrderDetailResponse;
 import com.example.test_order_service.dto.response.TestOrderResponse;
 import com.example.test_order_service.dto.request.TestOrderRequest;
 import com.example.test_order_service.dto.request.TestOrderUpdateRequest;
-import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
-import com.example.test_order_service.ingest.publisher.ResyncRequestPublisher;
-import com.example.test_order_service.repository.TestOrderRepository;
 import com.example.test_order_service.service.TestOrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +25,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class TestOrderController {
     private final TestOrderService testOrderService;
-    private final ResyncRequestPublisher resyncRequestPublisher;
-    private final TestOrderRepository testOrderRepository;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('CREATE_TEST_ORDER')")
@@ -130,19 +124,7 @@ public class TestOrderController {
     @PostMapping("/{orderId}/resync")
     @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN')")
     public RestResponse<Void> resyncTestOrderResults(@PathVariable String orderId) {
-
-        TestOrder order = testOrderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("TestOrder not found with id: " + orderId));
-
-        String bloodCollectionId = order.getBloodCollectionId();
-
-        resyncRequestPublisher.requestResync(orderId, bloodCollectionId, "ManualTriggerByUser");
-
-        return RestResponse.<Void>builder()
-                .statusCode(202) // 202 Accepted
-                .message("Resync request for orderId '" + orderId + "' and bloodCollectionId '" + bloodCollectionId + "' has been sent successfully.")
-                .timestamp(LocalDateTime.now())
-                .build();
+        return testOrderService.resyncTestOrderResults(orderId);
     }
 
     @GetMapping("/email")
