@@ -8,9 +8,11 @@ import com.example.test_order_service.entity.TestOrder;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.event.publisher.MonitoringEventPublisher;
 import com.example.test_order_service.exception.ResourceNotFoundException;
+import com.example.test_order_service.ingest.publisher.ResyncRequestPublisher;
 import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.mapper.TestOrderMapper;
 import com.example.test_order_service.repository.TestOrderRepository;
+import com.example.test_order_service.repository.TestResultRepository;
 import com.example.test_order_service.service.TestOrderService;
 import com.example.test_order_service.utils.GeneralUtils;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,8 @@ public class TestOrderServiceImpl implements TestOrderService {
     private final TestOrderRepository testOrderRepository;
     private final TestOrderMapper testOrderMapper;
     private final CommentMapper commentMapper;
+    private final ResyncRequestPublisher resyncRequestPublisher;
+    private final TestResultRepository testResultRepository;
     private final InstrumentSyncService instrumentSyncService;
     
     // Optional: Event publisher sẽ chỉ inject nếu có sẵn
@@ -368,6 +372,29 @@ public class TestOrderServiceImpl implements TestOrderService {
                 .statusCode(200)
                 .result(response)
                 .message("Test order retrieved successfully")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    public RestResponse<Void> resyncTestOrderResults(String orderId) {
+        TestOrder order = testOrderRepository.findById(orderId)
+                .orElseThrow(() -> new org.apache.kafka.common.errors.ResourceNotFoundException("TestOrder not found with id: " + orderId));
+
+        testResultRepository.findByBloodCollectionId(order.getBloodCollectionId())
+                .ifPresent(r -> {
+                    throw new IllegalArgumentException(
+                            "TestResult already exists for order: " + orderId
+                    );
+                });
+
+        String bloodCollectionId = order.getBloodCollectionId();
+
+        resyncRequestPublisher.requestResync(orderId, bloodCollectionId, "ManualTriggerByUser");
+
+        return RestResponse.<Void>builder()
+                .statusCode(202) // 202 Accepted
+                .message("Resync request for orderId '" + orderId + "' and bloodCollectionId '" + bloodCollectionId + "' has been sent successfully.")
                 .timestamp(LocalDateTime.now())
                 .build();
     }

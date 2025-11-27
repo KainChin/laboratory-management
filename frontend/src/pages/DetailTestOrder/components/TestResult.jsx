@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Loader2 } from "lucide-react";
+import { useParams } from "react-router-dom";
+import axios from "../../../api/axios";
+import { showToast } from "../../../components/Toast";
 import "../DetailTestOrder.css";
 
 function getFlagClass(flag) {
@@ -52,12 +55,15 @@ export default function TestResult({ tests, onUpdate }) {
     return [];
   }
 
+  const { id } = useParams();
+  
   // local copy of parameters so we can update after POST without needing parent update
   const [parameters, setParameters] = useState(() => extractParameters(tests));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hl7Text, setHl7Text] = useState("");
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState(null);
+  const [isResyncing, setIsResyncing] = useState(false);
 
   // keep local parameters in sync when parent tests prop changes
   useEffect(() => {
@@ -135,6 +141,29 @@ export default function TestResult({ tests, onUpdate }) {
     }
   }
 
+  async function handleResync() {
+    if (isResyncing) return;
+    
+    try {
+      setIsResyncing(true);
+      await axios.post(`/test-orders/${id}/resync`);
+      showToast({
+        type: "success",
+        title: "Resync Success",
+        message: "Test order resynced successfully"
+      });
+    } catch (error) {
+      console.error("Error resyncing test order:", error);
+      showToast({
+        type: "error",
+        title: "Resync Failed",
+        message: error.response?.data?.message || error.message || "Failed to resync test order"
+      });
+    } finally {
+      setIsResyncing(false);
+    }
+  }
+
   return (
     <section className="dto-card">
       <div className="dto-card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -143,7 +172,35 @@ export default function TestResult({ tests, onUpdate }) {
           <h3 className="dto-title">Test Result</h3>
         </div>
 
-        <div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={handleResync}
+            className="inline-flex items-center px-4 py-2 rounded-lg shadow"
+            style={{
+              backgroundColor: "#ef4444",
+              color: "#fff",
+              fontWeight: 600,
+              opacity: disableNew ? 0.6 : 1,
+              cursor: disableNew ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8
+            }}
+            aria-label="Resync Test Result"
+            disabled={disableNew || isResyncing}
+            title={disableNew ? "Test results already exist" : "Resync test result"}
+            aria-busy={isResyncing ? "true" : "false"}
+          >
+            {isResyncing ? (
+              <>
+                <Loader2 className="animate-spin" size={18} aria-hidden="true" />
+                <span>Resyncing...</span>
+              </>
+            ) : (
+              "Resync"
+            )}
+          </button>
           <button
             onClick={openModal}
             className="inline-flex items-center px-4 py-2 rounded-lg shadow"
