@@ -4,6 +4,7 @@ import { FaHeartbeat } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getUserName } from "../utils/jwtUtils";
 import UserDetailsModal from "./UserDetailsModal";
+import publicApi from "../api/publicAxios";
 
 export default function Header() {
   const location = useLocation();
@@ -42,6 +43,19 @@ export default function Header() {
   };
 
   const breadcrumbs = getBreadcrumb();
+
+  const handleLogout = async () => {
+    try {
+      await publicApi.delete("/auth/logout", {
+        withCredentials: true,
+      });
+      localStorage.removeItem("token");
+      navigate("/login");
+    } catch (error) {
+      alert("Đăng xuất thất bại! Vui lòng thử lại.");
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <header style={{ backgroundColor: "#FFFFFF" }} className="h-[60px] bg-card border-b border-border flex items-center justify-between px-4">
@@ -148,6 +162,7 @@ export default function Header() {
             onMouseLeave={() => setShowLogoutTooltip(false)}
           >
             <LogOut
+              onClick={handleLogout}
               style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
               className="hover:scale-110 transition-all duration-300 ease-in-out"
             />
