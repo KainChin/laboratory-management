@@ -110,13 +110,10 @@ export default function TestResult({ tests, onUpdate }) {
     setPosting(true);
     setPostError(null);
     try {
-      const res = await fetch("http://localhost:6868/api/test-results/hl7", {
-        method: "POST",
+      const res = await axios.post("/test-results/hl7", hl7Text, {
         headers: { "Content-Type": "text/plain" },
-        body: hl7Text,
       });
-      if (!res.ok) throw new Error(`Server responded ${res.status}`);
-      const data = await res.json();
+      const data = res.data;
       const newParams = data?.result?.testResultParameter || [];
       setParameters(newParams);
       
@@ -135,7 +132,7 @@ export default function TestResult({ tests, onUpdate }) {
       setIsModalOpen(false);
     } catch (err) {
       console.error("HL7 submit error:", err);
-      setPostError(err.message || "Failed to submit HL7");
+      setPostError(err.response?.data?.message || err.message || "Failed to submit HL7");
     } finally {
       setPosting(false);
     }
