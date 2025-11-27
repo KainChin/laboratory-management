@@ -1,17 +1,15 @@
 import { useState, useEffect, Fragment } from "react";
-import { ChevronsRight, Menu, Bell, Users, LogOut } from "lucide-react";
+import { ChevronsRight, Menu, LogOut } from "lucide-react";
 import { FaHeartbeat } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getUserName } from "../utils/jwtUtils";
-import UserDetailsModal from "./UserDetailsModal";
 import publicApi from "../api/publicAxios";
 
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [userName, setUserName] = useState("User");
-  const [showUserModal, setShowUserModal] = useState(false);
-  const [showUserTooltip, setShowUserTooltip] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showLogoutTooltip, setShowLogoutTooltip] = useState(false);
 
   // Get username from JWT token in localStorage
@@ -119,71 +117,30 @@ export default function Header() {
         <span className="text-[14px] text-muted-foreground hidden sm:inline">Welcome: </span>
         <span className="text-[18px] font-semibold">{userName}</span>
         <div className="flex items-center gap-[25px] ml-2">
-          <Bell
-            style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
-            className="hover:scale-110 transition-all duration-300 ease-in-out"
-          />
-          <div
-            className="relative inline-flex"
-            onMouseEnter={() => setShowUserTooltip(true)}
-            onMouseLeave={() => setShowUserTooltip(false)}
-          >
-            <Users
-              onClick={() => setShowUserModal(true)}
-              style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
-              className="hover:scale-110 transition-all duration-300 ease-in-out"
-            />
-            {/* User Details Tooltip */}
-            {showUserTooltip && (
-              <div 
-                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-1.5 bg-black text-white text-sm rounded shadow-lg whitespace-nowrap z-50 pointer-events-none"
-                style={{
-                  animation: "fadeIn 0.2s ease-in-out"
-                }}
-              >
-                User details
-                {/* Arrow pointing up */}
-                <div 
-                  className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-px"
-                  style={{
-                    width: 0,
-                    height: 0,
-                    borderLeft: "6px solid transparent",
-                    borderRight: "6px solid transparent",
-                    borderBottom: "6px solid black"
-                  }}
-                />
-              </div>
-            )}
-          </div>
           <div
             className="relative inline-flex"
             onMouseEnter={() => setShowLogoutTooltip(true)}
             onMouseLeave={() => setShowLogoutTooltip(false)}
           >
             <LogOut
-              onClick={handleLogout}
+              onClick={() => setShowLogoutConfirm(true)}
               style={{ color: "#777", fontSize: "24px", cursor: "pointer" }}
               className="hover:scale-110 transition-all duration-300 ease-in-out"
             />
-            {/* Logout Tooltip */}
             {showLogoutTooltip && (
-              <div 
-                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-1.5 bg-black text-white text-sm rounded shadow-lg whitespace-nowrap z-50 pointer-events-none"
-                style={{
-                  animation: "fadeIn 0.2s ease-in-out"
-                }}
+              <div
+                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-1.5 bg-black text-white text-sm rounded shadow-lg whitespace-nowrap z-50"
+                style={{ pointerEvents: 'none' }}
               >
                 Logout
-                {/* Arrow pointing up */}
-                <div 
-                  className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-px"
+                <div
+                  className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full"
                   style={{
                     width: 0,
                     height: 0,
-                    borderLeft: "6px solid transparent",
-                    borderRight: "6px solid transparent",
-                    borderBottom: "6px solid black"
+                    borderLeft: "8px solid transparent",
+                    borderRight: "8px solid transparent",
+                    borderBottom: "8px solid black"
                   }}
                 />
               </div>
@@ -191,12 +148,45 @@ export default function Header() {
           </div>
         </div>
       </div>
-
-      {/* User Details Modal */}
-      <UserDetailsModal
-        open={showUserModal}
-        onClose={() => setShowUserModal(false)}
-      />
+      {/* Modal xác nhận logout */}
+      {showLogoutConfirm && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-[10000] bg-black bg-opacity-60"
+          style={{ animation: "fadeIn 0.2s" }}
+        >
+          <div className="bg-white p-6 rounded-lg shadow-2xl max-w-md w-full text-center border border-[#FF5A5A]">
+            <div className="flex justify-between items-center mb-4">
+              <span className="flex items-center gap-2 text-[#FF5A5A] text-xl font-bold">
+                <LogOut style={{ color: "#FF5A5A" }} /> Confirm Logout
+              </span>
+              <button
+                className="text-xl text-gray-400 hover:text-black"
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="mb-6">Are you sure you want to log out?</div>
+            <div className="flex gap-3 justify-center">
+              <button
+                className="px-4 min-h-[40px] py-2 bg-gray-200 rounded hover:bg-gray-300"
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 min-h-[40px] py-2 bg-[#FF5A5A] text-white rounded hover:bg-[#FF3A3A] transition-colors duration-300"
+                onClick={async () => {
+                  setShowLogoutConfirm(false);
+                  await handleLogout();
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
