@@ -757,6 +757,7 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
       dob: f.dob ? formatDateForBackend(f.dob) : "", 
       birthDate: f.dob ? formatDateForBackend(f.dob) : "",
       identityNumber: f.citizenId,
+      citizenId: f.citizenId,
       country: f.country,
       gender: selectToEnumGender(f.gender) || "",
       status: f.status ? selectToEnumStatus(f.status) : undefined,

@@ -129,12 +129,12 @@ export default function Header() {
             />
             {showLogoutTooltip && (
               <div
-                className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-1.5 bg-black text-white text-sm rounded shadow-lg whitespace-nowrap z-50"
+                className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black text-white text-sm rounded shadow-lg whitespace-nowrap z-50"
                 style={{ pointerEvents: 'none' }}
               >
                 Logout
                 <div
-                  className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full"
+                  className="absolute top-0 right-1 -translate-y-full"
                   style={{
                     width: 0,
                     height: 0,

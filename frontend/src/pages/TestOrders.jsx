@@ -1,6 +1,5 @@
 import InfoCard from "../components/ViewTestOrder/InfoCard";
 import ChartSection from "../components/ViewTestOrder/ChartSection";
-import ActivityCard from "../components/ViewTestOrder/ActivityCard";
 import OrdersTable from "../components/ViewTestOrder/OrdersTable";
 import DeleteConfirmationModal from "../components/ViewTestOrder/DeleteConfirmationModal";
 import { BarChart3, Clock3, CheckCircle2, CheckCheck } from "lucide-react";
@@ -290,9 +289,6 @@ export default function TestOrders() {
           }}
         />
       </div>
-
-      {/* ACTIVITY */}
-      <ActivityCard />
 
       {/* TABLE */}
       <OrdersTable 
