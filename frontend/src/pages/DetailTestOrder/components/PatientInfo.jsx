@@ -76,8 +76,14 @@ export default function PatientInfo({ patient = {}, isEditing = false, onSave, o
       dobDate.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
       
+      const minDate = new Date();
+      minDate.setFullYear(today.getFullYear() - 120);
+      minDate.setHours(0, 0, 0, 0);
+
       if (dobDate > today) {
         newErrors.dateOfBirth = "Date of Birth cannot be in future";
+      } else if (dobDate < minDate) {
+        newErrors.dateOfBirth = "Date of birth cannot be more than 120 years ago";
       }
     }
     

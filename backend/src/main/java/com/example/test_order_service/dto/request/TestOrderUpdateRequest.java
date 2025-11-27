@@ -5,9 +5,7 @@ import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +21,17 @@ public class TestOrderUpdateRequest {
     private String patientName;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
+    @PastOrPresent(message = "Date of birth cannot be in the future")
     private LocalDate dateOfBirth;
+
+    @AssertTrue(message = "Date of birth cannot be more than 120 years ago")
+    private boolean isValidDateOfBirth() {
+        if (dateOfBirth == null) {
+            return true;
+        }
+        LocalDate minDate = LocalDate.now().minusYears(120);
+        return dateOfBirth.isAfter(minDate);
+    }
 
     @Size(max = 30, message = "Citizen ID must not exceed 30 characters")
     @Pattern(regexp = "^[a-zA-Z0-9\\s-]+$", message = "Citizen ID must contain only letters, numbers, spaces and hyphens")
@@ -31,7 +39,8 @@ public class TestOrderUpdateRequest {
     private String country;
 
     @Enumerated(EnumType.STRING)
-    private Gender gender; 
+    private Gender gender;
+
     @Enumerated(EnumType.STRING)
     private TestOrderStatus status;
 

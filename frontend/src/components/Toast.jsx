@@ -46,29 +46,20 @@ export default function ToastContainer() {
     toasts.forEach((t) => {
       if (timersRef.current.has(t.id)) return;
 
-      const tick = () => {
-        const remaining = Math.max(0, (t.expiresAt || (t.createdAt + (t.duration || 3000))) - Date.now());
-        const pct = Math.max(0, Math.min(100, (remaining / (t.duration || 3000)) * 100));
-        setToasts((list) => list.map((it) => (it.id === t.id ? { ...it, progress: pct } : it)));
-      };
-
-      const interval = setInterval(tick, 50);
       const timeoutDelay = Math.max(0, (t.expiresAt || (t.createdAt + (t.duration || 3000))) - Date.now());
       const timeout = setTimeout(() => {
         setToasts((list) => list.filter((it) => it.id !== t.id));
-        clearInterval(interval);
         timersRef.current.delete(t.id);
       }, timeoutDelay);
 
-      timersRef.current.set(t.id, { interval, timeout });
+      timersRef.current.set(t.id, { timeout });
     });
   }, [toasts]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      timersRef.current.forEach(({ interval, timeout }) => {
-        clearInterval(interval);
+      timersRef.current.forEach(({ timeout }) => {
         clearTimeout(timeout);
       });
       timersRef.current.clear();
@@ -81,6 +72,14 @@ export default function ToastContainer() {
       aria-live="polite"
       aria-atomic="true"
     >
+      <style>
+        {`
+          @keyframes shrink {
+            from { width: 100%; }
+            to { width: 0%; }
+          }
+        `}
+      </style>
       {toasts.map((t) => {
         const isSuccess = t.type === "success";
         const border = isSuccess ? "#86efac" : "#fca5a5";
@@ -124,7 +123,12 @@ export default function ToastContainer() {
               {t.message && <div style={{ fontSize: 14, lineHeight: 1.4 }}>{t.message}</div>}
             </div>
             <div style={{ height: 3, background: "rgba(0,0,0,0.06)" }}>
-              <div style={{ height: "100%", width: `${t.progress}%`, background: bar, transition: "width 100ms linear" }} />
+              <div style={{ 
+                height: "100%", 
+                background: bar, 
+                width: "100%",
+                animation: `shrink ${t.duration || 3000}ms linear forwards`
+              }} />
             </div>
           </div>
         );

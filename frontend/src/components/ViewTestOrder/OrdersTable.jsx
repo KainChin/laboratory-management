@@ -620,8 +620,15 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
       const today = new Date();
       dobDate.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
+      
+      const minDate = new Date();
+      minDate.setFullYear(today.getFullYear() - 120);
+      minDate.setHours(0, 0, 0, 0);
+
       if (dobDate > today) {
         e.dob = "Date of birth cannot be in the future";
+      } else if (dobDate < minDate) {
+        e.dob = "Date of birth cannot be more than 120 years ago";
       }
     }
     if (!f.phone || !String(f.phone).trim()) {
@@ -806,10 +813,11 @@ export default function OrdersTable({ filters = {}, onFilterChange, onResetFilte
       fetchOrdersWrapper(1);
       setPage(1);
     } catch (err) {
+      const errorMsg = err.response?.data?.message;
       showToast({
         type: "error",
         title: "Create Failed",
-        message: err.message || "Failed to create test order",
+        message: Array.isArray(errorMsg) ? errorMsg.join(", ") : (errorMsg || err.message || "Failed to create test order"),
       });
     } finally {
       setIsSubmitting(false);
