@@ -90,11 +90,15 @@ public class TestResultServiceKafka implements TestResultService {
 
         String bloodCollectionId = null;
         String instrument = "";
+        String sendingFacility = null;
+        LocalDateTime messageDateTime = null;
+        Integer hl7PatientId = null;
         List<TestResultParameter> testResultParameterList = new ArrayList<>();
         //iF we need PID just add more
         boolean hasMSH = false;
         boolean hasOBR = false;
         boolean hasOBX = false;
+        boolean hasPID = false;
 
         for (String line : lines) {
             if (line == null || line.isBlank()) continue;
@@ -108,6 +112,40 @@ public class TestResultServiceKafka implements TestResultService {
                 case "MSH":
                     hasMSH = true;
                     instrument = parts.length > 2 ? parts[2] : "";
+
+                    // Extract MSH-4 (Sending Facility) for runBy
+                    sendingFacility = parts.length > 3 ? parts[3].trim() : null;
+                    if (sendingFacility == null || sendingFacility.isBlank()) {
+                        throw new IllegalArgumentException("Missing Sending Facility in MSH-4");
+                    }
+
+                    // Extract MSH-7 (Message DateTime) for runAt
+                    String mshDateTime = parts.length > 6 ? parts[6].trim() : null;
+                    if (mshDateTime == null || mshDateTime.isBlank()) {
+                        throw new IllegalArgumentException("Missing Message DateTime in MSH-7");
+                    }
+
+                    messageDateTime = parseHl7DateTime(mshDateTime);
+
+                    break;
+
+                case "PID":
+                    hasPID = true;
+
+                    // Extract PID-3 (Patient ID)
+                    if (parts.length > 2 && !parts[2].isBlank()) {
+                        String patientIdStr = parts[2].trim();
+                        try {
+                            hl7PatientId = Integer.parseInt(patientIdStr);
+                        } catch (NumberFormatException e) {
+                            throw new IllegalArgumentException(
+                                    "HL7's Patient ID is not valid: " + patientIdStr
+                            );
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Missing Patient ID in PID-3");
+                    }
+
                     break;
 
                 case "OBR":
@@ -145,15 +183,17 @@ public class TestResultServiceKafka implements TestResultService {
                     break;
 
                 default:
-                    // Ignore other segment types (PID, etc.)
+                    // Ignore other segment types
                     break;
             }
         }
 
         // Step 6: Validate required segments exist
         if (!hasMSH) throw new IllegalArgumentException("Invalid HL7 format: Missing MSH segment");
+        if (!hasPID) throw new IllegalArgumentException("Invalid HL7 format: Missing PID segment");
         if (!hasOBR) throw new IllegalArgumentException("Invalid HL7 format: Missing OBR segment");
         if (!hasOBX) throw new IllegalArgumentException("Invalid HL7 format: Missing OBX segment");
+
         if (bloodCollectionId == null)
             throw new IllegalArgumentException("Missing blood collection id number in HL7 message");
 
@@ -179,7 +219,20 @@ public class TestResultServiceKafka implements TestResultService {
                     );
                 });
 
-        // Step 9: Create new TestResult
+        // Step 9: Validate Patient ID matches
+        if (hl7PatientId == null) {
+            throw new IllegalArgumentException("Patient ID from HL7 is null");
+        }
+
+        if (!hl7PatientId.equals(order.getPatientId())) {
+            throw new IllegalArgumentException(
+                    "HL7's Patient ID " + hl7PatientId +
+                            " is not match with Patient ID " + order.getPatientId() +
+                            " in Test Order"
+            );
+        }
+
+        // Step 10: Create new TestResult
         log.info("Creating new TestResult for bloodCollectionId: '{}'", finalBloodCollectionId);
         TestResult result = TestResult.builder()
                 .testOrder(order)
@@ -189,24 +242,24 @@ public class TestResultServiceKafka implements TestResultService {
                 .status("COMPLETED")
                 .build();
 
-        // Step 10: Link parameters to result and order
+        // Step 11: Link parameters to result and order
         for (TestResultParameter p : testResultParameterList) {
             p.setTestResult(result);
             p.setTestOrder(order);
         }
         result.setTestResultParameter(testResultParameterList);
-        order.setRunAt(LocalDateTime.now());
-        order.setRunBy(GeneralUtils.getCurrentUsername());
+        order.setRunAt(messageDateTime);
+        order.setRunBy(sendingFacility);
 
-        // Step 11: Save entities
+        // Step 12: Save entities
         TestResult savedResult = testResultRepository.save(result);
         order.setStatus(TestOrderStatus.COMPLETED);
         testOrderRepository.save(order);
 
-        // Step 12: Publish event for event-driven architecture
+        // Step 13: Publish event for event-driven architecture
         eventPublisher.publishTestResultCreated(savedResult);
 
-        // Step 13: Build response
+        // Step 14: Build response
         TestResultResponse testResultResponse = testResultMapper.toTestResultResponse(savedResult);
 
         return RestResponse.<TestResultResponse>builder()
@@ -279,6 +332,34 @@ public class TestResultServiceKafka implements TestResultService {
             return parts.length > index ? Integer.parseInt(parts[index]) : 0;
         } catch (NumberFormatException e) {
             return 0;
+        }
+    }
+
+    /**
+     * Parse HL7 DateTime format (YYYYMMDDHHmmss) to LocalDateTime
+     * Format: 20251017210049 -> 2025-10-17 21:00:49
+     */
+    private LocalDateTime parseHl7DateTime(String hl7DateTime) {
+        try {
+            // HL7 DateTime format: YYYYMMDDHHmmss (14 characters)
+            if (hl7DateTime.length() < 14) {
+                throw new IllegalArgumentException(
+                        "Invalid HL7 DateTime format. Expected YYYYMMDDHHmmss, got: " + hl7DateTime
+                );
+            }
+
+            int year = Integer.parseInt(hl7DateTime.substring(0, 4));
+            int month = Integer.parseInt(hl7DateTime.substring(4, 6));
+            int day = Integer.parseInt(hl7DateTime.substring(6, 8));
+            int hour = Integer.parseInt(hl7DateTime.substring(8, 10));
+            int minute = Integer.parseInt(hl7DateTime.substring(10, 12));
+            int second = Integer.parseInt(hl7DateTime.substring(12, 14));
+
+            return LocalDateTime.of(year, month, day, hour, minute, second);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "Failed to parse HL7 DateTime: " + hl7DateTime + ". Error: " + e.getMessage()
+            );
         }
     }
 

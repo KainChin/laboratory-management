@@ -3,14 +3,14 @@ server:
 
 spring:
   profiles:
-    active: prod
+    active: dev
 
   application:
     name: test-order-service
   datasource:
     url: jdbc:postgresql://localhost:5432/test-order-service
     username: postgres
-    password: 123456
+    password: 12345
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
