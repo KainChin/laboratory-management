@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { List } from "lucide-react";
+import { List, Loader2 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import axios from '../../../api/axios';
 import { createPortal } from "react-dom";
 import { showToast } from '../../../components/Toast';
 
-export default function QuickActions({ status, onStatusChange, onEditOrder }) {
+export default function QuickActions({ status, onStatusChange, onEditOrder, onAiCommentAdded }) {
   const { id } = useParams();
   const [isReviewing, setIsReviewing] = useState(false);
+  const [isAiReviewing, setIsAiReviewing] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const previousOverflowRef = useRef("");
 
@@ -32,6 +33,36 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
   const handleMarkAsReviewed = async () => {
     if (isReviewing) return;
     setIsConfirmOpen(true);
+  };
+
+  const handleAiAutoReview = async () => {
+    if (isAiReviewing) return;
+
+    try {
+      setIsAiReviewing(true);
+      const response = await axios.post(`/test-orders/${id}/comments/ai-reviewed`);
+      // If parent passed a callback, try to extract the created comment and send it up
+      if (typeof onAiCommentAdded === "function") {
+        const data = response?.data || {};
+        // Try common shapes: { result: { comment: {...} } } or { comment: {...} } or result directly
+        const newComment = data?.result?.comment ?? data?.comment ?? data?.result ?? (Object.keys(data).length ? data : null);
+        if (newComment) onAiCommentAdded(newComment);
+      }
+      showToast({
+        type: "success",
+        title: "AI Auto Review",
+        message: "AI review completed successfully"
+      });
+    } catch (error) {
+      console.error("Error executing AI auto review:", error);
+      showToast({
+        type: "error",
+        title: "AI Auto Review Failed",
+        message: error.response?.data?.message || error.message || "Failed to trigger AI auto review"
+      });
+    } finally {
+      setIsAiReviewing(false);
+    }
   };
 
   const confirmReview = async () => {
@@ -100,9 +131,20 @@ export default function QuickActions({ status, onStatusChange, onEditOrder }) {
         )}
         <button 
           className="btn-purple full"
+          onClick={handleAiAutoReview}
+          disabled={isAiReviewing}
           aria-label="AI Auto Review - Automatically review test results"
+          aria-busy={isAiReviewing ? "true" : "false"}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
         >
-          AI Auto Review
+          {isAiReviewing ? (
+            <>
+              <Loader2 className="animate-spin" size={18} aria-hidden="true" />
+              <span>Processing...</span>
+            </>
+          ) : (
+            "AI Auto Review"
+          )}
         </button>
         <button 
           className="btn-red full"

@@ -82,7 +82,8 @@ public class TestResultServiceKafka implements TestResultService {
         validateHl7FormatBasic(rawHl7);
 
         // Step 3: Split segments - using simple newline approach (more standard)
-        String[] lines = rawHl7.split("\\r?\\n");
+//        String[] lines = rawHl7.split("\\r?\\n");
+        String[] lines = rawHl7.split("[\\r\\n]+");
 
         // Step 4: Validate segment structure
         validateHl7Segments(lines);

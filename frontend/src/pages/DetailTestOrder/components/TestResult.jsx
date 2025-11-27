@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Loader2 } from "lucide-react";
+import { useParams } from "react-router-dom";
 import axios from "../../../api/axios";
-import "../DetailTestOrder.css";
 import { showToast } from "../../../components/Toast";
-import { getFlagColor } from "../../../utils/flagUtils";
+import "../DetailTestOrder.css";
 
 function getFlagClass(flag) {
-  if (!flag) return "dto-flag-default";
-  const f = String(flag).toUpperCase();
-  // Return class based on exact flag value to match Status Chart colors
-  if (f === "H") return "dto-flag-H";
-  if (f === "L") return "dto-flag-L";
-  if (f === "N") return "dto-flag-N";
+  // Normalize and map allowed flag tokens to CSS classes
+  if (!flag && flag !== 0) return "dto-flag-default";
+  const f = String(flag).toUpperCase().trim();
+  const allowed = new Set(["N", "H", "L", "A", "AA", "VS"]);
+  if (allowed.has(f)) return `dto-flag-${f}`;
+  // fallback: if flag is single-letter numeric or unknown, show default
   return "dto-flag-default";
 }
 
@@ -55,12 +55,15 @@ export default function TestResult({ tests, onUpdate }) {
     return [];
   }
 
+  const { id } = useParams();
+  
   // local copy of parameters so we can update after POST without needing parent update
   const [parameters, setParameters] = useState(() => extractParameters(tests));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hl7Text, setHl7Text] = useState("");
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState(null);
+  const [isResyncing, setIsResyncing] = useState(false);
 
   // keep local parameters in sync when parent tests prop changes
   useEffect(() => {
@@ -107,66 +110,57 @@ export default function TestResult({ tests, onUpdate }) {
     setPosting(true);
     setPostError(null);
     try {
-      const res = await axios.post("/test-results/hl7", hl7Text, {
+      const res = await fetch("http://localhost:6868/api/test-results/hl7", {
+        method: "POST",
         headers: { "Content-Type": "text/plain" },
+        body: hl7Text,
       });
-      const data = res.data;
-      const resultPayload = data?.result ?? {};
-      const extractedParams = extractParameters(resultPayload);
-      const newParams = extractedParams.length ? extractedParams : [];
-
-      // keep local parameters in sync
+      if (!res.ok) throw new Error(`Server responded ${res.status}`);
+      const data = await res.json();
+      const newParams = data?.result?.testResultParameter || [];
       setParameters(newParams);
-
-      // inform parent page that test results / status changed
+      
+      // inform parent page that test results changed
       try {
         if (typeof onUpdate === "function") {
-          let nextTestResults =
-            resultPayload?.testResults ??
-            (Array.isArray(resultPayload)
-              ? { testResultParameter: resultPayload }
-              : resultPayload);
-
-          if (
-            !nextTestResults ||
-            typeof nextTestResults !== "object" ||
-            !nextTestResults.testResultParameter
-          ) {
-            nextTestResults = { testResultParameter: newParams };
-          }
-
-          const nextStatus =
-            resultPayload?.status ?? resultPayload?.testOrderStatus ?? resultPayload?.testStatus;
-
-          onUpdate({
-            testResults: nextTestResults,
-            status: nextStatus,
-          });
+          // pass the whole testResults object from response if available
+          const testResults = data?.result || { testResultParameter: newParams };
+          onUpdate({ testResults });
         }
       } catch (e) {
         console.warn("onUpdate callback failed:", e);
       }
-
-      showToast({ type: "success", title: "HL7 Imported", message: data?.message || "Retrieved test result successfully" });
-
+      
       // close modal on success
       setIsModalOpen(false);
     } catch (err) {
       console.error("HL7 submit error:", err);
-      
-      // Extract detailed error message from response
-      let errorMessage = "Failed to submit HL7";
-      if (err.response?.data?.message) {
-        // Handle both array and string message formats
-        const msg = err.response.data.message;
-        errorMessage = Array.isArray(msg) ? msg.join(", ") : msg;
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-      
-      setPostError(errorMessage);
+      setPostError(err.message || "Failed to submit HL7");
     } finally {
       setPosting(false);
+    }
+  }
+
+  async function handleResync() {
+    if (isResyncing) return;
+    
+    try {
+      setIsResyncing(true);
+      await axios.post(`/test-orders/${id}/resync`);
+      showToast({
+        type: "success",
+        title: "Resync Success",
+        message: "Test order resynced successfully"
+      });
+    } catch (error) {
+      console.error("Error resyncing test order:", error);
+      showToast({
+        type: "error",
+        title: "Resync Failed",
+        message: error.response?.data?.message || error.message || "Failed to resync test order"
+      });
+    } finally {
+      setIsResyncing(false);
     }
   }
 
@@ -174,53 +168,76 @@ export default function TestResult({ tests, onUpdate }) {
     <section className="dto-card">
       <div className="dto-card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div className="dto-icon"><ClipboardList size={24} /></div>
-          <h3 className="dto-title" style={{ color: '#FF5A5A', fontSize: 18, fontWeight: 800 }}>Test Result</h3>
+          <div className="dto-icon"><ClipboardList size={16} /></div>
+          <h3 className="dto-title">Test Result</h3>
         </div>
 
-        <div>
+        <div style={{ display: "flex", gap: 8 }}>
           <button
-            onClick={openModal}
+            onClick={handleResync}
             className="inline-flex items-center px-4 py-2 rounded-lg shadow"
             style={{
-              backgroundColor: "#FF5A5A",
+              backgroundColor: "#ef4444",
               color: "#fff",
               fontWeight: 600,
               opacity: disableNew ? 0.6 : 1,
               cursor: disableNew ? "not-allowed" : "pointer",
-              transition: "background-color 0.3s ease",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8
             }}
-            onMouseEnter={(e) => !disableNew && (e.target.style.backgroundColor = "#FF3A3A")}
-            onMouseLeave={(e) => !disableNew && (e.target.style.backgroundColor = "#FF5A5A")}
+            aria-label="Resync Test Result"
+            disabled={disableNew || isResyncing}
+            title={disableNew ? "Test results already exist" : "Resync test result"}
+            aria-busy={isResyncing ? "true" : "false"}
+          >
+            {isResyncing ? (
+              <>
+                <Loader2 className="animate-spin" size={18} aria-hidden="true" />
+                <span>Resyncing...</span>
+              </>
+            ) : (
+              "Resync"
+            )}
+          </button>
+          <button
+            onClick={openModal}
+            className="inline-flex items-center px-4 py-2 rounded-lg shadow"
+            style={{
+              backgroundColor: "#ef4444",
+              color: "#fff",
+              fontWeight: 600,
+              opacity: disableNew ? 0.6 : 1,
+              cursor: disableNew ? "not-allowed" : "pointer",
+            }}
             aria-label="Add Test Result"
             disabled={disableNew}
             title={disableNew ? "Test results already exist" : "Add new test result"}
-            aria-disabled={disableNew ? "true" : "false"}
           >
             Add Test Result
           </button>
         </div>
       </div>
 
-      <table className="dto-table" role="table" aria-label="Test Results Table">
+      <table className="dto-table">
         <thead>
-          <tr role="row">
-            <th className="dto-th" role="columnheader" aria-label="Sequence Number">Sequence</th>
-            <th className="dto-th" role="columnheader" aria-label="Parameter Name">Parameter Name</th>
-            <th className="dto-th" role="columnheader" aria-label="Test Result Value">Value</th>
-            <th className="dto-th" role="columnheader" aria-label="Reference Range">Reference Range</th>
-            <th className="dto-th" role="columnheader" aria-label="Result Flag">Flag</th>
+          <tr>
+            <th className="dto-th">Sequence</th>
+            <th className="dto-th">Parameter Name</th>
+            <th className="dto-th">Value</th>
+            <th className="dto-th">Reference Range</th>
+            <th className="dto-th">Flag</th>
           </tr>
         </thead>
-        <tbody role="rowgroup">
+        <tbody>
           {parameters.length === 0 ? (
-            <tr role="row"><td colSpan={5} className="dto-empty" role="cell" aria-label="No test results available">No test results</td></tr>
+            <tr><td colSpan={5} className="dto-empty">No test results</td></tr>
           ) : (
             parameters.map((param) => {
               const flagClass = getFlagClass(param.flag);
-              const flagColor = getFlagColor(param.flag);
               return (
-                <tr key={param.id} className="dto-row" role="row">
+                <tr key={param.id} className="dto-row">
                   <td className="dto-td">{param.sequence}</td>
                   <td className="dto-td">{param.paramName}</td>
                   <td className="dto-td">{param.value}{param.unit ? ` ${param.unit}` : ""}</td>
@@ -228,7 +245,8 @@ export default function TestResult({ tests, onUpdate }) {
                   <td className="dto-td flag-col">
                     <span
                       className={`dto-flag ${flagClass}`}
-                      style={{ color: flagColor }}
+                      title={`Flag: ${param.flag ?? "Unknown"}`}
+                      aria-label={`Flag ${param.flag ?? "Unknown"}`}
                     >
                       {param.flag}
                     </span>
@@ -242,56 +260,27 @@ export default function TestResult({ tests, onUpdate }) {
 
       {/* Modal rendered into document.body to avoid stacking/transform issues */}
       {isModalOpen && createPortal(
-        <div
-          className="modal-overlay"
-          style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20, animation: "fadeInOverlay 0.3s ease-out" }}
-          onClick={() => setIsModalOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="hl7-modal-title"
-          aria-describedby="hl7-description"
-        >
-          <div
-            className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto"
-            style={{ maxHeight: '90vh', overflow: 'auto', animation: 'slideUp 0.4s ease-out' }}
-            role="dialog" aria-modal
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 id="hl7-modal-title" className="text-2xl text-red-500 font-bold text-center" style={{ marginBottom: 8 }}>Send HL7 (raw)</h3>
-            <p id="hl7-description" className="text-center text-sm text-gray-500 mb-6">Paste HL7 message here to create test result parameters</p>
+        <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}>
+          <div className="bg-white rounded-2xl w-full max-w-3xl p-4 md:p-6 shadow-lg mx-auto" style={{ maxHeight: '90vh', overflow: 'auto' }} role="dialog" aria-modal>
+            <h3 className="text-2xl text-red-500 font-bold text-center" style={{ marginBottom: 8 }}>Send HL7 (raw)</h3>
+            <p className="text-center text-sm text-gray-500 mb-6">Paste HL7 message here to create test result parameters</p>
             <textarea
               value={hl7Text}
               onChange={(e) => setHl7Text(e.target.value)}
               placeholder="Paste HL7 message here"
-              style={{ width: "100%", minHeight: 220, padding: 10, borderRadius: 6, border: "1px solid #CCC", fontFamily: "monospace" }}
-              onFocus={(e) => e.target.style.borderColor = "#FF5A5A"}
-              onBlur={(e) => e.target.style.borderColor = "#CCC"}
-              id="hl7-message-input"
-              aria-label="HL7 Message Input"
-              aria-required="true"
-              aria-describedby="hl7-description"
-              aria-invalid={postError ? "true" : "false"}
+              style={{ width: "100%", minHeight: 220, padding: 10, borderRadius: 6, border: "1px solid #e5e7eb", fontFamily: "monospace" }}
             />
 
-            {postError && <div role="alert" aria-live="assertive" style={{ color: "#FF0000", marginTop: 8 }}>{postError}</div>}
+            {postError && <div style={{ color: "#e11d48", marginTop: 8 }}>{postError}</div>}
 
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
-              <button 
-                onClick={closeModal} 
-                className="px-4 py-2 rounded-lg" 
-                style={{ background: "#f3f4f6", border: "1px solid #CCC" }}
-                aria-label="Cancel and close modal"
-              >
-                Cancel
-              </button>
+              <button onClick={closeModal} className="px-4 py-2 rounded-lg" style={{ background: "#f3f4f6" }}>Cancel</button>
               <button
                 onClick={submitHl7}
                 className="px-4 py-2 rounded-lg"
-                style={{ background: "#ef4444", color: "#fff", fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 8, border: "1px solid #CCC" }}
+                style={{ background: "#ef4444", color: "#fff", fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 8 }}
                 disabled={posting}
                 title={posting ? "Sending HL7..." : "Send HL7"}
-                aria-label={posting ? "Sending HL7 message" : "Send HL7 message"}
-                aria-busy={posting ? "true" : "false"}
               >
                 {posting ? (
                   <>

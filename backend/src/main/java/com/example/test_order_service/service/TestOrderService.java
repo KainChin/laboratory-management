@@ -24,4 +24,5 @@ public interface TestOrderService {
     PageResponse<TestOrderDetailResponse> getTestOrderByEmail(Pageable pageable, String email);
     RestResponse<?> getDailyStatistics();
     RestResponse<TestOrderResponse> getTestOrderByBloodCollectionId(String bloodCollectionId);
+    RestResponse<Void> resyncTestOrderResults(String orderId);
 }

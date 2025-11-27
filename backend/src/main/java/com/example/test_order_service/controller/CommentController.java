@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,6 +43,14 @@ public class CommentController {
                 .message("All comments for order " + orderId + " retrieved successfully")
                 .result(result)
                 .build();
+    }
+
+    @PostMapping("/ai-reviewed")
+    @PreAuthorize("hasAnyRole('LAB_USER', 'ADMIN') and hasAuthority('ADD_COMMENT')")
+    public Mono<RestResponse<CommentResponse>> getAIReview(
+            @PathVariable String orderId
+    ) {
+        return commentService.getAIReview(orderId);
     }
 
     @PutMapping("/{commentId}")

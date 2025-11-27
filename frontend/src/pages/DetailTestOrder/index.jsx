@@ -432,6 +432,14 @@ export default function DetailTestOrder() {
                 ));
               }}
               onEditOrder={handleEditOrder}
+              onAiCommentAdded={(comment) => {
+                setOrder((prev) => {
+                  if (!prev) return prev;
+                  const prevComments = Array.isArray(prev.comments) ? prev.comments : [];
+                  const incoming = Array.isArray(comment) ? comment : [comment];
+                  return { ...prev, comments: incoming.concat(prevComments) };
+                });
+              }}
             />
           </div>
 

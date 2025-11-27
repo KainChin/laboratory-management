@@ -7,6 +7,7 @@ import { getUserName } from "../../../utils/jwtUtils";
 import "../DetailTestOrder.css";
 
 export default function Comments({
+  comments: commentsProp = null,
   orderId: propOrderId = null,
   currentUser = null,
 }) {
@@ -156,6 +157,59 @@ export default function Comments({
       mounted = false;
     };
   }, [propOrderId]);
+
+  // If parent provides comments via prop (e.g. after AI review), sync them
+  useEffect(() => {
+    if (!Array.isArray(commentsProp)) return;
+    try {
+      const list = commentsProp.slice();
+
+      const parseDate = (c) => {
+        if (!c) return NaN;
+        const keys = [
+          "createdAt",
+          "created_at",
+          "createdOn",
+          "created_on",
+          "createdDate",
+          "created_date",
+          "timestamp",
+          "time",
+          "created",
+        ];
+        for (const k of keys) {
+          const v = c[k];
+          if (v == null) continue;
+          if (typeof v === "object") {
+            if (v.seconds != null)
+              return (
+                Number(v.seconds) * 1000 +
+                (v.nanoseconds ? Math.floor(v.nanoseconds / 1000000) : 0)
+              );
+            if (v._seconds != null) return Number(v._seconds) * 1000;
+          }
+          const n = Date.parse(String(v));
+          if (!isNaN(n)) return n;
+        }
+        return NaN;
+      };
+
+      const hasValidDate = list.some((c) => !isNaN(parseDate(c)));
+      if (hasValidDate) {
+        list.sort((a, b) => {
+          const da = parseDate(a),
+            db = parseDate(b);
+          return (isNaN(db) ? 0 : db) - (isNaN(da) ? 0 : da);
+        });
+      } else {
+        list.reverse();
+      }
+
+      setComments(list.slice(0, 100));
+    } catch (e) {
+      console.error("Failed to sync comments from prop:", e);
+    }
+  }, [commentsProp]);
 
   async function handleAdd() {
     const trimmed = (text || "").trim();
