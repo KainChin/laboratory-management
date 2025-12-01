@@ -13,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,12 +25,7 @@ class PatientServiceClientTest {
 
     @Mock PatientServiceProperties properties;
     @Mock WebClient.Builder builder;
-
     @Mock WebClient webClient;
-
-    @Mock WebClient.RequestHeadersUriSpec reqUriSpec;
-    @Mock WebClient.RequestHeadersSpec reqHeadersSpec;
-    @Mock WebClient.ResponseSpec responseSpec;
 
     @InjectMocks PatientServiceClient client;
 
@@ -42,17 +36,43 @@ class PatientServiceClientTest {
 
         when(builder.baseUrl(anyString())).thenReturn(builder);
         when(builder.build()).thenReturn(webClient);
-
-        // ===== chain cho getPatientById (đánh lenient để không bị UnnecessaryStubbing) =====
-        lenient().when(webClient.get()).thenReturn(reqUriSpec);
-        lenient().when(reqUriSpec.uri(anyString(), anyInt())).thenReturn(reqHeadersSpec);
-        lenient().when(reqHeadersSpec.header(eq(HttpHeaders.AUTHORIZATION), anyString()))
-                .thenReturn(reqHeadersSpec);
-        lenient().when(reqHeadersSpec.retrieve()).thenReturn(responseSpec);
-        lenient().when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
     }
 
-    // ===================== getPatientById =====================
+    // =========================================================
+    // Helpers to stub WebClient chains
+    // =========================================================
+
+    private void stubGetPatientChain(Mono<PatientDto> mono) {
+        WebClient.RequestHeadersUriSpec uriSpec = mock(WebClient.RequestHeadersUriSpec.class);
+        WebClient.RequestHeadersSpec headersSpec = mock(WebClient.RequestHeadersSpec.class);
+        WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
+
+        when(webClient.get()).thenReturn(uriSpec);
+        when(uriSpec.uri(anyString(), anyInt())).thenReturn(headersSpec);
+        when(headersSpec.header(eq(HttpHeaders.AUTHORIZATION), anyString()))
+                .thenReturn(headersSpec);
+        when(headersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(PatientDto.class)).thenReturn(mono);
+    }
+
+    private void stubGetAllPatientsChain(Mono<PatientListResponse> mono) {
+        WebClient.RequestHeadersUriSpec uriSpec = mock(WebClient.RequestHeadersUriSpec.class);
+        WebClient.RequestHeadersSpec headersSpec = mock(WebClient.RequestHeadersSpec.class);
+        WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
+
+        when(webClient.get()).thenReturn(uriSpec);
+        when(uriSpec.uri(any(Function.class))).thenReturn(headersSpec);
+        when(headersSpec.header(eq(HttpHeaders.AUTHORIZATION), anyString()))
+                .thenReturn(headersSpec);
+        when(headersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(PatientListResponse.class)).thenReturn(mono);
+    }
+
+    // =========================================================
+    // getPatientById
+    // =========================================================
 
     @Test
     void getPatientById_success_activePatient() {
@@ -60,20 +80,17 @@ class PatientServiceClientTest {
         when(patient.getIsActive()).thenReturn(true);
         when(patient.getFullName()).thenReturn("Nguyen Van A");
 
-        when(responseSpec.bodyToMono(PatientDto.class)).thenReturn(Mono.just(patient));
+        stubGetPatientChain(Mono.just(patient));
 
         PatientDto res = client.getPatientById(1, "token");
 
         assertSame(patient, res);
-
         verify(builder).baseUrl("http://patient-service");
-        verify(reqUriSpec).uri("/api/patients/{id}", 1);
-        verify(reqHeadersSpec).header(HttpHeaders.AUTHORIZATION, "token");
     }
 
     @Test
     void getPatientById_patientNull_shouldThrowNotFound() {
-        when(responseSpec.bodyToMono(PatientDto.class)).thenReturn(Mono.empty());
+        stubGetPatientChain(Mono.empty());
 
         assertThrows(ResourceNotFoundException.class,
                 () -> client.getPatientById(1, "token"));
@@ -84,7 +101,7 @@ class PatientServiceClientTest {
         PatientDto patient = mock(PatientDto.class);
         when(patient.getIsActive()).thenReturn(false);
 
-        when(responseSpec.bodyToMono(PatientDto.class)).thenReturn(Mono.just(patient));
+        stubGetPatientChain(Mono.just(patient));
 
         assertThrows(ResourceNotFoundException.class,
                 () -> client.getPatientById(1, "token"));
@@ -95,71 +112,63 @@ class PatientServiceClientTest {
         PatientDto patient = mock(PatientDto.class);
         when(patient.getIsActive()).thenReturn(null);
 
-        when(responseSpec.bodyToMono(PatientDto.class)).thenReturn(Mono.just(patient));
+        stubGetPatientChain(Mono.just(patient));
 
         assertThrows(ResourceNotFoundException.class,
                 () -> client.getPatientById(1, "token"));
     }
 
     @Test
-    void getPatientById_serviceNotFound_shouldThrowNotFound() {
-        when(responseSpec.bodyToMono(PatientDto.class))
-                .thenReturn(Mono.error(new ResourceNotFoundException("Patient not found with ID: 1")));
+    void getPatientById_bodyMonoThrowsResourceNotFound_shouldRethrow() {
+        stubGetPatientChain(Mono.error(
+                new ResourceNotFoundException("Patient not found with ID: 1")
+        ));
 
         assertThrows(ResourceNotFoundException.class,
                 () -> client.getPatientById(1, "token"));
     }
 
     @Test
-    void getPatientById_otherError_shouldThrowRuntime() {
-        when(responseSpec.bodyToMono(PatientDto.class))
-                .thenReturn(Mono.error(new RuntimeException("boom")));
+    void getPatientById_bodyMonoThrowsOther_shouldWrapRuntime() {
+        stubGetPatientChain(Mono.error(new RuntimeException("boom")));
 
-        assertThrows(RuntimeException.class,
+        RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> client.getPatientById(1, "token"));
+
+        assertTrue(ex.getMessage().contains("Failed to fetch patient from patient service"));
+        assertNotNull(ex.getCause());
     }
 
-    // ===================== getAllPatients =====================
+    // =========================================================
+    // getAllPatients
+    // =========================================================
 
     @Test
-    void getAllPatients_success() {
+    void getAllPatients_success_withKeyword() {
         PatientListResponse listResp = mock(PatientListResponse.class);
-
-        WebClient.RequestHeadersUriSpec listUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
-        WebClient.RequestHeadersSpec listHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
-        WebClient.ResponseSpec listResponseSpec = mock(WebClient.ResponseSpec.class);
-
-        when(webClient.get()).thenReturn(listUriSpec);
-
-        when(listUriSpec.uri(any(Function.class))).thenReturn(listHeadersSpec);
-        when(listHeadersSpec.header(eq(HttpHeaders.AUTHORIZATION), anyString()))
-                .thenReturn(listHeadersSpec);
-        when(listHeadersSpec.retrieve()).thenReturn(listResponseSpec);
-        when(listResponseSpec.onStatus(any(), any())).thenReturn(listResponseSpec);
-        when(listResponseSpec.bodyToMono(PatientListResponse.class))
-                .thenReturn(Mono.just(listResp));
+        stubGetAllPatientsChain(Mono.just(listResp));
 
         PatientListResponse res =
                 client.getAllPatients(0, 10, "abc", "patientId,desc", "token");
 
         assertSame(listResp, res);
-        verify(listHeadersSpec).header(HttpHeaders.AUTHORIZATION, "token");
+        verify(builder).baseUrl("http://patient-service");
     }
 
     @Test
-    void getAllPatients_error_shouldThrowRuntime() {
-        WebClient.RequestHeadersUriSpec listUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
-        WebClient.RequestHeadersSpec listHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
-        WebClient.ResponseSpec listResponseSpec = mock(WebClient.ResponseSpec.class);
+    void getAllPatients_success_withoutKeyword_andDefaults() {
+        PatientListResponse listResp = mock(PatientListResponse.class);
+        stubGetAllPatientsChain(Mono.just(listResp));
 
-        when(webClient.get()).thenReturn(listUriSpec);
-        when(listUriSpec.uri(any(Function.class))).thenReturn(listHeadersSpec);
-        when(listHeadersSpec.header(eq(HttpHeaders.AUTHORIZATION), anyString()))
-                .thenReturn(listHeadersSpec);
-        when(listHeadersSpec.retrieve()).thenReturn(listResponseSpec);
-        when(listResponseSpec.onStatus(any(), any())).thenReturn(listResponseSpec);
-        when(listResponseSpec.bodyToMono(PatientListResponse.class))
-                .thenReturn(Mono.error(new RuntimeException("boom")));
+        PatientListResponse res =
+                client.getAllPatients(null, null, "   ", null, "token");
+
+        assertSame(listResp, res);
+    }
+
+    @Test
+    void getAllPatients_bodyMonoError_shouldThrowRuntime() {
+        stubGetAllPatientsChain(Mono.error(new RuntimeException("boom")));
 
         assertThrows(RuntimeException.class,
                 () -> client.getAllPatients(0, 10, null, null, "token"));

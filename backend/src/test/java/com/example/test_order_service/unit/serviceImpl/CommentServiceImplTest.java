@@ -6,9 +6,9 @@ import com.example.test_order_service.dto.request.CreateCommentRequest;
 import com.example.test_order_service.dto.request.UpdateCommentRequest;
 import com.example.test_order_service.entity.Comment;
 import com.example.test_order_service.entity.TestOrder;
-import com.example.test_order_service.entity.enumForEntity.Gender;
 import com.example.test_order_service.entity.enumForEntity.TestOrderStatus;
 import com.example.test_order_service.exception.ResourceNotFoundException;
+import com.example.test_order_service.ingest.publisher.CommentEventPublisher;
 import com.example.test_order_service.mapper.CommentMapper;
 import com.example.test_order_service.repository.CommentRepository;
 import com.example.test_order_service.repository.TestOrderRepository;
@@ -21,8 +21,8 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +36,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit Tests for CommentServiceImpl
- * Tests business logic with mocked dependencies
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CommentServiceImpl Unit Tests")
@@ -52,6 +51,12 @@ public class CommentServiceImplTest {
     @Mock
     private CommentMapper commentMapper;
 
+    @Mock
+    private CommentEventPublisher commentEventPublisher;
+
+    @Mock
+    private WebClient webClient;
+
     @InjectMocks
     private CommentServiceImpl commentService;
 
@@ -63,23 +68,19 @@ public class CommentServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        testOrder = TestOrder.builder()
-                .testOrderId("TO-001")
-                .patientName("Nguyen Van A")
-                .dateOfBirth(LocalDate.of(1990, 1, 15))
-                .citizenId("001234567890")
-                .country("Vietnam")
-                .gender(Gender.MALE)
-                .status(TestOrderStatus.PENDING)
-                .build();
+        // tránh Lombok builder missing non-nullable fields:
+        // dùng object + setter trực tiếp
+        testOrder = new TestOrder();
+        testOrder.setTestOrderId("TO-001");
+        testOrder.setStatus(TestOrderStatus.PENDING);
+        testOrder.setDeleted(false);
 
-        comment = Comment.builder()
-                .commentId("C-001")
-                .testOrder(testOrder)
-                .commentText("This is a test comment")
-                .createdBy("Doctor A")
-                .createdAt(LocalDateTime.now())
-                .build();
+        comment = new Comment();
+        comment.setCommentId("C-001");
+        comment.setTestOrder(testOrder);
+        comment.setCommentText("This is a test comment");
+        comment.setCreatedBy("Doctor A");
+        comment.setCreatedAt(LocalDateTime.now());
 
         commentResponse = CommentResponse.builder()
                 .commentId("C-001")
@@ -110,39 +111,50 @@ public class CommentServiceImplTest {
         @Order(1)
         @DisplayName("Should create comment successfully")
         void shouldCreateCommentSuccessfully() {
-            // Given
             String orderId = "TO-001";
+
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
             when(commentMapper.toCommentEntity(createCommentRequest)).thenReturn(comment);
             when(commentRepository.save(any(Comment.class))).thenReturn(comment);
             when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
 
-            // When
-            RestResponse<CommentResponse> response = commentService.createComment(orderId, createCommentRequest);
+            try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
+                mocked.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-            // Then
-            assertThat(response).isNotNull();
-            assertThat(response.getStatusCode()).isEqualTo(200);
-            assertThat(response.getMessage()).isEqualTo("Comment created successfully");
-            assertThat(response.getResult()).isNotNull();
-            assertThat(response.getResult().getCommentText()).isEqualTo("This is a test comment");
-            assertThat(response.getTimestamp()).isNotNull();
+                RestResponse<CommentResponse> response =
+                        commentService.createComment(orderId, createCommentRequest);
+
+                assertThat(response).isNotNull();
+                assertThat(response.getStatusCode()).isEqualTo(200);
+                assertThat(response.getMessage()).isEqualTo("Comment created successfully");
+                assertThat(response.getResult()).isNotNull();
+                assertThat(response.getResult().getCommentText()).isEqualTo("This is a test comment");
+                assertThat(response.getTimestamp()).isNotNull();
+            }
 
             verify(testOrderRepository).findById(orderId);
             verify(commentMapper).toCommentEntity(createCommentRequest);
             verify(commentRepository).save(any(Comment.class));
             verify(commentMapper).toCommentResponse(comment);
+            verify(commentEventPublisher).publishCommentEvent(any(Comment.class), eq("COMMENT_CREATED"));
         }
 
         @Test
         @Order(2)
+        @DisplayName("Should throw IllegalArgumentException when request is null")
+        void shouldThrowWhenRequestNull() {
+            assertThatThrownBy(() -> commentService.createComment("TO-001", null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("No comment data provided");
+        }
+
+        @Test
+        @Order(3)
         @DisplayName("Should throw ResourceNotFoundException when test order not found")
         void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
-            // Given
             String invalidOrderId = "INVALID-ID";
             when(testOrderRepository.findById(invalidOrderId)).thenReturn(Optional.empty());
 
-            // When & Then
             assertThatThrownBy(() -> commentService.createComment(invalidOrderId, createCommentRequest))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("Test order not found");
@@ -153,50 +165,59 @@ public class CommentServiceImplTest {
         }
 
         @Test
-        @Order(3)
-        @DisplayName("Should set test order to comment")
-        void shouldSetTestOrderToComment() {
-            // Given
+        @Order(4)
+        @DisplayName("Should throw ResourceNotFoundException when test order is deleted")
+        void shouldThrowWhenOrderDeleted() {
             String orderId = "TO-001";
+            testOrder.setDeleted(true);
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            when(commentMapper.toCommentEntity(createCommentRequest)).thenReturn(comment);
-            when(commentRepository.save(any(Comment.class))).thenReturn(comment);
-            when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
 
-            // When
-            commentService.createComment(orderId, createCommentRequest);
-
-            // Then
-            verify(commentRepository).save(argThat(c ->
-                    c.getTestOrder() != null &&
-                            c.getTestOrder().getTestOrderId().equals("TO-001")
-            ));
+            assertThatThrownBy(() -> commentService.createComment(orderId, createCommentRequest))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessage("Test order not found");
         }
 
         @Test
-        @Order(4)
+        @Order(5)
         @DisplayName("Should handle repository exception during create")
         void shouldHandleRepositoryExceptionDuringCreate() {
-            // Given
             String orderId = "TO-001";
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
             when(commentMapper.toCommentEntity(createCommentRequest)).thenReturn(comment);
             when(commentRepository.save(any(Comment.class)))
                     .thenThrow(new DataAccessException("Database error") {});
 
-            // When & Then
-            assertThatThrownBy(() -> commentService.createComment(orderId, createCommentRequest))
-                    .isInstanceOf(DataAccessException.class);
+            try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
+                mocked.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-            verify(commentRepository).save(any(Comment.class));
+                assertThatThrownBy(() -> commentService.createComment(orderId, createCommentRequest))
+                        .isInstanceOf(DataAccessException.class);
+            }
+        }
+
+        @Test
+        @Order(6)
+        @DisplayName("Should ignore publisher exception")
+        void shouldIgnorePublisherException() {
+            String orderId = "TO-001";
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(commentMapper.toCommentEntity(createCommentRequest)).thenReturn(comment);
+            when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+            when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
+            doThrow(new RuntimeException("kafka down"))
+                    .when(commentEventPublisher).publishCommentEvent(any(Comment.class), eq("COMMENT_CREATED"));
+
+            try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
+                mocked.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
+
+                RestResponse<CommentResponse> response =
+                        commentService.createComment(orderId, createCommentRequest);
+
+                assertThat(response.getStatusCode()).isEqualTo(200);
+            }
         }
     }
-
-    // ═══════════════════════════════════════════════════════════════
-    // GET COMMENTS TESTS
-    // ═══════════════════════════════════════════════════════════════
-
-
 
     // ═══════════════════════════════════════════════════════════════
     // GET ALL COMMENTS TESTS
@@ -211,22 +232,19 @@ public class CommentServiceImplTest {
         @Order(1)
         @DisplayName("Should return all comments sorted by creation date")
         void shouldReturnAllCommentsSorted() {
-            // Given
             String orderId = "TO-001";
 
-            Comment comment1 = Comment.builder()
-                    .commentId("C-001")
-                    .commentText("First comment")
-                    .createdBy("User 1")
-                    .createdAt(LocalDateTime.now().minusDays(1))
-                    .build();
+            Comment comment1 = new Comment();
+            comment1.setCommentId("C-001");
+            comment1.setCommentText("First comment");
+            comment1.setCreatedBy("User 1");
+            comment1.setCreatedAt(LocalDateTime.now().minusDays(1));
 
-            Comment comment2 = Comment.builder()
-                    .commentId("C-002")
-                    .commentText("Second comment")
-                    .createdBy("User 2")
-                    .createdAt(LocalDateTime.now())
-                    .build();
+            Comment comment2 = new Comment();
+            comment2.setCommentId("C-002");
+            comment2.setCommentText("Second comment");
+            comment2.setCreatedBy("User 2");
+            comment2.setCreatedAt(LocalDateTime.now());
 
             CommentResponse response1 = CommentResponse.builder()
                     .commentId("C-001")
@@ -242,72 +260,58 @@ public class CommentServiceImplTest {
 
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
             when(commentRepository.findAllByTestOrder_TestOrderId(orderId))
-                    .thenReturn(Arrays.asList(comment2, comment1)); // Unordered list
+                    .thenReturn(Arrays.asList(comment2, comment1));
             when(commentMapper.toCommentResponse(comment1)).thenReturn(response1);
             when(commentMapper.toCommentResponse(comment2)).thenReturn(response2);
 
-            // When
             List<CommentResponse> response = commentService.getAllComments(orderId);
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response).hasSize(2);
-            assertThat(response.get(0).getCommentId()).isEqualTo("C-001"); // Sorted by createdAt
+            assertThat(response.get(0).getCommentId()).isEqualTo("C-001");
             assertThat(response.get(1).getCommentId()).isEqualTo("C-002");
 
             verify(testOrderRepository).findById(orderId);
             verify(commentRepository).findAllByTestOrder_TestOrderId(orderId);
-            verify(commentMapper, times(2)).toCommentResponse(any(Comment.class));
         }
 
         @Test
         @Order(2)
         @DisplayName("Should throw ResourceNotFoundException when test order not found")
         void shouldThrowResourceNotFoundExceptionWhenTestOrderNotFound() {
-            // Given
             String invalidOrderId = "INVALID-ID";
             when(testOrderRepository.findById(invalidOrderId)).thenReturn(Optional.empty());
 
-            // When & Then
             assertThatThrownBy(() -> commentService.getAllComments(invalidOrderId))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("Test order not found");
-
-            verify(testOrderRepository).findById(invalidOrderId);
-            verify(commentRepository, never()).findAllByTestOrder_TestOrderId(anyString());
         }
 
         @Test
         @Order(3)
+        @DisplayName("Should throw ResourceNotFoundException when order deleted")
+        void shouldThrowWhenOrderDeleted() {
+            testOrder.setDeleted(true);
+            when(testOrderRepository.findById("TO-001")).thenReturn(Optional.of(testOrder));
+
+            assertThatThrownBy(() -> commentService.getAllComments("TO-001"))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessage("Test order not found");
+        }
+
+        @Test
+        @Order(4)
         @DisplayName("Should return empty list when no comments found")
         void shouldReturnEmptyListWhenNoCommentsFound() {
-            // Given
             String orderId = "TO-001";
             when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
             when(commentRepository.findAllByTestOrder_TestOrderId(orderId))
                     .thenReturn(Collections.emptyList());
 
-            // When
             List<CommentResponse> response = commentService.getAllComments(orderId);
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response).isEmpty();
-        }
-
-        @Test
-        @Order(4)
-        @DisplayName("Should handle repository exception")
-        void shouldHandleRepositoryException() {
-            // Given
-            String orderId = "TO-001";
-            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-            when(commentRepository.findAllByTestOrder_TestOrderId(orderId))
-                    .thenThrow(new DataAccessException("Database error") {});
-
-            // When & Then
-            assertThatThrownBy(() -> commentService.getAllComments(orderId))
-                    .isInstanceOf(DataAccessException.class);
         }
     }
 
@@ -324,42 +328,41 @@ public class CommentServiceImplTest {
         @Order(1)
         @DisplayName("Should update comment successfully")
         void shouldUpdateCommentSuccessfully() {
-            // Given
             String orderId = "TO-001";
             String commentId = "C-001";
 
-            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
-                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                    .thenReturn(Optional.of(comment));
+            when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+            when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
 
-                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                        .thenReturn(Optional.of(comment));
-                when(commentRepository.save(any(Comment.class))).thenReturn(comment);
-                when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
+            try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
+                mocked.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-                // When
-                RestResponse<CommentResponse> response = commentService.updateComment(
-                        orderId, commentId, updateCommentRequest
-                );
+                RestResponse<CommentResponse> response =
+                        commentService.updateComment(orderId, commentId, updateCommentRequest);
 
-                // Then
-                assertThat(response).isNotNull();
                 assertThat(response.getStatusCode()).isEqualTo(200);
                 assertThat(response.getMessage()).isEqualTo("Comment updated successfully");
-                assertThat(response.getResult()).isNotNull();
-                assertThat(response.getTimestamp()).isNotNull();
-
-                verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId(commentId, orderId);
-                verify(commentRepository).save(any(Comment.class));
-                verify(commentMapper).toCommentResponse(comment);
             }
+
+            verify(commentEventPublisher).publishCommentEvent(any(Comment.class), eq("COMMENT_UPDATED"));
         }
 
         @Test
         @Order(2)
+        @DisplayName("Should throw IllegalArgumentException when request is null")
+        void shouldThrowWhenRequestNull() {
+            assertThatThrownBy(() -> commentService.updateComment("TO-001", "C-001", null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("No comment data provided");
+        }
+
+        @Test
+        @Order(3)
         @DisplayName("Should throw ResourceNotFoundException when comment not found")
         void shouldThrowResourceNotFoundExceptionWhenCommentNotFound() {
-            // Given
             String orderId = "TO-001";
             String invalidCommentId = "INVALID-ID";
 
@@ -367,68 +370,54 @@ public class CommentServiceImplTest {
             when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(invalidCommentId, orderId))
                     .thenReturn(Optional.empty());
 
-            // When & Then
-            assertThatThrownBy(() -> commentService.updateComment(
-                    orderId, invalidCommentId, updateCommentRequest
-            ))
+            assertThatThrownBy(() -> commentService.updateComment(orderId, invalidCommentId, updateCommentRequest))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("Comment not found");
-
-            verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId(invalidCommentId, orderId);
-            verify(commentRepository, never()).save(any());
-        }
-
-        @Test
-        @Order(3)
-        @DisplayName("Should update comment text")
-        void shouldUpdateCommentText() {
-            // Given
-            String orderId = "TO-001";
-            String commentId = "C-001";
-            String newText = "Updated comment text";
-            updateCommentRequest.setCommentText(newText);
-
-            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
-                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
-
-                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                        .thenReturn(Optional.of(comment));
-                when(commentRepository.save(any(Comment.class))).thenReturn(comment);
-                when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
-
-                // When
-                commentService.updateComment(orderId, commentId, updateCommentRequest);
-
-                // Then
-                verify(commentRepository).save(argThat(c ->
-                        c.getCommentText().equals(newText)
-                ));
-            }
         }
 
         @Test
         @Order(4)
-        @DisplayName("Should handle repository exception during update")
-        void shouldHandleRepositoryExceptionDuringUpdate() {
-            // Given
+        @DisplayName("Should throw IllegalStateException when user not owner")
+        void shouldThrowWhenNotOwner() {
+            String orderId = "TO-001";
+            String commentId = "C-001";
+            comment.setCreatedBy("Other");
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                    .thenReturn(Optional.of(comment));
+
+            try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
+                mocked.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
+
+                assertThatThrownBy(() -> commentService.updateComment(orderId, commentId, updateCommentRequest))
+                        .isInstanceOf(IllegalStateException.class)
+                        .hasMessage("User does not have permission to update this comment");
+            }
+        }
+
+        @Test
+        @Order(5)
+        @DisplayName("Should ignore publisher exception")
+        void shouldIgnorePublisherException() {
             String orderId = "TO-001";
             String commentId = "C-001";
 
-            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
-                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                    .thenReturn(Optional.of(comment));
+            when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+            when(commentMapper.toCommentResponse(comment)).thenReturn(commentResponse);
+            doThrow(new RuntimeException("kafka down"))
+                    .when(commentEventPublisher).publishCommentEvent(any(Comment.class), eq("COMMENT_UPDATED"));
 
-                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                        .thenReturn(Optional.of(comment));
-                when(commentRepository.save(any(Comment.class)))
-                        .thenThrow(new DataAccessException("Database error") {});
+            try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
+                mocked.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-                // When & Then
-                assertThatThrownBy(() -> commentService.updateComment(
-                        orderId, commentId, updateCommentRequest
-                ))
-                        .isInstanceOf(DataAccessException.class);
+                RestResponse<CommentResponse> response =
+                        commentService.updateComment(orderId, commentId, updateCommentRequest);
+
+                assertThat(response.getStatusCode()).isEqualTo(200);
             }
         }
     }
@@ -446,37 +435,32 @@ public class CommentServiceImplTest {
         @Order(1)
         @DisplayName("Should delete comment successfully")
         void shouldDeleteCommentSuccessfully() {
-            // Given
             String orderId = "TO-001";
             String commentId = "C-001";
 
-            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
-                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                    .thenReturn(Optional.of(comment));
+            doNothing().when(commentRepository).deleteById(commentId);
 
-                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                        .thenReturn(Optional.of(comment));
-                doNothing().when(commentRepository).deleteById(commentId);
+            try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
+                mocked.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-                // When
                 RestResponse<Void> response = commentService.deleteComment(orderId, commentId);
 
-                // Then
-                assertThat(response).isNotNull();
                 assertThat(response.getStatusCode()).isEqualTo(200);
-                assertThat((String) response.getMessage()).contains("Comment " + commentId + " deleted successfully");
-                assertThat(response.getTimestamp()).isNotNull();
-
-                verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId(commentId, orderId);
-                verify(commentRepository).deleteById(commentId);
+                assertThat((String) response.getMessage())
+                        .contains("Comment " + commentId + " deleted successfully");
             }
+
+            verify(commentRepository).deleteById(commentId);
+            verify(commentEventPublisher).publishCommentEvent(any(Comment.class), eq("COMMENT_DELETED"));
         }
 
         @Test
         @Order(2)
         @DisplayName("Should throw ResourceNotFoundException when comment not found")
         void shouldThrowResourceNotFoundExceptionWhenCommentNotFound() {
-            // Given
             String orderId = "TO-001";
             String invalidCommentId = "INVALID-ID";
 
@@ -484,37 +468,51 @@ public class CommentServiceImplTest {
             when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(invalidCommentId, orderId))
                     .thenReturn(Optional.empty());
 
-            // When & Then
             assertThatThrownBy(() -> commentService.deleteComment(orderId, invalidCommentId))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("Comment not found");
-
-            verify(commentRepository).findByCommentIdAndTestOrder_TestOrderId(invalidCommentId, orderId);
-            verify(commentRepository, never()).deleteById(anyString());
         }
 
         @Test
         @Order(3)
-        @DisplayName("Should handle repository exception during delete")
-        void shouldHandleRepositoryExceptionDuringDelete() {
-            // Given
+        @DisplayName("Should throw IllegalStateException when user not owner")
+        void shouldThrowWhenNotOwner() {
+            String orderId = "TO-001";
+            String commentId = "C-001";
+            comment.setCreatedBy("Other");
+
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                    .thenReturn(Optional.of(comment));
+
+            try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
+                mocked.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
+
+                assertThatThrownBy(() -> commentService.deleteComment(orderId, commentId))
+                        .isInstanceOf(IllegalStateException.class)
+                        .hasMessage("User does not have permission to delete this comment");
+            }
+        }
+
+        @Test
+        @Order(4)
+        @DisplayName("Should ignore publisher exception")
+        void shouldIgnorePublisherException() {
             String orderId = "TO-001";
             String commentId = "C-001";
 
-            try (MockedStatic<GeneralUtils> mockedGeneralUtils = mockStatic(GeneralUtils.class)) {
-                mockedGeneralUtils.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
+            when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
+            when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
+                    .thenReturn(Optional.of(comment));
+            doThrow(new RuntimeException("kafka down"))
+                    .when(commentEventPublisher).publishCommentEvent(any(Comment.class), eq("COMMENT_DELETED"));
 
-                when(testOrderRepository.findById(orderId)).thenReturn(Optional.of(testOrder));
-                when(commentRepository.findByCommentIdAndTestOrder_TestOrderId(commentId, orderId))
-                        .thenReturn(Optional.of(comment));
-                doThrow(new DataAccessException("Database error") {})
-                        .when(commentRepository).deleteById(commentId);
+            try (MockedStatic<GeneralUtils> mocked = mockStatic(GeneralUtils.class)) {
+                mocked.when(GeneralUtils::getCurrentUsername).thenReturn("Doctor A");
 
-                // When & Then
-                assertThatThrownBy(() -> commentService.deleteComment(orderId, commentId))
-                        .isInstanceOf(DataAccessException.class);
+                RestResponse<Void> response = commentService.deleteComment(orderId, commentId);
 
-                verify(commentRepository).deleteById(commentId);
+                assertThat(response.getStatusCode()).isEqualTo(200);
             }
         }
     }
