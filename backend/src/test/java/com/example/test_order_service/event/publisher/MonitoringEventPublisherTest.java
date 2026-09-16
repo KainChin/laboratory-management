@@ -98,6 +98,17 @@ class MonitoringEventPublisherTest {
     }
 
     @Test
+    void publishTestOrderCreated_withNonNullGenderAndNullPatientId_shouldSerializeAndSend() throws Exception {
+        when(testOrder.getPatientId()).thenReturn(null);
+        when(testOrder.getGender()).thenReturn(com.example.test_order_service.entity.enumForEntity.Gender.MALE);
+        when(objectMapper.writeValueAsString(any())).thenReturn("{\"ok\":true}");
+
+        publisher.publishTestOrderCreated(testOrder);
+
+        verify(rabbitTemplate, times(1)).convertAndSend(anyString(), anyString(), anyString());
+    }
+
+    @Test
     void publishTestOrderCreated_objectMapperThrows_shouldNotCrash() throws Exception {
         when(objectMapper.writeValueAsString(any()))
                 .thenThrow(new JsonProcessingException("boom") {});
@@ -186,3 +197,4 @@ class MonitoringEventPublisherTest {
         verify(rabbitTemplate, times(1)).convertAndSend(anyString(), anyString(), anyString());
     }
 }
+
