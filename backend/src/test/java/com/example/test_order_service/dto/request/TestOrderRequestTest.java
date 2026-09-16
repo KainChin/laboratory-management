@@ -110,6 +110,26 @@ class TestOrderRequestTest {
     }
 
     @Test
+    void nullDateOfBirth_shouldPass() {
+        TestOrderRequest req = validRequest();
+        req.setDateOfBirth(null);
+
+        Set<ConstraintViolation<TestOrderRequest>> violations = validator.validate(req);
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void tooOldDateOfBirth_shouldFail() {
+        TestOrderRequest req = validRequest();
+        req.setDateOfBirth(LocalDate.now().minusYears(125));
+
+        Set<ConstraintViolation<TestOrderRequest>> violations = validator.validate(req);
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("validDateOfBirth")));
+    }
+
+    @Test
     void lombokGeneratedMethods_shouldWork() {
         TestOrderRequest a = validRequest();
         TestOrderRequest b = validRequest();
@@ -128,3 +148,4 @@ class TestOrderRequestTest {
         assertEquals("X", empty.getPatientName());
     }
 }
+
